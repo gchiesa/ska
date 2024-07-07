@@ -62,30 +62,30 @@ Repository  -> Settings -> Secrets & variables -> `CODECOV_TOKEN`, `DOCKERHUB_TO
 # Demo Application
 
 ```sh
-$> golang-cli-template -h
-golang-cli project template demo application
+$> golang-cli-processor -h
+golang-cli project processor demo application
 
 Usage:
-  golang-cli-template [flags]
-  golang-cli-template [command]
+  golang-cli-processor [flags]
+  golang-cli-processor [command]
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   example     example subcommand which adds or multiplies two given integers
   help        Help about any command
-  version     golang-cli-template version
+  version     golang-cli-processor version
 
 Flags:
-  -h, --help   help for golang-cli-template
+  -h, --help   help for golang-cli-processor
 
 Use "golang-cli-template [command] --help" for more information about a command.
 ```
 
 ```sh
-$> golang-cli-template example 2 5 --add
+$> golang-cli-processor example 2 5 --add
 7
 
-$> golang-cli-template example 2 5 --multiply
+$> golang-cli-processor example 2 5 --multiply
 10
 ```
 

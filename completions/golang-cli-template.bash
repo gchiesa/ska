@@ -1,4 +1,4 @@
-# bash completion V2 for golang-cli-template                  -*- shell-script -*-
+# bash completion V2 for golang-cli-processor                  -*- shell-script -*-
 
 __golang-cli-template_debug()
 {
@@ -15,13 +15,13 @@ __golang-cli-template_init_completion()
     _get_comp_words_by_ref "$@" cur prev words cword
 }
 
-# This function calls the golang-cli-template program to obtain the completion
+# This function calls the golang-cli-processor program to obtain the completion
 # results and the directive.  It fills the 'out' and 'directive' vars.
 __golang-cli-template_get_completion_results() {
     local requestComp lastParam lastChar args
 
     # Prepare the command to request completions for the program.
-    # Calling ${words[0]} instead of directly golang-cli-template allows to handle aliases
+    # Calling ${words[0]} instead of directly golang-cli-processor allows to handle aliases
     args=("${words[@]:1}")
     requestComp="${words[0]} __complete ${args[*]}"
 
@@ -36,7 +36,7 @@ __golang-cli-template_get_completion_results() {
         requestComp="${requestComp} ''"
     fi
 
-    # When completing a flag with an = (e.g., golang-cli-template -n=<TAB>)
+    # When completing a flag with an = (e.g., golang-cli-processor -n=<TAB>)
     # bash focuses on the part after the =, so we need to remove
     # the flag part from $cur
     if [[ "${cur}" == -*=* ]]; then

@@ -1,6 +1,6 @@
-#compdef golang-cli-template
+#compdef golang-cli-processor
 
-# zsh completion for golang-cli-template                  -*- shell-script -*-
+# zsh completion for golang-cli-processor                  -*- shell-script -*-
 
 __golang-cli-template_debug()
 {
@@ -35,7 +35,7 @@ _golang-cli-template()
     lastChar=${lastParam[-1]}
     __golang-cli-template_debug "lastParam: ${lastParam}, lastChar: ${lastChar}"
 
-    # For zsh, when completing a flag with an = (e.g., golang-cli-template -n=<TAB>)
+    # For zsh, when completing a flag with an = (e.g., golang-cli-processor -n=<TAB>)
     # completions must be prefixed with the flag
     setopt local_options BASH_REMATCH
     if [[ "${lastParam}" =~ '-.*=' ]]; then

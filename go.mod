@@ -1,19 +1,25 @@
-module github.com/FalcoSuessgott/golang-cli-template
+module github.com/gchiesa/ska
 
-go 1.19
+go 1.21
+
+toolchain go1.22.0
 
 require (
+	github.com/FalcoSuessgott/golang-cli-template v0.3.0
+	github.com/apex/log v1.9.0
 	github.com/daixiang0/gci v0.13.4
 	github.com/go-critic/go-critic v0.11.3
 	github.com/golangci/golangci-lint v1.58.1
 	github.com/gotesttools/gotestfmt/v2 v2.5.0
 	github.com/muesli/mango-cobra v1.2.0
 	github.com/muesli/roff v0.1.0
+	github.com/otiai10/copy v1.14.0
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	golang.org/x/tools v0.21.0
 	mvdan.cc/gofumpt v0.6.0
+
 )
 
 require (
@@ -61,6 +67,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
 	github.com/ghostiam/protogetter v0.3.6 // indirect
+	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/go-toolsmith/astcast v1.1.0 // indirect
 	github.com/go-toolsmith/astcopy v1.1.0 // indirect
 	github.com/go-toolsmith/astequal v1.2.0 // indirect
@@ -130,6 +137,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v1.5.1 // indirect
 	github.com/prometheus/client_golang v1.12.1 // indirect

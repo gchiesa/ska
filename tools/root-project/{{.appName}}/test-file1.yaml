@@ -1,0 +1,11 @@
+---
+root:
+  key1: value1
+  key2: {{.notManaged}}
+  key3: value3
+# ska-start:key/4
+  key4:
+    subkey: "{{.appName}}"
+    subkey2: value2
+# ska-end
+  key5: value5

@@ -5,7 +5,7 @@ set -euo pipefail
 read -rp "GitHub Username: " user
 read -rp "Projectname: " projectname
 
-git clone git@github.com:FalcoSuessgott/golang-cli-template.git "$projectname"
+git clone git@github.com:FalcoSuessgott/golang-cli-renderer.git "$projectname"
 cd "$projectname"
 rm -rf .git
 find . -type f -exec sed -i "s/golang-cli-template/$projectname/g" {} +

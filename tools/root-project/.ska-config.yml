@@ -1,0 +1,10 @@
+config:
+  processAllFiles: false
+  excludeMatchingFiles: []
+  includeMatchingFiles: []
+
+state:
+  variables:
+    appName: This App
+    testFileName: test-file
+

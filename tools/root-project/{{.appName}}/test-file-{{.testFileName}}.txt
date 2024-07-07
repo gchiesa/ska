@@ -1,0 +1,1 @@
+this is a simple file test for the app {{.appName}}

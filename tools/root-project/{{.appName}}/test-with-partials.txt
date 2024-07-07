@@ -1,0 +1,16 @@
+This is an example
+file.
+
+# ska-start:part-01
+this is a managed partial
+of
+3 lines
+# ska-end
+
+this is an unmanaged part
+
+# ska-start:part-02
+this is a managed partial of 1 line
+# ska-end
+
+this is remaining part
