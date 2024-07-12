@@ -1,7 +1,7 @@
 package multipart
 
 import (
-	"github.com/gchiesa/ska/pkg/part"
+	"github.com/gchiesa/ska/internal/part"
 	"regexp"
 )
 

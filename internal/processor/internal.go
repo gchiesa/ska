@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/pkg/multipart"
+	"github.com/gchiesa/ska/internal/configuration"
+	"github.com/gchiesa/ska/internal/multipart"
 	"github.com/otiai10/copy"
 	"html/template"
 	"io/fs"
@@ -13,7 +14,7 @@ import (
 	"strings"
 )
 
-func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]string) error {
+func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]interface{}) error {
 	// walk the sourcePath and render the files
 	sPathAbs, err := filepath.Abs(tp.sourcePath)
 	if err != nil {
@@ -63,7 +64,7 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]strin
 }
 
 func (tp *FileTreeProcessor) loadMultiparts() error {
-	logger := tp.log.Logger.WithFields(log.Fields{"method": "loadMultiparts"})
+	logger := tp.log.WithFields(log.Fields{"method": "loadMultiparts"})
 	err := filepath.Walk(tp.workingDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -111,8 +112,8 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 
 // WAVE 3 - expand template
 // render all the templates, but if a partial exists for a file then expands only the partials
-func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]string) error {
-	logger := tp.log.Logger.WithFields(log.Fields{"method": "renderStagingFileTree"})
+func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]interface{}) error {
+	logger := tp.log.WithFields(log.Fields{"method": "renderStagingFileTree"})
 	err := filepath.Walk(tp.workingDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -164,7 +165,7 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]stri
 }
 
 func (tp *FileTreeProcessor) shouldProcessFile(path string) bool {
-	fileParts := strings.Split(path, "swanson")
+	fileParts := strings.Split(path, configuration.AppIdentifier)
 
 	// if it's a file in the form of `file.swanson-....` we skip it
 	if len(fileParts) > 1 && strings.HasSuffix(fileParts[0], ".") && strings.HasPrefix(fileParts[1], "-") {
@@ -209,7 +210,7 @@ func (tp *FileTreeProcessor) fileIsMultipart(relativeFilePath string) bool {
 // **IF the file already exists in the destination then
 // only replace the partials with the expanded content
 func (tp *FileTreeProcessor) updateDestinationFileTree() error {
-	logger := tp.log.Logger.WithFields(log.Fields{"method": "updateDestinationFileTree"})
+	logger := tp.log.WithFields(log.Fields{"method": "updateDestinationFileTree"})
 	err := filepath.Walk(tp.workingDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err

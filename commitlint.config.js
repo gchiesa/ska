@@ -1,5 +1,5 @@
-// commitlint.config.js
+// commitlint.configuration.js
 module.exports = {
-  extends: ['@commitlint/config-conventional'],
+  extends: ['@commitlint/configuration-conventional'],
   ignores: [(message) => /^Bumps \[.+]\(.+\) from .+ to .+\.$/m.test(message)],
 }

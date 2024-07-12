@@ -2,7 +2,7 @@ package multipart
 
 import (
 	"fmt"
-	"github.com/gchiesa/ska/pkg/part"
+	"github.com/gchiesa/ska/internal/part"
 	"os"
 	"path/filepath"
 	"strings"

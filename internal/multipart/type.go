@@ -3,7 +3,7 @@ package multipart
 import (
 	"fmt"
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/pkg/part"
+	"github.com/gchiesa/ska/internal/part"
 	"os"
 )
 

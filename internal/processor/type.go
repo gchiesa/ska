@@ -2,7 +2,8 @@ package processor
 
 import (
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/pkg/multipart"
+	"github.com/gchiesa/ska/internal/multipart"
+	"os"
 )
 
 type FileTreeProcessor struct {
@@ -15,6 +16,10 @@ type FileTreeProcessor struct {
 
 type TreeRendererOptions struct {
 }
+
+const (
+	workingDirPrefix = "ska-processor-wd-"
+)
 
 func NewFileTreeProcessor(sourcePath, destinationPathRoot string, options TreeRendererOptions) *FileTreeProcessor {
 	logCtx := log.WithFields(log.Fields{
@@ -30,4 +35,9 @@ func NewFileTreeProcessor(sourcePath, destinationPathRoot string, options TreeRe
 
 func (tp *FileTreeProcessor) WorkingDir() string {
 	return tp.workingDir
+}
+
+func (tp *FileTreeProcessor) RemoveWorkingDir() error {
+	tp.log.WithFields(log.Fields{"workingDir": tp.workingDir}).Debug("removing working dir.")
+	return os.RemoveAll(tp.workingDir)
 }

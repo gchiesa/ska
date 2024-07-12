@@ -2,7 +2,7 @@ package processor
 
 import "os"
 
-func (tp *FileTreeProcessor) Render(withVariables map[string]string) error {
+func (tp *FileTreeProcessor) Render(withVariables map[string]interface{}) error {
 	if tp.workingDir == "" {
 		var err error
 		tp.workingDir, err = os.MkdirTemp("", "swansonRenderer")

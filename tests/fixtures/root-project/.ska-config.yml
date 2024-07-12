@@ -1,5 +1,6 @@
 config:
-  processAllFiles: false
+  blueprintUpstream: github.com/gchiesa/ska/tools/root-project@1.0.0
+  processAllFiles: true
   excludeMatchingFiles: []
   includeMatchingFiles: []
 
