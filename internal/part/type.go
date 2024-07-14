@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 )
 
-const DelimiterId = "ska"
+const DelimiterID = "ska"
 const DelimiterStart = "ska-start"
 const DelimiterEnd = "ska-end"
 
 type Part struct {
-	parentRefFileUri string
+	parentRefFileURI string
 	refFilePath      string
 	refFileBasename  string
 	id               string
@@ -20,8 +20,8 @@ type Part struct {
 }
 
 var (
-	MultipartError = errors.New("error creating multipart")
-	InvalidContent = errors.New("invalid content for multipart")
+	ErrMultipartError = errors.New("error creating multipart")
+	ErrInvalidContent = errors.New("invalid content for multipart")
 )
 
 //
@@ -54,12 +54,12 @@ var (
 // `test-file.txt.swanson-2`
 //
 
-func NewPart(fromRefFileUri string, id string) *Part {
+func NewPart(fromRefFileURI, id string) *Part {
 	idEncoded := base32.StdEncoding.EncodeToString([]byte(id))
-	refFileBasename := filepath.Base(fmt.Sprintf("%s.%s-%s", fromRefFileUri, DelimiterId, idEncoded))
+	refFileBasename := filepath.Base(fmt.Sprintf("%s.%s-%s", fromRefFileURI, DelimiterID, idEncoded))
 	return &Part{
 		id:               id,
-		parentRefFileUri: fromRefFileUri,
+		parentRefFileURI: fromRefFileURI,
 		refFileBasename:  refFileBasename,
 	}
 }
@@ -72,6 +72,6 @@ func (p *Part) RefFilePath() string {
 	return p.refFilePath
 }
 
-func (p *Part) Id() string {
+func (p *Part) ID() string {
 	return p.id
 }

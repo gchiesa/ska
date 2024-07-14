@@ -9,21 +9,20 @@ import (
 
 type Multipart struct {
 	id              string
-	refFileUri      string
+	refFileURI      string
 	contentOriginal []byte
 	contentCompiled []byte
 	parts           []part.Part
-	workindDir      string
 	log             *log.Entry
 }
 
-func NewMultipartFromFile(filePath string, id string) (*Multipart, error) {
+func NewMultipartFromFile(filePath, id string) (*Multipart, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading file %s: %w", filePath, part.MultipartError)
+		return nil, fmt.Errorf("error reading file %s: %w", filePath, part.ErrMultipartError)
 	}
 	if ok := isValidContent(fileData); !ok {
-		return nil, fmt.Errorf("invalid contentOriginal for partial container: %w", part.InvalidContent)
+		return nil, fmt.Errorf("invalid contentOriginal for partial container: %w", part.ErrInvalidContent)
 	}
 
 	logCtx := log.WithFields(log.Fields{
@@ -32,13 +31,13 @@ func NewMultipartFromFile(filePath string, id string) (*Multipart, error) {
 
 	return &Multipart{
 		id:              id,
-		refFileUri:      filePath,
+		refFileURI:      filePath,
 		contentOriginal: fileData,
 		log:             logCtx,
 	}, nil
 }
 
-func (mp *Multipart) Id() string {
+func (mp *Multipart) ID() string {
 	return mp.id
 }
 

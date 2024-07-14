@@ -38,7 +38,7 @@ func (cs *ConfigService) WithBlueprintUpstream(bpURI string) *ConfigService {
 	return cs
 }
 
-func (cs *ConfigService) ProcessAllFiles(processAllFiles bool) bool {
+func (cs *ConfigService) ProcessAllFiles() bool {
 	return len(cs.app.Config.ExcludeMatchingFiles) == 0 && len(cs.app.Config.IncludeMatchingFiles) == 0
 }
 
@@ -79,11 +79,11 @@ func (cs *ConfigService) ReadConfig(dirPath string) ([]byte, error) {
 		return nil, err
 	}
 
-	var appCfg appCfg
-	err = yaml.Unmarshal(configData, &appCfg)
+	var cfg appCfg
+	err = yaml.Unmarshal(configData, &cfg)
 	if err != nil {
 		return nil, err
 	}
-	cs.app = &appCfg
+	cs.app = &cfg
 	return cf.ReadConfig()
 }

@@ -1,4 +1,4 @@
-package content_provider
+package contentprovider
 
 import (
 	"github.com/apex/log"
@@ -14,9 +14,9 @@ type LocalPath struct {
 
 const LocalPathPrefix = "file://"
 
-func NewLocalPath(path string, inMemoryFs bool) (*LocalPath, error) {
+func NewLocalPath(path string) (*LocalPath, error) {
 	logCtx := log.WithFields(log.Fields{
-		"pkg":  "content_provider",
+		"pkg":  "contentprovider",
 		"type": "github",
 	})
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
@@ -34,7 +34,7 @@ func (cp *LocalPath) RemoteURI() string {
 	return cp.sourcePath
 }
 
-func (cp *LocalPath) RemoveWorkingDir() error {
+func (cp *LocalPath) Cleanup() error {
 	cp.log.WithFields(log.Fields{"workingDir": cp.workingDir}).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err

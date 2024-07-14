@@ -1,4 +1,4 @@
-package content_provider
+package contentprovider
 
 import (
 	"errors"
@@ -23,10 +23,10 @@ func (cp *GitHub) validateRemoteURI(string) error {
 	return nil
 }
 
-func (cp *GitHub) remoteTagExists(tag string, authToken string) (bool, error) {
-	baseUrl := cp.repositoryURIToAPI()
-	url := fmt.Sprintf("%s/git/ref/tags/%s", baseUrl, tag)
-	req, err := http.NewRequest("GET", url, nil)
+func (cp *GitHub) remoteTagExists(tag, authToken string) (bool, error) {
+	baseURL := cp.repositoryURIToAPI()
+	url := fmt.Sprintf("%s/git/ref/tags/%s", baseURL, tag)
+	req, err := http.NewRequest("GET", url, http.NoBody)
 	if err != nil {
 		return false, err
 	}

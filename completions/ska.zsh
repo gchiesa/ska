@@ -2,7 +2,7 @@
 
 # zsh completion for golang-cli-processor                  -*- shell-script -*-
 
-__golang-cli-template_debug()
+__ska_debug()
 {
     local file="$BASH_COMP_DEBUG_FILE"
     if [[ -n ${file} ]]; then
@@ -10,7 +10,7 @@ __golang-cli-template_debug()
     fi
 }
 
-_golang-cli-template()
+_ska()
 {
     local shellCompDirectiveError=1
     local shellCompDirectiveNoSpace=2
@@ -21,19 +21,19 @@ _golang-cli-template()
     local lastParam lastChar flagPrefix requestComp out directive comp lastComp noSpace
     local -a completions
 
-    __golang-cli-template_debug "\n========= starting completion logic =========="
-    __golang-cli-template_debug "CURRENT: ${CURRENT}, words[*]: ${words[*]}"
+    __ska_debug "\n========= starting completion logic =========="
+    __ska_debug "CURRENT: ${CURRENT}, words[*]: ${words[*]}"
 
     # The user could have moved the cursor backwards on the command-line.
     # We need to trigger completion from the $CURRENT location, so we need
     # to truncate the command-line ($words) up to the $CURRENT location.
     # (We cannot use $CURSOR as its value does not work when a command is an alias.)
     words=("${=words[1,CURRENT]}")
-    __golang-cli-template_debug "Truncated words[*]: ${words[*]},"
+    __ska_debug "Truncated words[*]: ${words[*]},"
 
     lastParam=${words[-1]}
     lastChar=${lastParam[-1]}
-    __golang-cli-template_debug "lastParam: ${lastParam}, lastChar: ${lastChar}"
+    __ska_debug "lastParam: ${lastParam}, lastChar: ${lastChar}"
 
     # For zsh, when completing a flag with an = (e.g., golang-cli-processor -n=<TAB>)
     # completions must be prefixed with the flag
@@ -48,22 +48,22 @@ _golang-cli-template()
     if [ "${lastChar}" = "" ]; then
         # If the last parameter is complete (there is a space following it)
         # We add an extra empty parameter so we can indicate this to the go completion code.
-        __golang-cli-template_debug "Adding extra empty parameter"
+        __ska_debug "Adding extra empty parameter"
         requestComp="${requestComp} \"\""
     fi
 
-    __golang-cli-template_debug "About to call: eval ${requestComp}"
+    __ska_debug "About to call: eval ${requestComp}"
 
     # Use eval to handle any environment variables and such
     out=$(eval ${requestComp} 2>/dev/null)
-    __golang-cli-template_debug "completion output: ${out}"
+    __ska_debug "completion output: ${out}"
 
     # Extract the directive integer following a : from the last line
     local lastLine
     while IFS='\n' read -r line; do
         lastLine=${line}
     done < <(printf "%s\n" "${out[@]}")
-    __golang-cli-template_debug "last line: ${lastLine}"
+    __ska_debug "last line: ${lastLine}"
 
     if [ "${lastLine[1]}" = : ]; then
         directive=${lastLine[2,-1]}
@@ -73,16 +73,16 @@ _golang-cli-template()
         out=${out[1,-$suffix]}
     else
         # There is no directive specified.  Leave $out as is.
-        __golang-cli-template_debug "No directive found.  Setting do default"
+        __ska_debug "No directive found.  Setting do default"
         directive=0
     fi
 
-    __golang-cli-template_debug "directive: ${directive}"
-    __golang-cli-template_debug "completions: ${out}"
-    __golang-cli-template_debug "flagPrefix: ${flagPrefix}"
+    __ska_debug "directive: ${directive}"
+    __ska_debug "completions: ${out}"
+    __ska_debug "flagPrefix: ${flagPrefix}"
 
     if [ $((directive & shellCompDirectiveError)) -ne 0 ]; then
-        __golang-cli-template_debug "Completion received error. Ignoring completions."
+        __ska_debug "Completion received error. Ignoring completions."
         return
     fi
 
@@ -93,11 +93,11 @@ _golang-cli-template()
     while IFS='\n' read -r comp; do
         # Check if this is an activeHelp statement (i.e., prefixed with $activeHelpMarker)
         if [ "${comp[1,$endIndex]}" = "$activeHelpMarker" ];then
-            __golang-cli-template_debug "ActiveHelp found: $comp"
+            __ska_debug "ActiveHelp found: $comp"
             comp="${comp[$startIndex,-1]}"
             if [ -n "$comp" ]; then
                 compadd -x "${comp}"
-                __golang-cli-template_debug "ActiveHelp will need delimiter"
+                __ska_debug "ActiveHelp will need delimiter"
                 hasActiveHelp=1
             fi
 
@@ -114,7 +114,7 @@ _golang-cli-template()
             local tab="$(printf '\t')"
             comp=${comp//$tab/:}
 
-            __golang-cli-template_debug "Adding completion: ${comp}"
+            __ska_debug "Adding completion: ${comp}"
             completions+=${comp}
             lastComp=$comp
         fi
@@ -125,14 +125,14 @@ _golang-cli-template()
     # - file completion will be performed (so there will be choices after the activeHelp)
     if [ $hasActiveHelp -eq 1 ]; then
         if [ ${#completions} -ne 0 ] || [ $((directive & shellCompDirectiveNoFileComp)) -eq 0 ]; then
-            __golang-cli-template_debug "Adding activeHelp delimiter"
+            __ska_debug "Adding activeHelp delimiter"
             compadd -x "--"
             hasActiveHelp=0
         fi
     fi
 
     if [ $((directive & shellCompDirectiveNoSpace)) -ne 0 ]; then
-        __golang-cli-template_debug "Activating nospace."
+        __ska_debug "Activating nospace."
         noSpace="-S ''"
     fi
 
@@ -149,17 +149,17 @@ _golang-cli-template()
         done
         filteringCmd+=" ${flagPrefix}"
 
-        __golang-cli-template_debug "File filtering command: $filteringCmd"
+        __ska_debug "File filtering command: $filteringCmd"
         _arguments '*:filename:'"$filteringCmd"
     elif [ $((directive & shellCompDirectiveFilterDirs)) -ne 0 ]; then
         # File completion for directories only
         local subdir
         subdir="${completions[1]}"
         if [ -n "$subdir" ]; then
-            __golang-cli-template_debug "Listing directories in $subdir"
+            __ska_debug "Listing directories in $subdir"
             pushd "${subdir}" >/dev/null 2>&1
         else
-            __golang-cli-template_debug "Listing directories in ."
+            __ska_debug "Listing directories in ."
         fi
 
         local result
@@ -170,17 +170,17 @@ _golang-cli-template()
         fi
         return $result
     else
-        __golang-cli-template_debug "Calling _describe"
+        __ska_debug "Calling _describe"
         if eval _describe "completions" completions $flagPrefix $noSpace; then
-            __golang-cli-template_debug "_describe found some completions"
+            __ska_debug "_describe found some completions"
 
             # Return the success of having called _describe
             return 0
         else
-            __golang-cli-template_debug "_describe did not find completions."
-            __golang-cli-template_debug "Checking if we should do file completion."
+            __ska_debug "_describe did not find completions."
+            __ska_debug "Checking if we should do file completion."
             if [ $((directive & shellCompDirectiveNoFileComp)) -ne 0 ]; then
-                __golang-cli-template_debug "deactivating file completion"
+                __ska_debug "deactivating file completion"
 
                 # We must return an error code here to let zsh know that there were no
                 # completions found by _describe; this is what will trigger other
@@ -189,7 +189,7 @@ _golang-cli-template()
                 return 1
             else
                 # Perform file completion
-                __golang-cli-template_debug "Activating file completion"
+                __ska_debug "Activating file completion"
 
                 # We must return the result of this command, so it must be the
                 # last command, or else we must store its result to return it.
@@ -200,6 +200,6 @@ _golang-cli-template()
 }
 
 # don't run the completion function when being source-ed or eval-ed
-if [ "$funcstack[1]" = "_golang-cli-template" ]; then
-    _golang-cli-template
+if [ "$funcstack[1]" = "_ska" ]; then
+    _ska
 fi

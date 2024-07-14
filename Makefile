@@ -1,4 +1,4 @@
-projectname?=golang-cli-template
+projectname?=ska
 
 default: help
 
@@ -8,7 +8,7 @@ help: ## list makefile targets
 
 .PHONY: build
 build: ## build golang binary
-	@go build -ldflags "-X main.version=$(shell git describe --abbrev=0 --tags)" -o $(projectname)
+	@go build -ldflags "-X cmd.version=$(shell git describe --abbrev=0 --tags || echo devel)" -o $(projectname)
 
 .PHONY: install
 install: ## install golang binary

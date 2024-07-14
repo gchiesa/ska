@@ -9,7 +9,7 @@ before:
 
 builds:
   -
-    binary: golang-cli-processor
+    binary: ska
     ldflags: -s -w -X main.version={{ .Version }}
     goos:
       - linux
@@ -21,7 +21,7 @@ builds:
 archives:
   -
     builds:
-      - golang-cli-processor
+      - ska
     format_overrides:
       - goos: windows
         format: zip
@@ -32,10 +32,10 @@ archives:
 
 nfpms:
   - builds:
-      - golang-cli-processor
-    vendor: FalcoSuessgott
-    homepage:  https://github.com/FalcoSuessgott/golang-cli-template
-    maintainer: "Tom Morelly <tommorelly@gmail.com>"
+      - ska
+    vendor: gchiesa
+    homepage:  https://github.com/gchiesa/ska
+    maintainer: "Giuseppe Chiesa <hello@g-c.dev>"
     description: "A general purpose golang CLI processor for Github and Gitlab"
     license: GPL-3.0
     formats:
@@ -44,32 +44,32 @@ nfpms:
       - rpm
     bindir: /usr/bin
     contents:
-      - src: ./manpages/golang-cli-processor.1.gz
-        dst: /usr/share/man/man1/golang-cli-processor.1.gz
+      - src: ./manpages/ska.1.gz
+        dst: /usr/share/man/man1/ska.1.gz
         file_info:
           mode: 0644
-      - src: ./completions/golang-cli-processor.bash
-        dst: /usr/share/bash-completion/completions/golang-cli-processor
+      - src: ./completions/ska.bash
+        dst: /usr/share/bash-completion/completions/ska
         file_info:
           mode: 0644
-      - src: ./completions/golang-cli-processor.fish
-        dst: /usr/share/fish/vendor_completions.d/golang-cli-processor.fish
+      - src: ./completions/ska.fish
+        dst: /usr/share/fish/vendor_completions.d/ska.fish
         file_info:
           mode: 0644
-      - src: ./completions/golang-cli-processor.zsh
-        dst:  /usr/share/zsh/vendor-completions/_golang-cli-processor
+      - src: ./completions/ska.zsh
+        dst:  /usr/share/zsh/vendor-completions/_ska
         file_info:
           mode: 0644
 
 dockers:
 - image_templates:
-  - 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}-amd64'
+  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
+  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
   dockerfile: Dockerfile
   use: buildx
   build_flag_templates:
   - "--pull"
-  - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/FalcoSuessgott/golang-cli-processor/master/README.md"
+  - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/gchiesa/ska/master/README.md"
   - "--label=io.artifacthub.package.maintainers=[{\"name\":\"Tom Morelly\",\"email\":\"tommorelly@gmail.com\"}]"
   - "--label=io.artifacthub.package.license=MIT"
   - "--label=org.opencontainers.image.description=A general purpose golang CLI processor for Github and Gitlab"
@@ -80,14 +80,14 @@ dockers:
   - "--label=org.opencontainers.image.source={{.GitURL}}"
   - "--platform=linux/amd64"
 - image_templates:
-  - 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}-arm64'
-  - 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}-arm64'
+  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
+  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
   dockerfile:  Dockerfile
   use: buildx
   build_flag_templates:
   - "--pull"
-  - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/FalcoSuessgott/golang-cli-processor/master/README.md"
-  - "--label=io.artifacthub.package.logo-url=https://raw.githubusercontent.com/FalcoSuessgott/golang-cli-processor/master/www/static/images/logo.png"
+  - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/gchiesa/ska/master/README.md"
+  - "--label=io.artifacthub.package.logo-url=https://raw.githubusercontent.com/gchiesa/ska/master/www/static/images/logo.png"
   - "--label=io.artifacthub.package.maintainers=[{\"name\":\"Tom Morelly\",\"email\":\"tommorelly@gmail.com\"}]"
   - "--label=io.artifacthub.package.license=MIT"
   - "--label=org.opencontainers.image.description=A general purpose golang CLI processor for Github and Gitlab"
@@ -100,22 +100,22 @@ dockers:
   goarch: arm64
 
 docker_manifests:
-- name_template: 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}'
+- name_template: 'gchiesa/{{.ProjectName}}:{{ .Tag }}'
   image_templates:
-  - 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}-arm64'
-- name_template: 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}'
+  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
+  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
+- name_template: 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}'
   image_templates:
-  - 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}-arm64'
-- name_template: 'falcosuessgott/{{.ProjectName}}:latest'
+  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
+  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
+- name_template: 'gchiesa/{{.ProjectName}}:latest'
   image_templates:
-  - 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'falcosuessgott/{{.ProjectName}}:{{ .Tag }}-arm64'
-- name_template: 'ghcr.io/falcosuessgott/{{.ProjectName}}:latest'
+  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
+  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
+- name_template: 'ghcr.io/gchiesa/{{.ProjectName}}:latest'
   image_templates:
-  - 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'ghcr.io/falcosuessgott/{{.ProjectName}}:{{ .Tag }}-arm64'
+  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
+  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
 
 checksum:
   name_template: "checksums.txt"

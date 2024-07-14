@@ -13,5 +13,5 @@ func (p *Part) SetFilePath(path string) *Part {
 }
 
 func (p *Part) CreateFile() error {
-	return os.WriteFile(p.refFilePath, p.content, 0644)
+	return os.WriteFile(p.refFilePath, p.content, 0o644)
 }

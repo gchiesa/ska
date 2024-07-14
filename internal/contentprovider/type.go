@@ -1,10 +1,10 @@
-package content_provider
+package contentprovider
 
 type RemoteContentProvider interface {
 	// DownloadContent Download the remote content to a local working directory
 	DownloadContent() error
-	// RemoveWorkingDir Remove the local working directory
-	RemoveWorkingDir() error
+	// Cleanup Perform the cleanup task for the provider
+	Cleanup() error
 	// WorkingDir Get the local working directory
 	WorkingDir() string
 	// RemoteURI Get the remote URI

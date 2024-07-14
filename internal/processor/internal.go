@@ -50,7 +50,7 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 			}
 		} else {
 			// if directory we allocate all the path
-			if err := os.MkdirAll(dPath, 0755); err != nil {
+			if err := os.MkdirAll(dPath, 0o755); err != nil {
 				return err
 			}
 		}
@@ -89,7 +89,7 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 				return err
 			}
 
-			if err := multipart.ParseParts(); err != nil {
+			if err = multipart.ParseParts(); err != nil { //nolint:gocritic
 				return err
 			}
 			files, err := multipart.PartsToFiles()
@@ -149,7 +149,7 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 				return err
 			}
 			logger.WithFields(log.Fields{"filePath": relPath}).Debug("Saving rendered file.")
-			if err := os.WriteFile(absPath, []byte(buff.String()), 0644); err != nil {
+			if err := os.WriteFile(absPath, []byte(buff.String()), 0o644); err != nil { //nolint:gosimple // we don't need to check the error here
 				return err
 			}
 		} else {
@@ -174,32 +174,32 @@ func (tp *FileTreeProcessor) shouldProcessFile(path string) bool {
 	return true
 }
 
-func (tp *FileTreeProcessor) getMultipartById(id string) (*multipart.Multipart, error) {
+func (tp *FileTreeProcessor) getMultipartByID(id string) (*multipart.Multipart, error) {
 	for _, pc := range tp.multiparts {
-		if pc.Id() == id {
+		if pc.ID() == id {
 			return pc, nil
 		}
 	}
 	return nil, fmt.Errorf("multipart not found: %s", id)
 }
 
-func (tp *FileTreeProcessor) multipartWithIdExists(id string) bool {
-	if _, err := tp.getMultipartById(id); err != nil {
+func (tp *FileTreeProcessor) multipartWithIDExists(id string) bool {
+	if _, err := tp.getMultipartByID(id); err != nil {
 		return false
 	}
 	return true
 }
 
 func (tp *FileTreeProcessor) multipartExistsAndHasPartials(id string) bool {
-	if !tp.multipartWithIdExists(id) {
+	if !tp.multipartWithIDExists(id) {
 		return false
 	}
-	pc, _ := tp.getMultipartById(id)
+	pc, _ := tp.getMultipartByID(id)
 	return pc.HasParts()
 }
 
 func (tp *FileTreeProcessor) fileIsMultipart(relativeFilePath string) bool {
-	return tp.multipartWithIdExists(relativeFilePath)
+	return tp.multipartWithIDExists(relativeFilePath)
 }
 
 // WAVE 4 - copy to destination the staging directory
@@ -240,7 +240,7 @@ func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 				}
 				return nil
 			}
-			mp, _ := tp.getMultipartById(relPath)
+			mp, _ := tp.getMultipartByID(relPath)
 
 			// if it has no partials then we just copy as normal expanded file
 			if !mp.HasParts() {
@@ -256,10 +256,9 @@ func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 			if err := mp.CompileToFile(filepath.Join(tp.destinationPathRoot, relPath), false); err != nil {
 				return err
 			}
-
 		} else {
 			// if directory we allocate all the path
-			if err := os.MkdirAll(filepath.Join(tp.destinationPathRoot, relPath), 0755); err != nil {
+			if err := os.MkdirAll(filepath.Join(tp.destinationPathRoot, relPath), 0o755); err != nil {
 				return err
 			}
 		}

@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/configuration"
-	"github.com/gchiesa/ska/internal/content_provider"
+	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/processor"
 )
 
@@ -14,25 +14,29 @@ type CreateCmd struct {
 }
 
 func (c *CreateCmd) Execute() error {
-	templateProvider, err := content_provider.ContentProviderByURI(c.TemplateURI)
-	defer templateProvider.RemoveWorkingDir()
+	templateProvider, err := contentprovider.ByURI(c.TemplateURI)
+	defer func(templateProvider contentprovider.RemoteContentProvider) {
+		_ = templateProvider.Cleanup()
+	}(templateProvider)
 
 	if err != nil {
-		log.Fatalf("error creating template provider: %v", err)
+		return err
 	}
 
 	configService := configuration.NewConfigService()
 
-	if err := templateProvider.DownloadContent(); err != nil {
-		log.Fatalf("error downloading template: %v", err)
+	if err := templateProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
+		return err
 	}
 
-	fileTreeProcessor := processor.NewFileTreeProcessor(templateProvider.WorkingDir(), c.DestinationPath, processor.TreeRendererOptions{})
-	defer fileTreeProcessor.RemoveWorkingDir()
+	fileTreeProcessor := processor.NewFileTreeProcessor(templateProvider.WorkingDir(), c.DestinationPath)
+	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
+		_ = fileTreeProcessor.Cleanup()
+	}(fileTreeProcessor)
 
 	vars := mapStringToMapInterface(c.Variables)
-	if err := fileTreeProcessor.Render(vars); err != nil {
-		log.Fatalf("error rendering template: %v", err)
+	if err := fileTreeProcessor.Render(vars); err != nil { //nolint:govet //not a bit deal
+		return err
 	}
 
 	// save the config
@@ -41,7 +45,7 @@ func (c *CreateCmd) Execute() error {
 		WithBlueprintUpstream(templateProvider.RemoteURI()).
 		WriteConfig(c.DestinationPath)
 	if err != nil {
-		log.Fatalf("error writing config: %v", err)
+		return err
 	}
 
 	log.Infof("template created under file path: %s", c.DestinationPath)

@@ -17,11 +17,7 @@ type FileTreeProcessor struct {
 type TreeRendererOptions struct {
 }
 
-const (
-	workingDirPrefix = "ska-processor-wd-"
-)
-
-func NewFileTreeProcessor(sourcePath, destinationPathRoot string, options TreeRendererOptions) *FileTreeProcessor {
+func NewFileTreeProcessor(sourcePath, destinationPathRoot string) *FileTreeProcessor {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "processor",
 	})
@@ -37,7 +33,7 @@ func (tp *FileTreeProcessor) WorkingDir() string {
 	return tp.workingDir
 }
 
-func (tp *FileTreeProcessor) RemoveWorkingDir() error {
+func (tp *FileTreeProcessor) Cleanup() error {
 	tp.log.WithFields(log.Fields{"workingDir": tp.workingDir}).Debug("removing working dir.")
 	return os.RemoveAll(tp.workingDir)
 }

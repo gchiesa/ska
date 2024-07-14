@@ -31,7 +31,9 @@ func Execute() error {
 
 	switch {
 	case args.CreateCmd != nil:
-		return args.CreateCmd.Execute()
+		if err := args.CreateCmd.Execute(); err != nil {
+			log.Fatalf("error executing create command: %v", err)
+		}
 	default:
 		fmt.Println("no subcommand specified")
 	}

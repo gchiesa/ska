@@ -1,4 +1,4 @@
-package content_provider
+package contentprovider
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ const GitHubPrefix = "https://github.com/"
 
 func NewGitHub(remoteURI string) (*GitHub, error) {
 	logCtx := log.WithFields(log.Fields{
-		"pkg":  "content_provider",
+		"pkg":  "contentprovider",
 		"type": "github",
 	})
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
@@ -76,13 +76,13 @@ func (cp *GitHub) DownloadContent() error {
 	}
 
 	// remove the .git folder
-	if err = cp.removeGitFolder(); err != nil {
+	if err := cp.removeGitFolder(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (cp *GitHub) RemoveWorkingDir() error {
+func (cp *GitHub) Cleanup() error {
 	cp.log.WithFields(log.Fields{"workingDir": cp.workingDir}).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err

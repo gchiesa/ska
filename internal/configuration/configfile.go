@@ -6,37 +6,37 @@ import (
 	"path/filepath"
 )
 
-type configFile struct {
+type ConfigFile struct {
 	filePath string
 	log      *log.Entry
 }
 
 const configFileName = ".ska-config.yml"
 
-func NewConfigFromDirectory(dirPath string) *configFile {
+func NewConfigFromDirectory(dirPath string) *ConfigFile {
 	filePath := filepath.Join(dirPath, configFileName)
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "configuration",
 	})
-	return &configFile{
+	return &ConfigFile{
 		filePath: filePath,
 		log:      logCtx,
 	}
 }
 
-func (cf *configFile) GetFilePath() string {
+func (cf *ConfigFile) GetFilePath() string {
 	return cf.filePath
 }
 
-func (cf *configFile) WriteConfig(configData []byte) error {
+func (cf *ConfigFile) WriteConfig(configData []byte) error {
 	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Info("Writing configuration to file")
-	if err := os.WriteFile(cf.filePath, configData, 0644); err != nil {
+	if err := os.WriteFile(cf.filePath, configData, 0o644); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (cf *configFile) ReadConfig() ([]byte, error) {
+func (cf *ConfigFile) ReadConfig() ([]byte, error) {
 	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Info("Reading configuration from file")
 	return os.ReadFile(cf.filePath)
 }
