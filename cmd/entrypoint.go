@@ -13,6 +13,7 @@ const version = "development"
 
 type arguments struct {
 	CreateCmd *CreateCmd `arg:"subcommand:create"`
+	UpdateCmd *UpdateCmd `arg:"subcommand:update"`
 	Debug     bool       `arg:"-d"`
 }
 
@@ -33,6 +34,10 @@ func Execute() error {
 	case args.CreateCmd != nil:
 		if err := args.CreateCmd.Execute(); err != nil {
 			log.Fatalf("error executing create command: %v", err)
+		}
+	case args.UpdateCmd != nil:
+		if err := args.UpdateCmd.Execute(); err != nil {
+			log.Fatalf("error executing update command: %v", err)
 		}
 	default:
 		fmt.Println("no subcommand specified")

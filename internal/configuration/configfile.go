@@ -15,6 +15,10 @@ const configFileName = ".ska-config.yml"
 
 func NewConfigFromDirectory(dirPath string) *ConfigFile {
 	filePath := filepath.Join(dirPath, configFileName)
+	return NewConfigFromFile(filePath)
+}
+
+func NewConfigFromFile(filePath string) *ConfigFile {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "configuration",
 	})

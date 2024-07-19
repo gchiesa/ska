@@ -12,7 +12,7 @@ func ByURI(uri string) (RemoteContentProvider, error) {
 	case strings.HasPrefix(uri, GitHubPrefix):
 		contentProvider, err = NewGitHub(uri)
 	case strings.HasPrefix(uri, LocalPathPrefix):
-		contentProvider, err = NewLocalPath(uri)
+		contentProvider, err = NewLocalPath(strings.TrimPrefix(uri, LocalPathPrefix))
 	default:
 		return nil, fmt.Errorf("unsupported uri: %s", uri)
 	}

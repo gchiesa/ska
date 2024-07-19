@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"gopkg.in/yaml.v2"
+	"time"
 )
 
 type ConfigBlock struct {
@@ -11,7 +12,8 @@ type ConfigBlock struct {
 }
 
 type StateBlock struct {
-	Variables map[string]interface{}
+	LastUpdate string                 `yaml:"lastUpdate"`
+	Variables  map[string]interface{} `yaml:"variables"`
 }
 
 type appCfg struct {
@@ -31,6 +33,14 @@ func NewConfigService() *ConfigService {
 		State:  *stateBlock,
 	}
 	return &ConfigService{app: appConfiguration}
+}
+
+func (cs *ConfigService) BlueprintUpstream() string {
+	return cs.app.Config.BlueprintUpstream
+}
+
+func (cs *ConfigService) Variables() map[string]interface{} {
+	return cs.app.State.Variables
 }
 
 func (cs *ConfigService) WithBlueprintUpstream(bpURI string) *ConfigService {
@@ -60,6 +70,9 @@ func (cs *ConfigService) WithVariables(variables map[string]interface{}) *Config
 func (cs *ConfigService) WriteConfig(dirPath string) error {
 	cf := NewConfigFromDirectory(dirPath)
 
+	// get the time utc now in format "2006-01-02 15:04:05.999999999 -0700 MST"
+	cs.app.State.LastUpdate = TimeNowUTC()
+
 	configData, err := yaml.Marshal(cs.app)
 	if err != nil {
 		return err
@@ -71,19 +84,25 @@ func (cs *ConfigService) WriteConfig(dirPath string) error {
 	return nil
 }
 
-func (cs *ConfigService) ReadConfig(dirPath string) ([]byte, error) {
+func (cs *ConfigService) ReadConfig(dirPath string) error {
 	cf := NewConfigFromDirectory(dirPath)
 
 	configData, err := cf.ReadConfig()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var cfg appCfg
 	err = yaml.Unmarshal(configData, &cfg)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	cs.app = &cfg
-	return cf.ReadConfig()
+	return nil
+}
+
+func TimeNowUTC() string {
+	utcTime := time.Now().UTC()
+	timeFormat := "2006-01-02 15:04:05 -0700 MST"
+	return utcTime.Format(timeFormat)
 }
