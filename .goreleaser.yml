@@ -1,4 +1,6 @@
----
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
 project_name: ska
 before:
   hooks:
@@ -39,7 +41,7 @@ nfpms:
 sboms:
 - artifacts: archive
 brews:
-- tap:
+- repository:
     owner: gchiesa
     name: homebrew-ska
     branch: main
@@ -48,7 +50,7 @@ brews:
   commit_author:
     name: Giuseppe Chiesa
     email: mail@giuseppechiesa.it
-  folder: Formula
+  directory: Formula
   homepage: https://github.com/gchiesa/ska
   description: >-
     SKA is a CLI and Library to scaffold, maintain and update from upstream blueprint your projects.
@@ -63,7 +65,7 @@ checksum:
 snapshot:
   name_template: '{{ .Tag }}-next'
 changelog:
-  skip: true
+  disable: true
   sort: asc
   filters:
     exclude:
