@@ -69,7 +69,6 @@ func (s *SkaUpdate) Update() error {
 
 	// check if interactive mode is required
 	if interactiveService.ShouldRun() {
-
 		// overrides the variables from remote service with already saved variables
 		interactiveService.SetDefaults(mapInterfaceToString(vars))
 

@@ -34,7 +34,7 @@ func (m *Model) Init() tea.Cmd {
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmds []tea.Cmd = make([]tea.Cmd, len(m.inputs))
+	var cmds = make([]tea.Cmd, len(m.inputs))
 
 	for i := range m.inputs {
 		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
@@ -84,7 +84,7 @@ func (m *Model) View() string {
 	builder.WriteRune('\n')
 	builder.WriteString(helpStyle.Render(" ↑, ↓: navigate, enter: confirm, ctrl+c: quit, ctrl+s: save"))
 	if m.err != nil {
-		builder.WriteString(errorStyle.Render(fmt.Sprintf("%s", m.err.Error())))
+		builder.WriteString(errorStyle.Render(m.err.Error()))
 	}
 	return builder.String()
 }

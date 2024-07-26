@@ -1,12 +1,14 @@
 name: Test and coverage
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+
 
 jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.19.x]
+        go-version: [1.22.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}

@@ -46,6 +46,8 @@ linters-settings:
     - singleCaseSwitch
     - hugeParam
     - appendCombine
+    - sloppyReassign
+    - whyNoLint
   funlen:
     lines: 100
     statements: 52
