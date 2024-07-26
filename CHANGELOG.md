@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/gchiesa/ska/compare/v0.0.5...v0.0.6) (2024-07-26)
+
+
+### Bug Fixes
+
+* add missing secret ([1235ff2](https://github.com/gchiesa/ska/commit/1235ff296936534285f89f1a98790e01e739fb15))
+
 ## [0.0.5](https://github.com/gchiesa/ska/compare/v0.0.4...v0.0.5) (2024-07-26)
 
 
