@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3](https://github.com/gchiesa/ska/compare/v0.0.2...v0.0.3) (2024-07-26)
+
+
+### Bug Fixes
+
+* goreleaser ([d7da3d9](https://github.com/gchiesa/ska/commit/d7da3d98a2c80134ae86a53ef1b8ed8fbae9b020))
+
 ## [0.0.2](https://github.com/gchiesa/ska/compare/v0.0.1...v0.0.2) (2024-07-26)
 
 
