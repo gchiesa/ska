@@ -24,6 +24,6 @@ jobs:
       uses: golangci/golangci-lint-action@v3
       with:
         version: v1.54
-        args: --config .golangci.yaml
+        args: --config .golang-ci.yml
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-pr-check
