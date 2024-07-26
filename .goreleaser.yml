@@ -1,149 +1,72 @@
-env:
-  - GO111MODULE=on
-  - CGO_ENABLED=0
-
+---
+project_name: ska
 before:
   hooks:
-    - ./scripts/manpages.sh
-    - ./scripts/completions.sh
-
+  - go mod tidy
 builds:
-  -
-    binary: ska
-    ldflags: -s -w -X main.version={{ .Version }}
-    goos:
-      - linux
-      - darwin
-    goarch:
-      - amd64
-      - arm64
-
-archives:
-  -
-    builds:
-      - ska
-    format_overrides:
-      - goos: windows
-        format: zip
-    replacements:
-      darwin: Darwin
-      linux: Linux
-      amd64: x86_64
-
+- env:
+  - CGO_ENABLED=0
+  goos:
+  - linux
+  - windows
+  - darwin
+  goarch:
+  - amd64
+  - arm
+  - arm64
+  ldflags:
+  - -s -w -X cmd.version={{.Version}}
+release:
+  prerelease: auto
 nfpms:
-  - builds:
-      - ska
-    vendor: gchiesa
-    homepage:  https://github.com/gchiesa/ska
-    maintainer: "Giuseppe Chiesa <hello@g-c.dev>"
-    description: "A general purpose golang CLI processor for Github and Gitlab"
-    license: GPL-3.0
-    formats:
-      - apk
-      - deb
-      - rpm
-    bindir: /usr/bin
-    contents:
-      - src: ./manpages/ska.1.gz
-        dst: /usr/share/man/man1/ska.1.gz
-        file_info:
-          mode: 0644
-      - src: ./completions/ska.bash
-        dst: /usr/share/bash-completion/completions/ska
-        file_info:
-          mode: 0644
-      - src: ./completions/ska.fish
-        dst: /usr/share/fish/vendor_completions.d/ska.fish
-        file_info:
-          mode: 0644
-      - src: ./completions/ska.zsh
-        dst:  /usr/share/zsh/vendor-completions/_ska
-        file_info:
-          mode: 0644
-
-dockers:
-- image_templates:
-  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
-  dockerfile: Dockerfile
-  use: buildx
-  build_flag_templates:
-  - "--pull"
-  - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/gchiesa/ska/master/README.md"
-  - "--label=io.artifacthub.package.maintainers=[{\"name\":\"Tom Morelly\",\"email\":\"tommorelly@gmail.com\"}]"
-  - "--label=io.artifacthub.package.license=MIT"
-  - "--label=org.opencontainers.image.description=A general purpose golang CLI processor for Github and Gitlab"
-  - "--label=org.opencontainers.image.created={{.Date}}"
-  - "--label=org.opencontainers.image.name={{.ProjectName}}"
-  - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-  - "--label=org.opencontainers.image.version={{.Version}}"
-  - "--label=org.opencontainers.image.source={{.GitURL}}"
-  - "--platform=linux/amd64"
-- image_templates:
-  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
-  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
-  dockerfile:  Dockerfile
-  use: buildx
-  build_flag_templates:
-  - "--pull"
-  - "--label=io.artifacthub.package.readme-url=https://raw.githubusercontent.com/gchiesa/ska/master/README.md"
-  - "--label=io.artifacthub.package.logo-url=https://raw.githubusercontent.com/gchiesa/ska/master/www/static/images/logo.png"
-  - "--label=io.artifacthub.package.maintainers=[{\"name\":\"Tom Morelly\",\"email\":\"tommorelly@gmail.com\"}]"
-  - "--label=io.artifacthub.package.license=MIT"
-  - "--label=org.opencontainers.image.description=A general purpose golang CLI processor for Github and Gitlab"
-  - "--label=org.opencontainers.image.created={{.Date}}"
-  - "--label=org.opencontainers.image.name={{.ProjectName}}"
-  - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-  - "--label=org.opencontainers.image.version={{.Version}}"
-  - "--label=org.opencontainers.image.source={{.GitURL}}"
-  - "--platform=linux/arm64"
-  goarch: arm64
-
-docker_manifests:
-- name_template: 'gchiesa/{{.ProjectName}}:{{ .Tag }}'
-  image_templates:
-  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
-- name_template: 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}'
-  image_templates:
-  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
-- name_template: 'gchiesa/{{.ProjectName}}:latest'
-  image_templates:
-  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
-- name_template: 'ghcr.io/gchiesa/{{.ProjectName}}:latest'
-  image_templates:
-  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-amd64'
-  - 'ghcr.io/gchiesa/{{.ProjectName}}:{{ .Tag }}-arm64'
-
+- file_name_template: '{{ .ProjectName }}_{{ .Arch }}'
+  maintainer: hello@g-c.dev
+  homepage: https://ska.g-c.dev
+  description: >-
+    SKA is a CLI and Library to scaffold, maintain and update from upstream blueprint your projects.
+  license: MIT
+  formats:
+  - deb
+  - rpm
+  - apk
+  bindir: /usr/bin
+  section: utils
+  contents:
+  - src: ./LICENSE
+    dst: /usr/share/doc/nfpm/copyright
+    file_info:
+      mode: 0644
+sboms:
+- artifacts: archive
+brews:
+- tap:
+    owner: gchiesa
+    name: homebrew-ska
+    branch: main
+  # yamllint disable-line rule:comments rule:line-length
+  url_template: https://github.com/gchiesa/ska/releases/download/{{ .Tag }}/{{ .ArtifactName }}
+  commit_author:
+    name: Giuseppe Chiesa
+    email: mail@giuseppechiesa.it
+  folder: Formula
+  homepage: https://github.com/gchiesa/ska
+  description: >-
+    SKA is a CLI and Library to scaffold, maintain and update from upstream blueprint your projects.
+  license: MIT
+archives:
+- wrap_in_directory: true
+  format_overrides:
+  - goos: windows
+    format: zip
 checksum:
-  name_template: "checksums.txt"
-
+  name_template: checksums.txt
+snapshot:
+  name_template: '{{ .Tag }}-next'
 changelog:
+  skip: true
   sort: asc
-  use: github
   filters:
     exclude:
+    - '^docs:'
     - '^test:'
-    - '^chore'
-    - 'merge conflict'
-    - Merge pull request
-    - Merge remote-tracking branch
-    - Merge branch
-    - go mod tidy
-  groups:
-    - title: Dependency updates
-      regexp: '^.*?(feat|fix)\(deps\)!?:.+$'
-      order: 300
-    - title: 'New Features'
-      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
-      order: 100
-    - title: 'Bug fixes'
-      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
-      order: 200
-    - title: 'Documentation updates'
-      regexp: ^.*?doc(\([[:word:]]+\))??!?:.+$
-      order: 400
-    - title: Other work
-      order: 9999
+    - '^*.md:'

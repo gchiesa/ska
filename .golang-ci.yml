@@ -17,7 +17,7 @@ linters-settings:
     rules:
       # Add here those packages that you'd like to exclude or blacklist
       "Rule not allowed packages":
-        files: [".*"]
+        files: [ ".*" ]
         deny:
         - pkg: "notexist"
           desc: "notexist is not allowed or blacklisted"

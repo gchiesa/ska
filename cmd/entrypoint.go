@@ -9,7 +9,8 @@ import (
 )
 
 const programName = "ska"
-const version = "development"
+
+var version = "development"
 
 type arguments struct {
 	CreateCmd *CreateCmd `arg:"subcommand:create"`
