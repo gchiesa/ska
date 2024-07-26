@@ -16,7 +16,7 @@ type SkaCreate struct {
 	Log             *log.Entry
 }
 
-func NewSkaCreate(templateURI string, destinationPath string, variables map[string]string) *SkaCreate {
+func NewSkaCreate(templateURI, destinationPath string, variables map[string]string) *SkaCreate {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
