@@ -53,4 +53,5 @@ jobs:
         version: latest
         args: release --clean
       env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         SKA_HOMEBREW_TOKEN: ${{secrets.SKA_HOMEBREW_TOKEN}}
