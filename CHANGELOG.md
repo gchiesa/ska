@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/gchiesa/ska/compare/v0.0.4...v0.0.5) (2024-07-26)
+
+
+### Bug Fixes
+
+* configure homebrew integration ([7db05b1](https://github.com/gchiesa/ska/commit/7db05b1e35ecf3d799b6fa05fbd115f25aa0aa40))
+
 ## [0.0.4](https://github.com/gchiesa/ska/compare/v0.0.3...v0.0.4) (2024-07-26)
 
 
