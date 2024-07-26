@@ -1,10 +1,12 @@
 package skaffolder //nolint:typecheck
 
 import (
+	"fmt"
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/processor"
+	"github.com/gchiesa/ska/internal/tui"
 )
 
 type SkaUpdate struct {
@@ -33,30 +35,57 @@ func (s *SkaUpdate) Update() error {
 	}
 
 	// allocate the template based on the configured upstream
-	templateProvider, err := contentprovider.ByURI(configService.BlueprintUpstream())
-	defer func(templateProvider contentprovider.RemoteContentProvider) {
-		_ = templateProvider.Cleanup()
-	}(templateProvider)
-
+	blueprintProvider, err := contentprovider.ByURI(configService.BlueprintUpstream())
 	if err != nil {
 		return err
 	}
 
-	if err := templateProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
+	defer func(templateProvider contentprovider.RemoteContentProvider) {
+		_ = templateProvider.Cleanup()
+	}(blueprintProvider)
+
+	if err := blueprintProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
 		return err
 	}
 
-	fileTreeProcessor := processor.NewFileTreeProcessor(templateProvider.WorkingDir(), s.BaseURI)
+	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.BaseURI,
+		processor.WithErrorOnMissingKey(true))
+
 	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
 	}(fileTreeProcessor)
 
-	// merge the known variables with overrides
+	// merge the known variables from the yaml with overrides from command line
 	vars := configService.Variables()
 	for k, v := range mapStringToMapInterface(s.Variables) {
 		vars[k] = v
 	}
 
+	var interactiveServiceVariables map[string]string
+
+	interactiveService := tui.NewSkaInteractiveService(
+		blueprintProvider.WorkingDir(),
+		fmt.Sprintf("Variables for blueprint: %s", configService.BlueprintUpstream()))
+
+	// check if interactive mode is required
+	if interactiveService.ShouldRun() {
+
+		// overrides the variables from remote service with already saved variables
+		interactiveService.SetDefaults(mapInterfaceToString(vars))
+
+		if err = interactiveService.Run(); err != nil {
+			return err
+		}
+		// retrieve the collected variables
+		interactiveServiceVariables = interactiveService.Variables()
+	}
+
+	// update the variables with the interactive variables
+	for k, v := range mapStringToMapInterface(interactiveServiceVariables) {
+		vars[k] = v
+	}
+
+	// render
 	if err := fileTreeProcessor.Render(vars); err != nil { //nolint:govet //not a bit deal
 		return err
 	}
@@ -64,7 +93,7 @@ func (s *SkaUpdate) Update() error {
 	// save the config
 	err = configService.
 		WithVariables(vars).
-		WithBlueprintUpstream(templateProvider.RemoteURI()).
+		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
 		WriteConfig(s.BaseURI)
 	if err != nil {
 		return err

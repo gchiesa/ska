@@ -7,14 +7,19 @@ import (
 	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/multipart"
 	"github.com/otiai10/copy"
-	"html/template"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
+// buildStagingFileTree build the staging file tree
+// allocate the folders and files by copying a local source (upstream) blueprint into a destination
+// so that they are ready to be rendered
+// if file structure (directories, files) are templated then they are expanded and rendered
 func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]interface{}) error {
+	logger := tp.log.WithFields(log.Fields{"method": "buildStagingFileTree"})
+
 	// walk the sourcePath and render the files
 	sPathAbs, err := filepath.Abs(tp.sourcePath)
 	if err != nil {
@@ -33,14 +38,27 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 		if err != nil {
 			return err
 		}
+
+		// filter out path that should not be processed
+		if !tp.shouldProcessFile(sRelPath) {
+			logger.WithFields(log.Fields{"path": sRelPath}).Debug("skipping path")
+			return nil
+		}
+
 		// create a template from the file name as it was a template
-		tpl := template.Must(template.New("file-path").Parse(sRelPath))
+		if err := tp.templateService.FromString(sRelPath); err != nil {
+			return err
+		}
 
 		// render the template
 		buff := bytes.NewBufferString("")
-		if err := tpl.Execute(buff, withVariables); err != nil {
+		if err := tp.templateService.Execute(buff, withVariables); err != nil {
+			if tp.templateService.IsMissingKeyError(err) {
+				logger.WithFields(log.Fields{"path": sRelPath}).Errorf("missing variable while rendering file path: %s", sRelPath)
+			}
 			return err
 		}
+
 		dPath := filepath.Join(dPathAbs, buff.String())
 
 		// if it's file we copy the file to the destination
@@ -63,6 +81,8 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 	return nil
 }
 
+// loadMultiparts decompose the files in the staging directory that are managed partials
+// create a set of partials that are related to the files in the staging directory
 func (tp *FileTreeProcessor) loadMultiparts() error {
 	logger := tp.log.WithFields(log.Fields{"method": "loadMultiparts"})
 	err := filepath.Walk(tp.workingDir, func(path string, info fs.FileInfo, err error) error {
@@ -78,12 +98,14 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 		if err != nil {
 			return err
 		}
+
+		if !tp.shouldProcessFile(relPath) {
+			tp.log.WithFields(log.Fields{"path": relPath}).Debug("skipping path")
+			return nil
+		}
+
 		// if it's file we copy the file to the destination
 		if !info.IsDir() {
-			// check if the file is to process
-			if !tp.shouldProcessFile(relPath) {
-				logger.WithFields(log.Fields{"filePath": relPath}).Debug("Skipping file, because should not be processed.")
-			}
 			multipart, err := multipart.NewMultipartFromFile(absPath, relPath)
 			if err != nil {
 				return err
@@ -110,8 +132,7 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 	return nil
 }
 
-// WAVE 3 - expand template
-// render all the templates, but if a partial exists for a file then expands only the partials
+// renderStagingFileTree render all the templates, but if a partial exists for a file then expands only the partials
 func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]interface{}) error {
 	logger := tp.log.WithFields(log.Fields{"method": "renderStagingFileTree"})
 	err := filepath.Walk(tp.workingDir, func(path string, info fs.FileInfo, err error) error {
@@ -136,18 +157,19 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 				return nil
 			}
 
-			data, err := os.ReadFile(absPath)
-			if err != nil {
+			if err := tp.templateService.FromFile(absPath); err != nil {
 				return err
 			}
-
-			tpl := template.Must(template.New("file-content").Parse(string(data)))
 
 			// render the template
 			buff := bytes.NewBufferString("")
-			if err := tpl.Execute(buff, withVariables); err != nil {
+			if err := tp.templateService.Execute(buff, withVariables); err != nil {
+				if tp.templateService.IsMissingKeyError(err) {
+					logger.WithFields(log.Fields{"path": relPath}).Errorf("missing variable while rendering file: %s", relPath)
+				}
 				return err
 			}
+
 			logger.WithFields(log.Fields{"filePath": relPath}).Debug("Saving rendered file.")
 			if err := os.WriteFile(absPath, []byte(buff.String()), 0o644); err != nil { //nolint:gosimple // we don't need to check the error here
 				return err
@@ -165,6 +187,9 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 }
 
 func (tp *FileTreeProcessor) shouldProcessFile(path string) bool {
+	if strings.HasPrefix(path, ".git/") {
+		return false
+	}
 	fileParts := strings.Split(path, configuration.AppIdentifier)
 
 	// if it's a file in the form of `file.swanson-....` we skip it
@@ -202,13 +227,15 @@ func (tp *FileTreeProcessor) fileIsMultipart(relativeFilePath string) bool {
 	return tp.multipartWithIDExists(relativeFilePath)
 }
 
-// WAVE 4 - copy to destination the staging directory
-// copy the staging directory to the destination with the process
-// for each file (non-swanson) copy the file first
-// then replace the partials with the expanded content
-// **IF the file mustBeSkipped then skip, otherwise copy
-// **IF the file already exists in the destination then
-// only replace the partials with the expanded content
+// updateDestinationFileTree assemble partials and update the destination directory
+// what it does:
+// copy the staging directory to the destination with the process below:
+// - for each file (non-partial) copy the file first
+// - then replace the partials with the expanded content
+// - copy to destination with the logic:
+//   - if the file mustBeSkipped then skip, otherwise copy
+//   - if the file already exists in the destination then
+//     only replace the partials with the expanded content
 func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 	logger := tp.log.WithFields(log.Fields{"method": "updateDestinationFileTree"})
 	err := filepath.Walk(tp.workingDir, func(path string, info fs.FileInfo, err error) error {

@@ -6,9 +6,10 @@ import (
 )
 
 type Model struct {
-	header     string
-	focusIndex int
-	inputs     []textinput.Model
-	cursorMode cursor.Mode
-	err        error
+	header        string
+	focusIndex    int
+	inputs        []textinput.Model
+	cursorMode    cursor.Mode
+	err           error
+	exitWithCtrlC bool
 }

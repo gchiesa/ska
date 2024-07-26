@@ -1,6 +1,7 @@
 package contentprovider
 
 import (
+	"fmt"
 	"github.com/apex/log"
 	"github.com/otiai10/copy"
 	"os"
@@ -31,7 +32,7 @@ func NewLocalPath(path string) (*LocalPath, error) {
 }
 
 func (cp *LocalPath) RemoteURI() string {
-	return cp.sourcePath
+	return fmt.Sprintf("%s%s", LocalPathPrefix, cp.sourcePath)
 }
 
 func (cp *LocalPath) Cleanup() error {

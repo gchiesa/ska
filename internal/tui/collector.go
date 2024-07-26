@@ -13,7 +13,7 @@ type (
 )
 
 var (
-	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
+	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#416767"}
 	highlight = lipgloss.AdaptiveColor{Light: "#83ADF4", Dark: "#83ADF4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
 	bad       = lipgloss.AdaptiveColor{Light: "#CE1E00", Dark: "#CE1E00"}
@@ -27,16 +27,13 @@ var (
 	noStyle      = lipgloss.NewStyle()
 	helpStyle    = blurredStyle
 	errorStyle   = lipgloss.NewStyle().Foreground(bad).MarginTop(2).MarginBottom(1)
-
-	focusedButton = focusedStyle.Render("[ Submit ]")
-	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Submit"))
 )
 
-func (m Model) Init() tea.Cmd {
+func (m *Model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd = make([]tea.Cmd, len(m.inputs))
 
 	for i := range m.inputs {
@@ -46,18 +43,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
+		case tea.KeyCtrlS:
+			return m, tea.Quit
 		case tea.KeyEnter:
 			if m.focusIndex == len(m.inputs) {
 				return m, tea.Quit
 			}
 			m.nextInputIfNoError()
 		case tea.KeyCtrlC, tea.KeyEsc:
+			m.exitWithCtrlC = true
 			return m, tea.Quit
 		case tea.KeyShiftTab, tea.KeyCtrlP, tea.KeyUp:
 			m.prevInputIfNoError()
-		default:
-			m.inputs[m.focusIndex].Err = nil
-			m.inputs[m.focusIndex].Update(msg)
 		}
 
 		for i := range m.inputs {
@@ -70,14 +67,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case errMsg:
 		m.err = msg
 	}
-	//
-	//for i := range m.inputs {
-	//	m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
-	//}
 	return m, tea.Batch(cmds...)
 }
 
-func (m Model) View() string {
+func (m *Model) View() string {
 	var builder strings.Builder
 
 	builder.WriteRune('\n')
@@ -86,25 +79,17 @@ func (m Model) View() string {
 	for i := range m.inputs {
 		builder.WriteRune('⇨')
 		builder.WriteString(fmt.Sprintf(" %s ", m.inputs[i].View()))
-		if i < len(m.inputs)-1 {
-			builder.WriteRune('\n')
-		}
+		builder.WriteRune('\n')
 	}
-
-	button := &blurredButton
-	if m.focusIndex == len(m.inputs) {
-		button = &focusedButton
-	}
+	builder.WriteRune('\n')
+	builder.WriteString(helpStyle.Render(" ↑, ↓: navigate, enter: confirm, ctrl+c: quit, ctrl+s: save"))
 	if m.err != nil {
 		builder.WriteString(errorStyle.Render(fmt.Sprintf("%s", m.err.Error())))
 	}
-
-	fmt.Fprintf(&builder, "\n\n%s\n\n", *button)
-
 	return builder.String()
 }
 
-func InputCollector(m tea.Model) error {
+func (m *Model) Execute() error {
 	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 		return err
 	}
@@ -135,4 +120,12 @@ func (m *Model) prevInputIfNoError() {
 		m.focusIndex = len(m.inputs) - 1
 	}
 	m.inputs[m.focusIndex].Focus()
+}
+
+func (m *Model) GetVariablesForInteractiveForm(iForm InteractiveForm) map[string]string {
+	variables := make(map[string]string)
+	for i := range iForm.Inputs {
+		variables[iForm.Inputs[i].Placeholder] = m.inputs[i].Value()
+	}
+	return variables
 }

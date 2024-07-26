@@ -29,39 +29,46 @@ func NewSkaCreate(templateURI string, destinationPath string, variables map[stri
 }
 
 func (s *SkaCreate) Create() error {
-	templateProvider, err := contentprovider.ByURI(s.TemplateURI)
-	defer func(templateProvider contentprovider.RemoteContentProvider) {
-		_ = templateProvider.Cleanup()
-	}(templateProvider)
-
+	// blueprint provider
+	blueprintProvider, err := contentprovider.ByURI(s.TemplateURI)
 	if err != nil {
 		return err
 	}
 
+	defer func(templateProvider contentprovider.RemoteContentProvider) {
+		_ = templateProvider.Cleanup()
+	}(blueprintProvider)
+
+	// configservice
 	configService := configuration.NewConfigService()
 
-	if err = templateProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
+	if err = blueprintProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
 		return err
 	}
 
-	fileTreeProcessor := processor.NewFileTreeProcessor(templateProvider.WorkingDir(), s.DestinationPath)
+	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.DestinationPath,
+		processor.WithErrorOnMissingKey(true))
+
 	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
 	}(fileTreeProcessor)
 
-	// check if interactive mode is required
 	var interactiveServiceVariables map[string]string
 
 	interactiveService := tui.NewSkaInteractiveService(
-		templateProvider.WorkingDir(),
+		blueprintProvider.WorkingDir(),
 		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI))
+
+	// check if interactive mode is required
 	if interactiveService.ShouldRun() {
 		if err = interactiveService.Run(); err != nil {
 			return err
 		}
+		// retrieve the collected variables
 		interactiveServiceVariables = interactiveService.Variables()
 	}
 
+	// variables for templating
 	vars := mapStringToMapInterface(s.Variables)
 
 	// merge the known variables with overrides
@@ -76,7 +83,7 @@ func (s *SkaCreate) Create() error {
 	// save the config
 	err = configService.
 		WithVariables(vars).
-		WithBlueprintUpstream(templateProvider.RemoteURI()).
+		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
 		WriteConfig(s.DestinationPath)
 	if err != nil {
 		return err

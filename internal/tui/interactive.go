@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/configuration"
 	"gopkg.in/yaml.v2"
@@ -13,7 +14,7 @@ const skaInteractiveFileName = ".ska-interactive.yaml"
 type SkaInteractiveService struct {
 	templateURI string
 	formTitle   string
-	formConfig  InteractiveForm
+	formConfig  *InteractiveForm
 	variables   map[string]string
 	log         *log.Entry
 }
@@ -24,7 +25,7 @@ type InteractiveInput struct {
 	RegExp      string `yaml:"regexp,omitempty"`
 	MinLength   int    `yaml:"minLength,omitempty"`
 	MaxLength   int    `yaml:"maxLength,omitempty"`
-	Required    bool   `yaml:"required,omitempty"`
+	Default     string `yaml:"default,omitempty"`
 	Help        string `yaml:"help,omitempty"`
 	Value       string
 }
@@ -67,7 +68,7 @@ func (s *SkaInteractiveService) ShouldRun() bool {
 		return false
 	}
 
-	s.formConfig = cfg
+	s.formConfig = &cfg
 
 	if len(s.formConfig.Inputs) == 0 {
 		s.log.Info("no inputs in the interactive config.")
@@ -83,17 +84,28 @@ func (s *SkaInteractiveService) Run() error {
 	}
 	s.disableWithLoggingInvalidRegExp()
 
-	form := NewModelFromInteractiveForm(s.formConfig, s.formTitle)
+	tui := NewModelFromInteractiveForm(*s.formConfig, s.formTitle)
 
-	if err := InputCollector(form); err != nil {
+	if err := tui.Execute(); err != nil {
 		return err
 	}
-	s.variables = GetVariablesFromModel(form)
+	if tui.exitWithCtrlC {
+		return fmt.Errorf("cancelled by user")
+	}
+	s.variables = tui.GetVariablesForInteractiveForm(*s.formConfig)
 	return nil
 }
 
 func (s *SkaInteractiveService) Variables() map[string]string {
 	return s.variables
+}
+
+func (s *SkaInteractiveService) SetDefaults(variables map[string]string) {
+	for i := range s.formConfig.Inputs {
+		if v, ok := variables[s.formConfig.Inputs[i].Placeholder]; ok {
+			s.formConfig.Inputs[i].Default = v
+		}
+	}
 }
 
 func (s *SkaInteractiveService) disableWithLoggingInvalidRegExp() {
