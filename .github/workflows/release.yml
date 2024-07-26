@@ -47,10 +47,10 @@ jobs:
     - name: Download Syft
       uses: anchore/sbom-action/download-syft@422cb34a0f8b599678c41b21163ea6088edb2624 # v0.14.1
     - name: Run GoReleaser
-      uses: ggoreleaser/goreleaser-action@v6
+      uses: goreleaser/goreleaser-action@v6
       with:
         distribution: goreleaser
         version: latest
         args: release --clean
       env:
-        GITHUB_TOKEN: ${{secrets.GH_HOMEBREW_TOKEN}}
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
