@@ -7,10 +7,12 @@ import (
 )
 
 type FileTreeProcessor struct {
-	sourcePath          string
-	destinationPathRoot string
-	workingDir          string
-	multiparts          []*multipart.Multipart
-	templateService     *templateservice.SprigTemplate
-	log                 *log.Entry
+	sourcePath             string
+	sourceIgnorePaths      []string
+	destinationPathRoot    string
+	destinationIgnorePaths []string
+	workingDir             string
+	multiparts             []*multipart.Multipart
+	templateService        *templateservice.SprigTemplate
+	log                    *log.Entry
 }

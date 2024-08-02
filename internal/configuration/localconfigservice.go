@@ -6,9 +6,8 @@ import (
 )
 
 type ConfigBlock struct {
-	BlueprintUpstream    string   `yaml:"blueprintUpstream"`
-	ExcludeMatchingFiles []string `yaml:"excludeMatchingFiles"`
-	IncludeMatchingFiles []string `yaml:"includeMatchingFiles"`
+	BlueprintURI string   `yaml:"blueprintURI"`
+	IgnorePaths  []string `yaml:"ignorePaths"`
 }
 
 type StateBlock struct {
@@ -21,53 +20,52 @@ type appCfg struct {
 	State  StateBlock  `yaml:"state"`
 }
 
-type ConfigService struct {
+type LocalConfigService struct {
 	app *appCfg
 }
 
-func NewConfigService() *ConfigService {
+func NewLocalConfigService() *LocalConfigService {
 	configBlock := &ConfigBlock{}
 	stateBlock := &StateBlock{}
 	appConfiguration := &appCfg{
 		Config: *configBlock,
 		State:  *stateBlock,
 	}
-	return &ConfigService{app: appConfiguration}
+	return &LocalConfigService{app: appConfiguration}
 }
 
-func (cs *ConfigService) BlueprintUpstream() string {
-	return cs.app.Config.BlueprintUpstream
+func (cs *LocalConfigService) BlueprintUpstream() string {
+	return cs.app.Config.BlueprintURI
 }
 
-func (cs *ConfigService) Variables() map[string]interface{} {
+func (cs *LocalConfigService) Variables() map[string]interface{} {
 	return cs.app.State.Variables
 }
 
-func (cs *ConfigService) WithBlueprintUpstream(bpURI string) *ConfigService {
-	cs.app.Config.BlueprintUpstream = bpURI
+func (cs *LocalConfigService) WithBlueprintUpstream(bpURI string) *LocalConfigService {
+	cs.app.Config.BlueprintURI = bpURI
 	return cs
 }
 
-func (cs *ConfigService) ProcessAllFiles() bool {
-	return len(cs.app.Config.ExcludeMatchingFiles) == 0 && len(cs.app.Config.IncludeMatchingFiles) == 0
+func (cs *LocalConfigService) ProcessAllFiles() bool {
+	return len(cs.app.Config.IgnorePaths) == 0
 }
 
-func (cs *ConfigService) WithExcludeMatchingFiles(excludeMatchingFiles []string) *ConfigService {
-	cs.app.Config.ExcludeMatchingFiles = excludeMatchingFiles
+func (cs *LocalConfigService) WithExcludeMatchingFiles(ignorePaths []string) *LocalConfigService {
+	cs.app.Config.IgnorePaths = ignorePaths
 	return cs
 }
 
-func (cs *ConfigService) WithIncludeMatchingFiles(includeMatchingFiles []string) *ConfigService {
-	cs.app.Config.IncludeMatchingFiles = includeMatchingFiles
-	return cs
+func (cs *LocalConfigService) GetIgnorePaths() []string {
+	return cs.app.Config.IgnorePaths
 }
 
-func (cs *ConfigService) WithVariables(variables map[string]interface{}) *ConfigService {
+func (cs *LocalConfigService) WithVariables(variables map[string]interface{}) *LocalConfigService {
 	cs.app.State.Variables = variables
 	return cs
 }
 
-func (cs *ConfigService) WriteConfig(dirPath string) error {
+func (cs *LocalConfigService) WriteConfig(dirPath string) error {
 	cf := NewConfigFromDirectory(dirPath)
 
 	// get the time utc now in format "2006-01-02 15:04:05.999999999 -0700 MST"
@@ -84,7 +82,7 @@ func (cs *ConfigService) WriteConfig(dirPath string) error {
 	return nil
 }
 
-func (cs *ConfigService) ReadConfig(dirPath string) error {
+func (cs *LocalConfigService) ReadConfig(dirPath string) error {
 	cf := NewConfigFromDirectory(dirPath)
 
 	configData, err := cf.ReadConfig()

@@ -44,7 +44,18 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlS:
-			return m, tea.Quit
+			var i int
+			for i = range m.inputs {
+				if err := m.inputs[i].Validate(m.inputs[i].Value()); err != nil {
+					m.err = err
+					break
+				}
+			}
+			if m.err != nil {
+				m.focusInput(i)
+			} else {
+				return m, tea.Quit
+			}
 		case tea.KeyEnter:
 			if m.focusIndex == len(m.inputs) {
 				return m, tea.Quit
@@ -94,6 +105,12 @@ func (m *Model) Execute() error {
 		return err
 	}
 	return nil
+}
+
+func (m *Model) focusInput(id int) {
+	m.inputs[m.focusIndex].Blur()
+	m.focusIndex = id
+	m.inputs[m.focusIndex].Focus()
 }
 
 // nextInput focuses the next input field

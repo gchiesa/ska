@@ -83,3 +83,15 @@ func WithErrorOnMissingKey(errorOnMissingKey bool) func(tp *FileTreeProcessor) {
 		tp.templateService.WithErrorOnMissingKey(errorOnMissingKey)
 	}
 }
+
+func WithSourceIgnorePaths(sourceIgnorePaths []string) func(tp *FileTreeProcessor) {
+	return func(tp *FileTreeProcessor) {
+		tp.sourceIgnorePaths = sourceIgnorePaths
+	}
+}
+
+func WithDestinationIgnorePaths(destinationIgnorePaths []string) func(tp *FileTreeProcessor) {
+	return func(tp *FileTreeProcessor) {
+		tp.destinationIgnorePaths = destinationIgnorePaths
+	}
+}

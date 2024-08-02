@@ -13,10 +13,15 @@ type SkaCreate struct {
 	TemplateURI     string
 	DestinationPath string
 	Variables       map[string]string
+	Options         *SkaOptions
 	Log             *log.Entry
 }
 
-func NewSkaCreate(templateURI, destinationPath string, variables map[string]string) *SkaCreate {
+type SkaOptions struct {
+	NonInteractive bool
+}
+
+func NewSkaCreate(templateURI, destinationPath string, variables map[string]string, options SkaOptions) *SkaCreate {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
@@ -24,6 +29,7 @@ func NewSkaCreate(templateURI, destinationPath string, variables map[string]stri
 		TemplateURI:     templateURI,
 		DestinationPath: destinationPath,
 		Variables:       variables,
+		Options:         &options,
 		Log:             logCtx,
 	}
 }
@@ -40,14 +46,22 @@ func (s *SkaCreate) Create() error {
 	}(blueprintProvider)
 
 	// configservice
-	configService := configuration.NewConfigService()
+	localConfig := configuration.NewLocalConfigService()
 
 	if err = blueprintProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
 		return err
 	}
 
+	// load the config for upstream blueprint
+	upstreamConfig, err := configuration.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
+	if err != nil {
+		return err
+	}
+
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.DestinationPath,
-		processor.WithErrorOnMissingKey(true))
+		processor.WithErrorOnMissingKey(true),
+		processor.WithSourceIgnorePaths(upstreamConfig.GetIgnorePaths()),
+		processor.WithDestinationIgnorePaths(localConfig.GetIgnorePaths()))
 
 	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
@@ -56,11 +70,11 @@ func (s *SkaCreate) Create() error {
 	var interactiveServiceVariables map[string]string
 
 	interactiveService := tui.NewSkaInteractiveService(
-		blueprintProvider.WorkingDir(),
-		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI))
+		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI),
+		upstreamConfig.GetInputs())
 
 	// check if interactive mode is required
-	if interactiveService.ShouldRun() {
+	if !s.Options.NonInteractive && interactiveService.ShouldRun() {
 		if err = interactiveService.Run(); err != nil {
 			return err
 		}
@@ -81,7 +95,7 @@ func (s *SkaCreate) Create() error {
 	}
 
 	// save the config
-	err = configService.
+	err = localConfig.
 		WithVariables(vars).
 		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
 		WriteConfig(s.DestinationPath)
@@ -89,6 +103,6 @@ func (s *SkaCreate) Create() error {
 		return err
 	}
 
-	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath}).Infof("template created under destination path: %s", s.DestinationPath)
+	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath, "blueprintUri": blueprintProvider.RemoteURI()}).Info("Blueprint expanded under destination path.")
 	return nil
 }
