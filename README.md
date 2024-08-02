@@ -1,6 +1,7 @@
 # SKA
 
-[!IMPORTANT] This project is still under development and not intended for production use
+> [!IMPORTANT]
+> This project is still under development and not intended for production use
 
 
 SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprint folder structure.
