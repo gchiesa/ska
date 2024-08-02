@@ -13,10 +13,15 @@ type SkaCreate struct {
 	TemplateURI     string
 	DestinationPath string
 	Variables       map[string]string
+	Options         *SkaOptions
 	Log             *log.Entry
 }
 
-func NewSkaCreate(templateURI, destinationPath string, variables map[string]string) *SkaCreate {
+type SkaOptions struct {
+	NonInteractive bool
+}
+
+func NewSkaCreate(templateURI, destinationPath string, variables map[string]string, options SkaOptions) *SkaCreate {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
@@ -24,6 +29,7 @@ func NewSkaCreate(templateURI, destinationPath string, variables map[string]stri
 		TemplateURI:     templateURI,
 		DestinationPath: destinationPath,
 		Variables:       variables,
+		Options:         &options,
 		Log:             logCtx,
 	}
 }
@@ -68,7 +74,7 @@ func (s *SkaCreate) Create() error {
 		upstreamConfig.GetInputs())
 
 	// check if interactive mode is required
-	if interactiveService.ShouldRun() {
+	if !s.Options.NonInteractive && interactiveService.ShouldRun() {
 		if err = interactiveService.Run(); err != nil {
 			return err
 		}
@@ -97,6 +103,6 @@ func (s *SkaCreate) Create() error {
 		return err
 	}
 
-	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath}).Infof("template created under destination path: %s", s.DestinationPath)
+	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath, "blueprintUri": blueprintProvider.RemoteURI()}).Info("Blueprint expanded under destination path.")
 	return nil
 }

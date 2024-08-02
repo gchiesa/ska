@@ -56,7 +56,7 @@ func NewSkaInteractiveService(formTitle string, inputs []configuration.UpstreamC
 
 func (s *SkaInteractiveService) ShouldRun() bool {
 	if len(s.formConfig.Inputs) == 0 {
-		s.log.Info("no inputs in the interactive config.")
+		s.log.Info("No inputs in the interactive config.")
 		return false
 	}
 	return true
@@ -64,7 +64,7 @@ func (s *SkaInteractiveService) ShouldRun() bool {
 
 func (s *SkaInteractiveService) Run() error {
 	if !s.ShouldRun() {
-		s.log.Info("skipping interactive config")
+		s.log.Info("Skipping interactive config")
 		return nil
 	}
 	s.disableWithLoggingInvalidRegExp()

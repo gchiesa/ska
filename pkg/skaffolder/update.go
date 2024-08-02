@@ -12,16 +12,18 @@ import (
 type SkaUpdate struct {
 	BaseURI   string
 	Variables map[string]string
+	Options   *SkaOptions
 	Log       *log.Entry
 }
 
-func NewSkaUpdate(baseURI string, variables map[string]string) *SkaUpdate {
+func NewSkaUpdate(baseURI string, variables map[string]string, options SkaOptions) *SkaUpdate {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
 	return &SkaUpdate{
 		BaseURI:   baseURI,
 		Variables: variables,
+		Options:   &options,
 		Log:       logCtx,
 	}
 }
@@ -76,7 +78,7 @@ func (s *SkaUpdate) Update() error {
 		upstreamConfig.GetInputs())
 
 	// check if interactive mode is required
-	if interactiveService.ShouldRun() {
+	if !s.Options.NonInteractive && interactiveService.ShouldRun() {
 		// overrides the variables from remote service with already saved variables
 		interactiveService.SetDefaults(mapInterfaceToString(vars))
 
@@ -106,6 +108,6 @@ func (s *SkaUpdate) Update() error {
 		return err
 	}
 
-	log.WithFields(log.Fields{"method": "Update", "path": s.BaseURI}).Infof("template updated under destination path: %s", s.BaseURI)
+	log.WithFields(log.Fields{"method": "Update", "path": s.BaseURI, "blueprintURI": localConfig.BlueprintUpstream()}).Info("Local path updated with blueprint.")
 	return nil
 }
