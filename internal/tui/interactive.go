@@ -7,8 +7,6 @@ import (
 	"regexp"
 )
 
-const skaInteractiveFileName = ".ska-interactive.yaml"
-
 type SkaInteractiveService struct {
 	formTitle  string
 	formConfig *InteractiveForm

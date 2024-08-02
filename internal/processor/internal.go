@@ -203,11 +203,8 @@ func (tp *FileTreeProcessor) shouldProcessFile(path string, ignoreList []string)
 
 	// skip whatever matches the ignoreList
 	gitIgnore := ignore.CompileIgnoreLines(ignoreList...)
-	if gitIgnore.MatchesPath(path) {
-		return false
-	}
 
-	return true
+	return !gitIgnore.MatchesPath(path)
 }
 
 func (tp *FileTreeProcessor) getMultipartByID(id string) (*multipart.Multipart, error) {

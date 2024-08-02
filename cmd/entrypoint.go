@@ -18,7 +18,7 @@ type arguments struct {
 	CreateCmd  *CreateCmd `arg:"subcommand:create"`
 	UpdateCmd  *UpdateCmd `arg:"subcommand:update"`
 	Debug      bool       `arg:"-d"`
-	JsonOutput bool       `arg:"-j,--json" help:"Enable JSON output for logging"`
+	JSONOutput bool       `arg:"-j,--json" help:"Enable JSON output for logging"`
 }
 
 func (arguments) Version() string {
@@ -50,7 +50,7 @@ func Execute(version string) error {
 	if args.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
-	if args.JsonOutput {
+	if args.JSONOutput {
 		log.SetHandler(json.New(os.Stderr))
 	}
 
