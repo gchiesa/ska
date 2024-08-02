@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.0.7](https://github.com/gchiesa/ska/compare/v0.0.6...v0.0.7) (2024-08-02)
+
+
+### Features
+
+* implement ignorepaths ([e00d711](https://github.com/gchiesa/ska/commit/e00d7117411743b80c0e54bd9ae706dc81451375))
+* implement json output, non interactive mode and better arguments for CLI ([e2b64eb](https://github.com/gchiesa/ska/commit/e2b64eb2fdadc9dd720c5a9216d38f39d1204a1c))
+
+
+### Bug Fixes
+
+* lint issues ([266fd9a](https://github.com/gchiesa/ska/commit/266fd9af7cf40986d7eb5025fe03638eaf6f6e45))
+
+
+### Docs
+
+* update README ([84126a7](https://github.com/gchiesa/ska/commit/84126a7e5fa7b87227bdeb774ec89a2d924ec72e))
+* update README ([72cd21b](https://github.com/gchiesa/ska/commit/72cd21b646c10238be0e79521a20f0e7eda8decb))
+* update README ([25bc2e1](https://github.com/gchiesa/ska/commit/25bc2e10b5541300c7046e55ebbf44a66594ba90))
+
 ## [0.0.6](https://github.com/gchiesa/ska/compare/v0.0.5...v0.0.6) (2024-07-26)
 
 
