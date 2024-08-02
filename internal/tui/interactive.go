@@ -4,19 +4,16 @@ import (
 	"fmt"
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/configuration"
-	"gopkg.in/yaml.v2"
-	"path/filepath"
 	"regexp"
 )
 
 const skaInteractiveFileName = ".ska-interactive.yaml"
 
 type SkaInteractiveService struct {
-	templateURI string
-	formTitle   string
-	formConfig  *InteractiveForm
-	variables   map[string]string
-	log         *log.Entry
+	formTitle  string
+	formConfig *InteractiveForm
+	variables  map[string]string
+	log        *log.Entry
 }
 
 type InteractiveInput struct {
@@ -35,41 +32,29 @@ type InteractiveForm struct {
 
 type Variables map[string]string
 
-func NewSkaInteractiveService(templateURI, formTitle string) *SkaInteractiveService {
+func NewSkaInteractiveService(formTitle string, inputs []configuration.UpstreamConfigInput) *SkaInteractiveService {
+	var interactiveInputs []InteractiveInput
+
+	for _, i := range inputs {
+		input := &InteractiveInput{
+			Placeholder: i.Placeholder,
+			Label:       i.Label,
+			RegExp:      i.Regexp,
+			MaxLength:   i.MaxLength,
+			Default:     i.Default,
+			Help:        i.Help,
+		}
+		interactiveInputs = append(interactiveInputs, *input)
+	}
+
 	return &SkaInteractiveService{
-		templateURI: templateURI,
-		formTitle:   formTitle,
-		log:         log.WithFields(log.Fields{"pkg": "skaffolder"}),
+		formTitle:  formTitle,
+		formConfig: &InteractiveForm{Inputs: interactiveInputs},
+		log:        log.WithFields(log.Fields{"pkg": "skaffolder"}),
 	}
 }
 
 func (s *SkaInteractiveService) ShouldRun() bool {
-	interactiveConfigFilePath := filepath.Join(s.templateURI, skaInteractiveFileName)
-
-	// check if file exists
-	if !fileExists(interactiveConfigFilePath) {
-		s.log.WithFields(log.Fields{"templateURI": s.templateURI, "interactiveConfig": skaInteractiveFileName}).Debug("no interactive config found.")
-		return false
-	}
-
-	// check if we can load it
-	cf := configuration.NewConfigFromFile(interactiveConfigFilePath)
-
-	configData, err := cf.ReadConfig()
-	if err != nil {
-		s.log.WithError(err).WithFields(log.Fields{"interactiveConfigFilePath": interactiveConfigFilePath}).Error("could not read interactive config.")
-		return false
-	}
-
-	var cfg InteractiveForm
-	err = yaml.Unmarshal(configData, &cfg)
-	if err != nil {
-		s.log.WithError(err).WithFields(log.Fields{"interactiveConfigFilePath": interactiveConfigFilePath}).Error("could not unmarshal interactive config.")
-		return false
-	}
-
-	s.formConfig = &cfg
-
 	if len(s.formConfig.Inputs) == 0 {
 		s.log.Info("no inputs in the interactive config.")
 		return false

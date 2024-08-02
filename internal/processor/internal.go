@@ -7,6 +7,7 @@ import (
 	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/multipart"
 	"github.com/otiai10/copy"
+	ignore "github.com/sabhiram/go-gitignore"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -40,7 +41,7 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 		}
 
 		// filter out path that should not be processed
-		if !tp.shouldProcessFile(sRelPath) {
+		if !tp.shouldProcessFile(sRelPath, tp.sourceIgnorePaths) {
 			logger.WithFields(log.Fields{"path": sRelPath}).Debug("skipping path")
 			return nil
 		}
@@ -99,7 +100,7 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 			return err
 		}
 
-		if !tp.shouldProcessFile(relPath) {
+		if !tp.shouldProcessFile(relPath, tp.sourceIgnorePaths) {
 			tp.log.WithFields(log.Fields{"path": relPath}).Debug("skipping path")
 			return nil
 		}
@@ -186,16 +187,26 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 	return nil
 }
 
-func (tp *FileTreeProcessor) shouldProcessFile(path string) bool {
+func (tp *FileTreeProcessor) shouldProcessFile(path string, ignoreList []string) bool {
+	// git is always skipped
 	if strings.HasPrefix(path, ".git/") {
 		return false
 	}
+
+	// skip internally generated files
 	fileParts := strings.Split(path, configuration.AppIdentifier)
 
 	// if it's a file in the form of `file.swanson-....` we skip it
 	if len(fileParts) > 1 && strings.HasSuffix(fileParts[0], ".") && strings.HasPrefix(fileParts[1], "-") {
 		return false
 	}
+
+	// skip whatever matches the ignoreList
+	gitIgnore := ignore.CompileIgnoreLines(ignoreList...)
+	if gitIgnore.MatchesPath(path) {
+		return false
+	}
+
 	return true
 }
 
@@ -255,7 +266,7 @@ func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 		// if it's file we copy the file to the destination
 		if !info.IsDir() {
 			// is it is not a swanson file we copy to destination
-			if !tp.shouldProcessFile(relPath) {
+			if !tp.shouldProcessFile(relPath, tp.destinationIgnorePaths) {
 				logger.WithFields(log.Fields{"filePath": relPath}).Debug("Skipping file because should not be processed.")
 				return nil
 			}

@@ -17,6 +17,7 @@ require (
 	github.com/gotesttools/gotestfmt/v2 v2.5.0
 	github.com/huandu/xstrings v1.5.0
 	github.com/otiai10/copy v1.14.0
+	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d

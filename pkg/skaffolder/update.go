@@ -27,15 +27,15 @@ func NewSkaUpdate(baseURI string, variables map[string]string) *SkaUpdate {
 }
 
 func (s *SkaUpdate) Update() error {
-	configService := configuration.NewConfigService()
+	localConfig := configuration.NewLocalConfigService()
 
 	// read the config from the folder
-	if err := configService.ReadConfig(s.BaseURI); err != nil {
+	if err := localConfig.ReadConfig(s.BaseURI); err != nil {
 		return err
 	}
 
 	// allocate the template based on the configured upstream
-	blueprintProvider, err := contentprovider.ByURI(configService.BlueprintUpstream())
+	blueprintProvider, err := contentprovider.ByURI(localConfig.BlueprintUpstream())
 	if err != nil {
 		return err
 	}
@@ -48,15 +48,23 @@ func (s *SkaUpdate) Update() error {
 		return err
 	}
 
+	// load the config for upstream blueprint
+	upstreamConfig, err := configuration.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
+	if err != nil {
+		return err
+	}
+
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.BaseURI,
-		processor.WithErrorOnMissingKey(true))
+		processor.WithErrorOnMissingKey(true),
+		processor.WithSourceIgnorePaths(upstreamConfig.GetIgnorePaths()),
+		processor.WithDestinationIgnorePaths(localConfig.GetIgnorePaths()))
 
 	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
 	}(fileTreeProcessor)
 
 	// merge the known variables from the yaml with overrides from command line
-	vars := configService.Variables()
+	vars := localConfig.Variables()
 	for k, v := range mapStringToMapInterface(s.Variables) {
 		vars[k] = v
 	}
@@ -64,8 +72,8 @@ func (s *SkaUpdate) Update() error {
 	var interactiveServiceVariables map[string]string
 
 	interactiveService := tui.NewSkaInteractiveService(
-		blueprintProvider.WorkingDir(),
-		fmt.Sprintf("Variables for blueprint: %s", configService.BlueprintUpstream()))
+		fmt.Sprintf("Variables for blueprint: %s", localConfig.BlueprintUpstream()),
+		upstreamConfig.GetInputs())
 
 	// check if interactive mode is required
 	if interactiveService.ShouldRun() {
@@ -90,7 +98,7 @@ func (s *SkaUpdate) Update() error {
 	}
 
 	// save the config
-	err = configService.
+	err = localConfig.
 		WithVariables(vars).
 		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
 		WriteConfig(s.BaseURI)

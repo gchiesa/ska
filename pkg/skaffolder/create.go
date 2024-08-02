@@ -40,14 +40,22 @@ func (s *SkaCreate) Create() error {
 	}(blueprintProvider)
 
 	// configservice
-	configService := configuration.NewConfigService()
+	localConfig := configuration.NewLocalConfigService()
 
 	if err = blueprintProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
 		return err
 	}
 
+	// load the config for upstream blueprint
+	upstreamConfig, err := configuration.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
+	if err != nil {
+		return err
+	}
+
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.DestinationPath,
-		processor.WithErrorOnMissingKey(true))
+		processor.WithErrorOnMissingKey(true),
+		processor.WithSourceIgnorePaths(upstreamConfig.GetIgnorePaths()),
+		processor.WithDestinationIgnorePaths(localConfig.GetIgnorePaths()))
 
 	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
@@ -56,8 +64,8 @@ func (s *SkaCreate) Create() error {
 	var interactiveServiceVariables map[string]string
 
 	interactiveService := tui.NewSkaInteractiveService(
-		blueprintProvider.WorkingDir(),
-		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI))
+		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI),
+		upstreamConfig.GetInputs())
 
 	// check if interactive mode is required
 	if interactiveService.ShouldRun() {
@@ -81,7 +89,7 @@ func (s *SkaCreate) Create() error {
 	}
 
 	// save the config
-	err = configService.
+	err = localConfig.
 		WithVariables(vars).
 		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
 		WriteConfig(s.DestinationPath)
