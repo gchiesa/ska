@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.8](https://github.com/gchiesa/ska/compare/v0.0.7...v0.0.8) (2024-08-03)
+
+
+### Bug Fixes
+
+* template error issues and better reporting. ([51eb60c](https://github.com/gchiesa/ska/commit/51eb60c95a0f4cfbd601d398ac94b17f36d134a2))
+
 ## [0.0.7](https://github.com/gchiesa/ska/compare/v0.0.6...v0.0.7) (2024-08-02)
 
 
