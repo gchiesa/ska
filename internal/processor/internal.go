@@ -193,6 +193,11 @@ func (tp *FileTreeProcessor) shouldProcessFile(path string, ignoreList []string)
 		return false
 	}
 
+	// .DS_Store is always skipped
+	if path == ".DS_Store" {
+		return false
+	}
+
 	// skip internally generated files
 	fileParts := strings.Split(path, configuration.AppIdentifier)
 
