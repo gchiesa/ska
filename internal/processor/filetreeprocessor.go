@@ -37,7 +37,7 @@ func (tp *FileTreeProcessor) Cleanup() error {
 func (tp *FileTreeProcessor) Render(withVariables map[string]interface{}) error {
 	if tp.workingDir == "" {
 		var err error
-		tp.workingDir, err = os.MkdirTemp("", "swansonRenderer")
+		tp.workingDir, err = os.MkdirTemp("", "skaRenderer")
 		if err != nil {
 			return err
 		}

@@ -2,6 +2,7 @@ package templateservice
 
 import (
 	sprig "github.com/go-task/slim-sprig"
+	"github.com/palantir/stacktrace"
 	"io"
 	"os"
 	"strings"
@@ -36,7 +37,7 @@ func (t *SprigTemplate) FromString(templateContent string) error {
 	t.templateContent = templateContent
 	tpl, err := t.textTemplate.Parse(t.templateContent)
 	if err != nil {
-		return err
+		return stacktrace.Propagate(err, "failed to parse template")
 	}
 	t.textTemplate = tpl
 	return nil
@@ -51,7 +52,7 @@ func (t *SprigTemplate) FromFile(templateFilePath string) error {
 	t.templateContent = string(fileContent)
 	tpl, err := t.textTemplate.Parse(t.templateContent)
 	if err != nil {
-		return err
+		return stacktrace.Propagate(err, "failed to parse template")
 	}
 	t.textTemplate = tpl
 	return nil
