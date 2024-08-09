@@ -2,7 +2,7 @@ package processor
 
 import (
 	"github.com/apex/log"
-	ts "github.com/gchiesa/ska/internal/templateprovider"
+	"github.com/gchiesa/ska/internal/templateprovider"
 	"os"
 )
 
@@ -72,7 +72,7 @@ func (tp *FileTreeProcessor) Render(withVariables map[string]interface{}) error 
 	return nil
 }
 
-func WithTemplateService(ts ts.TemplateService) func(tp *FileTreeProcessor) {
+func WithTemplateService(ts templateprovider.TemplateService) func(tp *FileTreeProcessor) {
 	return func(tp *FileTreeProcessor) {
 		tp.template = ts
 	}

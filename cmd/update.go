@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/pkg/skaffolder"
 )
 
@@ -14,7 +15,7 @@ type UpdateCmd struct {
 func (c *UpdateCmd) Execute(ctx context.Context) error {
 	options := &skaffolder.SkaOptions{
 		NonInteractive: c.NonInteractive,
-		Engine:         ctx.Value("engine").(string),
+		Engine:         ctx.Value(contextEngineKey("engine")).(templateprovider.TemplateType),
 	}
 	ska := skaffolder.NewSkaUpdate(
 		c.FolderPath,

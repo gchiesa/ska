@@ -19,6 +19,6 @@ type TemplateService interface {
 type TemplateType int
 
 const (
-	SprigTemplateService TemplateType = iota
-	JinjaTemplateService
+	SprigTemplateType TemplateType = iota
+	JinjaTemplateType
 )

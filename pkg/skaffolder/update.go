@@ -60,12 +60,12 @@ func (s *SkaUpdate) Update() error {
 	// template engine
 	var templateService templateprovider.TemplateService
 	switch s.Options.Engine {
-	case "sprig":
+	case templateprovider.SprigTemplateType:
 		templateService = templateprovider.NewSprigTemplate(s.BaseURI)
-	case "jinja":
+	case templateprovider.JinjaTemplateType:
 		templateService = templateprovider.NewJinjaTemplate(s.BaseURI)
 	default:
-		return fmt.Errorf("unknown template engine: %s", s.Options.Engine)
+		return fmt.Errorf("unknown template engine")
 	}
 
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.BaseURI,

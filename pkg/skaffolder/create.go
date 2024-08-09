@@ -20,7 +20,7 @@ type SkaCreate struct {
 
 type SkaOptions struct {
 	NonInteractive bool
-	Engine         string // jinja or sprig
+	Engine         templateprovider.TemplateType // jinja or sprig
 }
 
 func NewSkaCreate(templateURI, destinationPath string, variables map[string]string, options SkaOptions) *SkaCreate {
@@ -63,12 +63,12 @@ func (s *SkaCreate) Create() error {
 	// template engine
 	var templateService templateprovider.TemplateService
 	switch s.Options.Engine {
-	case "sprig":
+	case templateprovider.SprigTemplateType:
 		templateService = templateprovider.NewSprigTemplate(s.TemplateURI)
-	case "jinja":
+	case templateprovider.JinjaTemplateType:
 		templateService = templateprovider.NewJinjaTemplate(s.TemplateURI)
 	default:
-		return fmt.Errorf("unknown template engine: %s", s.Options.Engine)
+		return fmt.Errorf("unknown template engine")
 	}
 
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.DestinationPath,

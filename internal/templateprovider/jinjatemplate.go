@@ -7,13 +7,12 @@ import (
 )
 
 type JinjaTemplate struct {
-	templateFilePath string
-	templateContent  string
-	variables        map[string]interface{}
-	pongo2Template   *pongo2.Template
+	templateContent string
+	variables       map[string]interface{}
+	pongo2Template  *pongo2.Template
 }
 
-func NewJinjaTemplate(name string) *JinjaTemplate {
+func NewJinjaTemplate(_ string) *JinjaTemplate {
 	return &JinjaTemplate{}
 }
 
@@ -40,7 +39,7 @@ func (t *JinjaTemplate) Execute(fp io.Writer, withVariables map[string]interface
 	t.variables = withVariables
 	var context = make(pongo2.Context)
 	for k, v := range t.variables {
-		context[k] = v.(any)
+		context[k] = v
 	}
 	renderedContent, err := t.pongo2Template.Execute(context)
 	if err != nil {
