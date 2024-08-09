@@ -8,7 +8,7 @@ require (
 	github.com/alexflint/go-arg v1.5.1
 	github.com/apex/log v1.9.0
 	github.com/charmbracelet/bubbles v0.18.0
-	github.com/charmbracelet/bubbletea v0.26.4
+	github.com/charmbracelet/bubbletea v0.26.6
 	github.com/charmbracelet/lipgloss v0.12.1
 	github.com/daixiang0/gci v0.13.4
 	github.com/flosch/pongo2/v6 v6.0.0
