@@ -5,6 +5,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/common-nighthawk/go-figure"
+	"github.com/gchiesa/ska/internal/configuration"
 	"strings"
 )
 
@@ -13,6 +15,7 @@ type (
 )
 
 var (
+	banner    = figure.NewFigure(configuration.AppIdentifier, "doom", true)
 	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#416767"}
 	highlight = lipgloss.AdaptiveColor{Light: "#83ADF4", Dark: "#83ADF4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
@@ -56,7 +59,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				return m, tea.Quit
 			}
-		case tea.KeyEnter:
+		case tea.KeyEnter, tea.KeyDown, tea.KeyTab:
 			if m.focusIndex == len(m.inputs) {
 				return m, tea.Quit
 			}
@@ -84,9 +87,12 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) View() string {
 	var builder strings.Builder
 
+	figure.Write(&builder, banner)
+	builder.WriteString("Your scaffolding buddy!\n")
 	builder.WriteRune('\n')
 	builder.WriteString(headerStyle.Render(m.header))
 	builder.WriteRune('\n')
+	builder.WriteString("Please fill the required fields below:\n\n")
 	for i := range m.inputs {
 		builder.WriteRune('⇨')
 		builder.WriteString(fmt.Sprintf(" %s ", m.inputs[i].View()))
@@ -101,7 +107,7 @@ func (m *Model) View() string {
 }
 
 func (m *Model) Execute() error {
-	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+	if _, err := tea.NewProgram(m).Run(); err != nil {
 		return err
 	}
 	return nil
