@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.9](https://github.com/gchiesa/ska/compare/v0.0.8...v0.0.9) (2024-08-09)
+
+
+### Features
+
+* add support for jinja2 like templates ([e82f9f7](https://github.com/gchiesa/ska/commit/e82f9f7757422d7f1807bab9914bc7dc11383a8a))
+* lint issues ([845bd3c](https://github.com/gchiesa/ska/commit/845bd3c60697609b4cfc29155cce75ab3d9892aa))
+
 ## [0.0.8](https://github.com/gchiesa/ska/compare/v0.0.7...v0.0.8) (2024-08-03)
 
 
