@@ -121,6 +121,48 @@ rest of the file as it is.
 This is quite useful for files where only a part should be centrally managed and the rest will be customized by the
 user, after the initial creation.
 
+
+### Template variable collection via Terminal UI
+
+While developing the blueprint, you can configure SKA to collect the variables via Terminal UI.
+
+To do this you need to create on the root of your blueprint folder a special file `.ska-upstream.yaml`. The file is a
+simple YAML file with the following structure (see example with comments):
+
+```yaml
+# list of path that will be ignored in the blueprint 
+# typically it's wise to ignore `.git` and `.idea` (and your preferred IDE) since you might use
+# the blueprint not only from remote but also from your local filesystem 
+ignorePaths:
+- .git
+- .idea
+
+# this is the section that SKA will consume to generate the input form.
+# each input supports the following information:
+# 
+# * placeholder: the name of the variable you used in the template blueprint
+# * label: the label used in the form
+# * help: the help inline to be presented in the form for that specific field
+# * regexp: a validation regexp that will be used to specify the set of accepted characters (NOT A ENTIRE PATTERN VALIDATION)
+# * default: the default value you might want to present in the form
+inputs:
+- placeholder: githubRepo
+  label: Github Repository
+  help: The url of the github repository e.g. https://github.com/org/repo
+  regexp: "^[a-z0-9-/:.]*$"
+
+# ... other inputs 
+```
+
+SKA will check if the file is present and if yes, then a Terminal UI interface will be used to collect the inputs.
+
+The interactive Terminal UI can be disabled with `--non-interactive (-n)` command line argument.
+
+
+### Example template
+
+Check this example golang cli tool template: https://github.com/gchiesa/ska-golang-cli-template
+
 ## Contribute
 
 You are more than welcome! please have a look to [CONTRIBUTING.md](CONTRIBUTING.md)
