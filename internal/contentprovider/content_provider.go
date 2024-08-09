@@ -11,6 +11,8 @@ func ByURI(uri string) (RemoteContentProvider, error) {
 	switch {
 	case strings.HasPrefix(uri, GitHubPrefix):
 		contentProvider, err = NewGitHub(uri)
+	case strings.HasPrefix(uri, GitLabPrefix):
+		contentProvider, err = NewGitLab(uri)
 	case strings.HasPrefix(uri, LocalPathPrefix):
 		contentProvider, err = NewLocalPath(strings.TrimPrefix(uri, LocalPathPrefix))
 	default:
