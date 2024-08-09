@@ -1,35 +1,45 @@
 # SKA
 
-> [!IMPORTANT]
-> This project is still under development and not intended for production use
+SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprints (GitHub hosted)
 
+Additionally, you can update your folder structure from the upstream blueprint to onboard new changes that are
+maintained centrally and added overtime to upstream.
 
-SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprint folder structure.
+SKA is designed for simplicity and quick usage. If you want to integrate SKA capabilities in your app or framework
+you can leverage the package under `pkg/`.
 
-Additionally, you can update your folder structure from the upstream blueprint to always onboard new changes that are
-added centrally to the upstream.
+## SKA in action
 
-The interface is design for immediate use and simplicity. SKA offers also a simple package to integrate its
-functionality in other tools and frameworks.
+[![asciicast](https://asciinema.org/a/7cCSlbCFmDbD387LJISSMySfP.svg)](https://asciinema.org/a/7cCSlbCFmDbD387LJISSMySfP)
 
+## Get Started
+
+SKA is distributed via [Homebrew](https://brew.sh/), so you can install it with the commands below:
+
+```shell
+brew tap gchiesa/ska
+brew install ska
+```
 
 ## How To Use
 
-SKA is very simple to use. Just run it with the upstream blueprint you want to expand, with the following command
+SKA is very simple to use. Just run `create` with the upstream blueprint you want to use. See below example for
+scaffolding a golang command line tool:
 
 ```shell 
-ska create -b https://github.com/gchiesa/ska-example-template -o ~/my-project
+ska create --blueprint https://github.com/gchiesa/ska-golang-cli-template@master --output ~/workspace/myNewApp
 ```
 
-This will load the remote template, collect the required variable via Terminal UI and create the project for you. In
-the root of the project you can find the SKA configuration file that will keep track from now on of state and
-upstream reference.
+This will load the remote template, collect the required variable via Terminal UI and create the project for you.
+
+In the root of the project you can find the SKA configuration file `.ska-config.yml ` that will keep track from now
+on of state and upstream reference.
 
 When you want to update your project, just use:
 
 ```shell
-cd ~/my-project
-ska update -p ~/my-project
+cd ~/workspace/myNewApp
+ska update --path .
 ```
 
 you can modify the variables or accept the current version. Your project will be updated based on latest changes in
@@ -37,7 +47,8 @@ the upstream blueprint.
 
 More information are available with `ska --help`.
 
-## Concepts and Templating 
+
+## Concepts and Templating
 
 ### Upstream Blueprint
 
@@ -45,7 +56,8 @@ This is the typically centrally maintained template that everyone can use to exp
 can specify the blueprint both locally and remotely with specific URIs:
 
 * **file://** for local blueprints. E.g. `file:///Users/gchiesa/git/ska-example-template`
-* **https://** for GitHub or GitLab blueprints. You can optionally pin a specific reference (tag or branch with the `@`
+* **https://** for GitHub or GitLab (soon) blueprints. You can optionally pin a specific reference (tag or branch with
+  the `@`
   symbol. E.g. `https://github.com/gchiesa/ska-example-template@v1.2.3`
 
 ### Update from upstream
@@ -58,11 +70,16 @@ See How To Use section for more information.
 
 ### Upstream Template Language
 
-SKA currently fully supports **[Go Template framework][go-template]** for templating your upstream blueprint.
+SKA currently fully supports primarily **[Go Template framework][go-template]** for templating your upstream blueprint.
 
 Moreover, in addition to Go Template you can use the extensions offered by [Sprig functions][sprig]
 
 If you are not familiar with Go Template have a look to this [simple how-to][go-template-how-to].
+
+_NOTE:_ SKA supports also a Jinja2 like engine (use the `--engine jinja` argument) that will make your life easier
+when you need to deal with native go code. However, the function set is limited. The support is based on [Pongo2
+project][pongo2].
+
 
 [go-template]: https://pkg.go.dev/text/template
 
@@ -70,12 +87,16 @@ If you are not familiar with Go Template have a look to this [simple how-to][go-
 
 [go-template-how-to]: https://www.digitalocean.com/community/tutorials/how-to-use-templates-in-go#step-4-writing-a-template
 
+[pongo2]: https://www.schlachter.tech/solutions/pongo2-template-engine/
+
 ### Templating with partial sections
 
-SKA offers the capability to manage only part of files. This is generally useful to keep only a specific part of the 
-file centrally managed by the upstream blueprint and let the user change the rest of the file. 
+SKA offers the capability to manage only part of files.  
+This is generally useful to keep only a specific part of the file centrally managed by the upstream blueprint and
+let the user change the rest of the file. See as example
+the `codecov.yml` [here](https://github.com/gchiesa/ska-golang-cli-template/blob/master/codecov.yml)
 
-This is achievable with the named partials, a type of block you can use in the SKA template. 
+This is achievable with the named partials, a type of block you can use in the SKA template.
 
 For example, if we want to have only a section of a larger file managed by SKA we can use the approach below:
 
@@ -94,11 +115,15 @@ root:
   key5: value5
 ```
 
-by using the `ska-start:<blockName>` and `ska-end` tags, you instruct SKA to only process the block and leave the 
-rest of the file as it is. 
+by using the `ska-start:<blockName>` and `ska-end` tags, you instruct SKA to only process the block and leave the
+rest of the file as it is.
 
-This is quite useful for files where only a part should be centrally managed and the rest will be customized by the 
+This is quite useful for files where only a part should be centrally managed and the rest will be customized by the
 user, after the initial creation.
+
+## Contribute
+
+You are more than welcome! please have a look to [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Credits
 
