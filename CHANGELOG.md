@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.10](https://github.com/gchiesa/ska/compare/v0.0.9...v0.0.10) (2024-08-09)
+
+
+### Features
+
+* minor updates and extended readme with demo ([807c318](https://github.com/gchiesa/ska/commit/807c318a6e1d6730c6d539afbe0b48a712a17004))
+
 ## [0.0.9](https://github.com/gchiesa/ska/compare/v0.0.8...v0.0.9) (2024-08-09)
 
 
