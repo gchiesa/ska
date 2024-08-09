@@ -6,6 +6,7 @@ import (
 	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/processor"
+	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
 )
 
@@ -19,6 +20,7 @@ type SkaCreate struct {
 
 type SkaOptions struct {
 	NonInteractive bool
+	Engine         templateprovider.TemplateType // jinja or sprig
 }
 
 func NewSkaCreate(templateURI, destinationPath string, variables map[string]string, options SkaOptions) *SkaCreate {
@@ -58,8 +60,19 @@ func (s *SkaCreate) Create() error {
 		return err
 	}
 
+	// template engine
+	var templateService templateprovider.TemplateService
+	switch s.Options.Engine {
+	case templateprovider.SprigTemplateType:
+		templateService = templateprovider.NewSprigTemplate(s.TemplateURI)
+	case templateprovider.JinjaTemplateType:
+		templateService = templateprovider.NewJinjaTemplate(s.TemplateURI)
+	default:
+		return fmt.Errorf("unknown template engine")
+	}
+
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.DestinationPath,
-		processor.WithErrorOnMissingKey(true),
+		processor.WithTemplateService(templateService),
 		processor.WithSourceIgnorePaths(upstreamConfig.GetIgnorePaths()),
 		processor.WithDestinationIgnorePaths(localConfig.GetIgnorePaths()))
 

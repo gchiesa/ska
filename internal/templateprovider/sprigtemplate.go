@@ -1,4 +1,4 @@
-package templateservice
+package templateprovider
 
 import (
 	sprig "github.com/go-task/slim-sprig"
@@ -24,13 +24,12 @@ func NewSprigTemplate(name string) *SprigTemplate {
 	}
 }
 
-func (t *SprigTemplate) WithErrorOnMissingKey(state bool) *SprigTemplate {
+func (t *SprigTemplate) WithErrorOnMissingKey(state bool) {
 	if state {
 		t.textTemplate.Option("missingkey=error")
 	} else {
 		t.textTemplate.Option("missingkey=default")
 	}
-	return t
 }
 
 func (t *SprigTemplate) FromString(templateContent string) error {

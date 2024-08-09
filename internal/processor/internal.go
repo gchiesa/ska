@@ -47,14 +47,14 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 		}
 
 		// create a template from the file name as it was a template
-		if err := tp.templateService.FromString(sRelPath); err != nil {
+		if err := tp.template.FromString(sRelPath); err != nil {
 			return err
 		}
 
 		// render the template
 		buff := bytes.NewBufferString("")
-		if err := tp.templateService.Execute(buff, withVariables); err != nil {
-			if tp.templateService.IsMissingKeyError(err) {
+		if err := tp.template.Execute(buff, withVariables); err != nil {
+			if tp.template.IsMissingKeyError(err) {
 				logger.WithFields(log.Fields{"path": sRelPath}).Errorf("missing variable while rendering file path: %s", sRelPath)
 			}
 			return err
@@ -158,14 +158,14 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 				return nil
 			}
 
-			if err := tp.templateService.FromFile(absPath); err != nil {
+			if err := tp.template.FromFile(absPath); err != nil {
 				return err
 			}
 
 			// render the template
 			buff := bytes.NewBufferString("")
-			if err := tp.templateService.Execute(buff, withVariables); err != nil {
-				if tp.templateService.IsMissingKeyError(err) {
+			if err := tp.template.Execute(buff, withVariables); err != nil {
+				if tp.template.IsMissingKeyError(err) {
 					logger.WithFields(log.Fields{"path": relPath}).Errorf("missing variable while rendering file: %s", relPath)
 				}
 				return err

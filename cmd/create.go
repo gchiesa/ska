@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"context"
+	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/pkg/skaffolder"
 )
 
@@ -11,9 +13,10 @@ type CreateCmd struct {
 	NonInteractive  bool              `arg:"-n,--non-interactive" help:"Run in non-interactive mode"`
 }
 
-func (c *CreateCmd) Execute() error {
+func (c *CreateCmd) Execute(ctx context.Context) error {
 	options := &skaffolder.SkaOptions{
 		NonInteractive: c.NonInteractive,
+		Engine:         ctx.Value(contextEngineKey("engine")).(templateprovider.TemplateType),
 	}
 	ska := skaffolder.NewSkaCreate(
 		c.TemplateURI,
