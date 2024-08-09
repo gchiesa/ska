@@ -2,7 +2,7 @@ package processor
 
 import (
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/internal/templateservice"
+	ts "github.com/gchiesa/ska/internal/templateprovider"
 	"os"
 )
 
@@ -15,7 +15,7 @@ func NewFileTreeProcessor(sourcePath, destinationPathRoot string, options ...fun
 		sourcePath:          sourcePath,
 		destinationPathRoot: destinationPathRoot,
 		workingDir:          "",
-		templateService:     templateservice.NewSprigTemplate("default"),
+		template:            nil,
 		log:                 logCtx,
 	}
 	// configure options
@@ -72,15 +72,9 @@ func (tp *FileTreeProcessor) Render(withVariables map[string]interface{}) error 
 	return nil
 }
 
-func WithTemplateService(templateService *templateservice.SprigTemplate) func(tp *FileTreeProcessor) {
+func WithTemplateService(ts ts.TemplateService) func(tp *FileTreeProcessor) {
 	return func(tp *FileTreeProcessor) {
-		tp.templateService = templateService
-	}
-}
-
-func WithErrorOnMissingKey(errorOnMissingKey bool) func(tp *FileTreeProcessor) {
-	return func(tp *FileTreeProcessor) {
-		tp.templateService.WithErrorOnMissingKey(errorOnMissingKey)
+		tp.template = ts
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/processor"
+	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
 )
 
@@ -56,8 +57,19 @@ func (s *SkaUpdate) Update() error {
 		return err
 	}
 
+	// template engine
+	var templateService templateprovider.TemplateService
+	switch s.Options.Engine {
+	case "sprig":
+		templateService = templateprovider.NewSprigTemplate(s.BaseURI)
+	case "jinja":
+		templateService = templateprovider.NewJinjaTemplate(s.BaseURI)
+	default:
+		return fmt.Errorf("unknown template engine: %s", s.Options.Engine)
+	}
+
 	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.BaseURI,
-		processor.WithErrorOnMissingKey(true),
+		processor.WithTemplateService(templateService),
 		processor.WithSourceIgnorePaths(upstreamConfig.GetIgnorePaths()),
 		processor.WithDestinationIgnorePaths(localConfig.GetIgnorePaths()))
 

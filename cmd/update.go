@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"github.com/gchiesa/ska/pkg/skaffolder"
 )
 
@@ -10,9 +11,10 @@ type UpdateCmd struct {
 	NonInteractive bool              `arg:"-n,--non-interactive" help:"Run in non-interactive mode"`
 }
 
-func (c *UpdateCmd) Execute() error {
+func (c *UpdateCmd) Execute(ctx context.Context) error {
 	options := &skaffolder.SkaOptions{
 		NonInteractive: c.NonInteractive,
+		Engine:         ctx.Value("engine").(string),
 	}
 	ska := skaffolder.NewSkaUpdate(
 		c.FolderPath,

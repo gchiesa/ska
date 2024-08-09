@@ -11,12 +11,14 @@ require (
 	github.com/charmbracelet/bubbletea v0.26.4
 	github.com/charmbracelet/lipgloss v0.12.1
 	github.com/daixiang0/gci v0.13.4
+	github.com/flosch/pongo2/v6 v6.0.0
 	github.com/go-critic/go-critic v0.11.3
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572
 	github.com/golangci/golangci-lint v1.58.1
 	github.com/gotesttools/gotestfmt/v2 v2.5.0
 	github.com/huandu/xstrings v1.5.0
 	github.com/otiai10/copy v1.14.0
+	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -147,12 +149,10 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.16.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -225,7 +225,6 @@ require (
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
