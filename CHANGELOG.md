@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.0.11](https://github.com/gchiesa/ska/compare/v0.0.10...v0.0.11) (2024-08-16)
+
+
+### Features
+
+* add support for gitlab public/private blueprints ([d3b364f](https://github.com/gchiesa/ska/commit/d3b364ff50815b02a30945abfda6372690ff704c))
+
+
+### Bug Fixes
+
+* update url for gitlab test repository ([d136e00](https://github.com/gchiesa/ska/commit/d136e00768de7b1ce2f2a3e1b77d41dece6d77a7))
+
+
+### Docs
+
+* update README ([69af4bd](https://github.com/gchiesa/ska/commit/69af4bd700af311e26808875dbe93f2f79a639e4))
+
 ## [0.0.10](https://github.com/gchiesa/ska/compare/v0.0.9...v0.0.10) (2024-08-09)
 
 
