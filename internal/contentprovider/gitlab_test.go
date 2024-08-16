@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// const GitLabTestPublicRepo = "https://gitlab.com/gchiesa/s3vaultlib@master"
 const GitLabTestPublicRepo = "https://gitlab.com/gchiesa/test@master"
 
 func TestGitLab_DownloadPublicRepo(t *testing.T) {
