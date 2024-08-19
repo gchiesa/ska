@@ -22,7 +22,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3
-    - uses: google-github-actions/release-please-action@ee9822ec2c397e8a364d634464339ac43a06e042
+    - uses: google-github-actions/release-please-action@e4dc86ba9405554aeba3c6bb2d169500e7d3b4ee
       id: release
       with:
         command: manifest
