@@ -1,6 +1,7 @@
 # SKA
 
-SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprints (GitHub hosted)
+SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprints (GitHub and GitLab 
+hosted)
 
 Additionally, you can update your folder structure from the upstream blueprint to onboard new changes that are
 maintained centrally and added overtime to upstream.
@@ -10,7 +11,7 @@ you can leverage the package under `pkg/`.
 
 ## SKA in action
 
-[![asciicast](https://asciinema.org/a/7cCSlbCFmDbD387LJISSMySfP.svg)](https://asciinema.org/a/7cCSlbCFmDbD387LJISSMySfP)
+![demo](assets/demo.gif)
 
 ## Get Started
 
