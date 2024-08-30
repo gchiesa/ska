@@ -33,7 +33,7 @@ func (cf *ConfigFile) GetFilePath() string {
 }
 
 func (cf *ConfigFile) WriteConfig(configData []byte) error {
-	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Debug("Writing configuration to file")
+	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Debug("writing configuration to file")
 	if err := os.WriteFile(cf.filePath, configData, 0o644); err != nil {
 		return err
 	}
@@ -41,6 +41,6 @@ func (cf *ConfigFile) WriteConfig(configData []byte) error {
 }
 
 func (cf *ConfigFile) ReadConfig() ([]byte, error) {
-	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Debug("Reading configuration from file")
+	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Debug("reading configuration from file")
 	return os.ReadFile(cf.filePath)
 }

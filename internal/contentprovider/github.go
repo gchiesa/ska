@@ -7,14 +7,16 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
+	"path/filepath"
 )
 
 type GitHub struct {
-	remoteURI     string
-	repositoryURL string
-	repositoryRef string
-	workingDir    string
-	log           *log.Entry
+	remoteURI          string
+	repositoryURL      string
+	repositoryRef      string
+	repositoryFilePath string
+	workingDir         string
+	log                *log.Entry
 }
 
 const GitHubPrefix = "https://github.com/"
@@ -32,6 +34,12 @@ func NewGitHub(remoteURI string) (*GitHub, error) {
 }
 
 func (cp *GitHub) WorkingDir() string {
+	// if filepath is set we set that one as working directory
+	if cp.repositoryFilePath != "" {
+		wd := filepath.Join(cp.workingDir, cp.repositoryFilePath)
+		cp.log.WithFields(log.Fields{"repositoryFilePath": cp.repositoryFilePath}).Debugf("using repository file path: %s", wd)
+		return wd
+	}
 	return cp.workingDir
 }
 
@@ -79,6 +87,7 @@ func (cp *GitHub) DownloadContent() error {
 	if err := cp.removeGitFolder(); err != nil {
 		return err
 	}
+
 	return nil
 }
 

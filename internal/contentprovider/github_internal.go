@@ -11,7 +11,7 @@ import (
 )
 
 func (cp *GitHub) validateRemoteURI(string) error {
-	url, ref := parseRemoteURI(cp.remoteURI)
+	url, filePath, ref := parseRemoteURIV2(cp.remoteURI)
 	if !strings.HasPrefix(url, "https://github.com/") {
 		return errors.New("invalid github url. The url must start with https://github.com/")
 	}
@@ -20,6 +20,7 @@ func (cp *GitHub) validateRemoteURI(string) error {
 	}
 	cp.repositoryURL = url
 	cp.repositoryRef = ref
+	cp.repositoryFilePath = filePath
 	return nil
 }
 

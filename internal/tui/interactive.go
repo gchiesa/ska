@@ -54,7 +54,7 @@ func NewSkaInteractiveService(formTitle string, inputs []configuration.UpstreamC
 
 func (s *SkaInteractiveService) ShouldRun() bool {
 	if len(s.formConfig.Inputs) == 0 {
-		s.log.Info("No inputs in the interactive config.")
+		s.log.Info("no inputs in the interactive config.")
 		return false
 	}
 	return true
@@ -62,7 +62,7 @@ func (s *SkaInteractiveService) ShouldRun() bool {
 
 func (s *SkaInteractiveService) Run() error {
 	if !s.ShouldRun() {
-		s.log.Info("Skipping interactive config")
+		s.log.Info("skipping interactive config")
 		return nil
 	}
 	s.disableWithLoggingInvalidRegExp()
@@ -94,7 +94,7 @@ func (s *SkaInteractiveService) SetDefaults(variables map[string]string) {
 func (s *SkaInteractiveService) disableWithLoggingInvalidRegExp() {
 	for i := range s.formConfig.Inputs {
 		if _, err := regexp.Compile(s.formConfig.Inputs[i].RegExp); err != nil {
-			s.log.WithFields(log.Fields{"validation": s.formConfig.Inputs[i].RegExp}).Warnf("RegExp expression is invalid. Error: %s. Ignoring validation.", err)
+			s.log.WithFields(log.Fields{"validation": s.formConfig.Inputs[i].RegExp}).Warnf("the RegExp expression is invalid. Error: %s. Ignoring validation.", err)
 			s.formConfig.Inputs[i].RegExp = ""
 		}
 	}

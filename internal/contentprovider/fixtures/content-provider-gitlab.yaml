@@ -1,0 +1,104 @@
+---
+version: 2
+interactions:
+    - id: 0
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 0
+        transfer_encoding: []
+        trailer: {}
+        host: gitlab.com
+        remote_addr: ""
+        request_uri: ""
+        body: ""
+        form: {}
+        headers:
+            Accept:
+                - application/json
+            Private-Token:
+                - ""
+            User-Agent:
+                - go-gitlab
+        url: https://gitlab.com/api/v4/projects/gchiesa%2Ftest/repository/archive.zip?sha=master
+        method: GET
+      response:
+        proto: HTTP/2.0
+        proto_major: 2
+        proto_minor: 0
+        transfer_encoding: []
+        trailer: {}
+        content_length: -1
+        uncompressed: false
+        body: !!binary |
+            UEsDBAoAAAAAAKCAH0sAAAAAAAAAAAAAAAA1AAkAdGVzdC1tYXN0ZXItM2U2NDcxYzk1NT
+            A3YjRjNGNhNjI2Yzk5YTRmMjY5Y2RmOTAyNjBkNy9VVAUAAa0zqFlQSwMECgAAAAAAoIAf
+            SwAAAAAAAAAAAAAAAD4ACQB0ZXN0LW1hc3Rlci0zZTY0NzFjOTU1MDdiNGM0Y2E2MjZjOT
+            lhNGYyNjljZGY5MDI2MGQ3L1JFQURNRS5tZFVUBQABrTOoWVBLAwQKAAAAAACggB9LkGA4
+            Sw0AAAANAAAAPgAJAHRlc3QtbWFzdGVyLTNlNjQ3MWM5NTUwN2I0YzRjYTYyNmM5OWE0Zj
+            I2OWNkZjkwMjYwZDcvc29tZXRoaW5nVVQFAAGtM6hZZW1wdHkuLi4gbm90ClBLAwQKAAAA
+            CACggB9LcOI9ay8AAAA0AAAASgAJAHRlc3QtbWFzdGVyLTNlNjQ3MWM5NTUwN2I0YzRjYT
+            YyNmM5OWE0ZjI2OWNkZjkwMjYwZDcveW91LXdvbnQtYmVsaWV2ZS10aGlzVVQFAAGtM6hZ
+            K8nILFYAokSFnMy8VK7EvPyU1CIwW0EjJV+hMr9UoTg1VaEkA4grC/LtFaw0uQBQSwECAA
+            AKAAAAAACggB9LAAAAAAAAAAAAAAAANQAJAAAAAAAAABAAAAAAAAAAdGVzdC1tYXN0ZXIt
+            M2U2NDcxYzk1NTA3YjRjNGNhNjI2Yzk5YTRmMjY5Y2RmOTAyNjBkNy9VVAUAAa0zqFlQSw
+            ECAAAKAAAAAACggB9LAAAAAAAAAAAAAAAAPgAJAAAAAAABAAAAAABcAAAAdGVzdC1tYXN0
+            ZXItM2U2NDcxYzk1NTA3YjRjNGNhNjI2Yzk5YTRmMjY5Y2RmOTAyNjBkNy9SRUFETUUubW
+            RVVAUAAa0zqFlQSwECAAAKAAAAAACggB9LkGA4Sw0AAAANAAAAPgAJAAAAAAABAAAAAADB
+            AAAAdGVzdC1tYXN0ZXItM2U2NDcxYzk1NTA3YjRjNGNhNjI2Yzk5YTRmMjY5Y2RmOTAyNj
+            BkNy9zb21ldGhpbmdVVAUAAa0zqFlQSwECAAAKAAAACACggB9LcOI9ay8AAAA0AAAASgAJ
+            AAAAAAABAAAAAAAzAQAAdGVzdC1tYXN0ZXItM2U2NDcxYzk1NTA3YjRjNGNhNjI2Yzk5YT
+            RmMjY5Y2RmOTAyNjBkNy95b3Utd29udC1iZWxpZXZlLXRoaXNVVAUAAa0zqFlQSwUGAAAA
+            AAQABADXAQAA0wEAACgAM2U2NDcxYzk1NTA3YjRjNGNhNjI2Yzk5YTRmMjY5Y2RmOTAyNj
+            BkNw==
+        headers:
+            Cache-Control:
+                - max-age=0, private, must-revalidate
+            Cf-Cache-Status:
+                - MISS
+            Cf-Ray:
+                - 8bb4e27788de4266-AMS
+            Content-Disposition:
+                - attachment; filename="test-master-3e6471c95507b4c4ca626c99a4f269cdf90260d7.zip"
+            Content-Security-Policy:
+                - default-src 'none'
+            Content-Transfer-Encoding:
+                - binary
+            Content-Type:
+                - application/zip
+            Date:
+                - Fri, 30 Aug 2024 12:46:37 GMT
+            Etag:
+                - W/"12ae32cb1ec02d01eda3581b127c1fee"
+            Gitlab-Lb:
+                - haproxy-main-24-lb-gprd
+            Gitlab-Sv:
+                - gke-cny-api
+            Nel:
+                - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+            Referrer-Policy:
+                - strict-origin-when-cross-origin
+            Report-To:
+                - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=OodJJVR%2F0xN1lCY0xcJCLmtxpvk6CV0%2BbcKFqG9tnPwW0WYnQShWpUzxQSxSYpZYGWswrqPd%2FylP29oARAY3TN8uh40mK5iG0xBbUXxthnRyw7l6IkjEMrDW4CY%3D"}],"group":"cf-nel","max_age":604800}'
+            Server:
+                - cloudflare
+            Set-Cookie:
+                - _cfuvid=uLtEt2EsftPOYwlWAFamg9YmrFUSq.vI58OQB.Wzlos-1725021997316-0.0.1.1-604800000; path=/; domain=.gitlab.com; HttpOnly; Secure; SameSite=None
+            Strict-Transport-Security:
+                - max-age=31536000
+            Vary:
+                - Origin, Accept-Encoding
+            X-Content-Type-Options:
+                - nosniff
+            X-Frame-Options:
+                - SAMEORIGIN
+            X-Gitlab-Meta:
+                - '{"correlation_id":"13d0980c4f908f96193feadab20cafe9","version":"1"}'
+            X-Request-Id:
+                - 13d0980c4f908f96193feadab20cafe9
+            X-Runtime:
+                - "0.424257"
+        status: 200 OK
+        code: 200
+        duration: 646.394875ms

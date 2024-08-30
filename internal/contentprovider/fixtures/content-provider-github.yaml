@@ -1,0 +1,164 @@
+---
+version: 2
+interactions:
+    - id: 0
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 0
+        transfer_encoding: []
+        trailer: {}
+        host: github.com
+        remote_addr: ""
+        request_uri: ""
+        body: ""
+        form: {}
+        headers:
+            Accept:
+                - '*/*'
+            Host:
+                - github.com
+            User-Agent:
+                - git/1.0
+        url: https://github.com/gchiesa/ska-example-template/info/refs?service=git-upload-pack
+        method: GET
+      response:
+        proto: HTTP/2.0
+        proto_major: 2
+        proto_minor: 0
+        transfer_encoding: []
+        trailer: {}
+        content_length: -1
+        uncompressed: false
+        body: "001e# service=git-upload-pack\n00000153a3086fc06ba53f04932f9e2cf1b3e5ad8f2dd006 HEAD\0multi_ack thin-pack side-band side-band-64k ofs-delta shallow deepen-since deepen-not deepen-relative no-progress include-tag multi_ack_detailed allow-tip-sha1-in-want allow-reachable-sha1-in-want no-done symref=HEAD:refs/heads/main filter object-format=sha1 agent=git/github-254539cbab51\n003da3086fc06ba53f04932f9e2cf1b3e5ad8f2dd006 refs/heads/main\n0000"
+        headers:
+            Cache-Control:
+                - no-cache, max-age=0, must-revalidate
+            Content-Security-Policy:
+                - default-src 'none'; sandbox
+            Content-Type:
+                - application/x-git-upload-pack-advertisement
+            Date:
+                - Fri, 30 Aug 2024 12:46:23 GMT
+            Expires:
+                - Fri, 01 Jan 1980 00:00:00 GMT
+            Pragma:
+                - no-cache
+            Server:
+                - GitHub-Babel/3.0
+            Vary:
+                - Accept-Encoding
+            X-Frame-Options:
+                - DENY
+            X-Github-Request-Id:
+                - D88C:2A7A97:D062D8:D35C20:66D1BF1F
+        status: 200 OK
+        code: 200
+        duration: 176.250417ms
+    - id: 1
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 116
+        transfer_encoding: []
+        trailer: {}
+        host: github.com
+        remote_addr: ""
+        request_uri: ""
+        body: |
+            0067want a3086fc06ba53f04932f9e2cf1b3e5ad8f2dd006 side-band-64k ofs-delta agent=go-git/4.x no-progress
+            00000009done
+        form: {}
+        headers:
+            Accept:
+                - application/x-git-upload-pack-result
+            Content-Length:
+                - "116"
+            Content-Type:
+                - application/x-git-upload-pack-request
+            Host:
+                - github.com
+            User-Agent:
+                - git/1.0
+        url: https://github.com/gchiesa/ska-example-template/git-upload-pack
+        method: POST
+      response:
+        proto: HTTP/2.0
+        proto_major: 2
+        proto_minor: 0
+        transfer_encoding: []
+        trailer: {}
+        content_length: -1
+        uncompressed: false
+        body: !!binary |
+            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
+        headers:
+            Cache-Control:
+                - no-cache, max-age=0, must-revalidate
+            Content-Security-Policy:
+                - default-src 'none'; sandbox
+            Content-Type:
+                - application/x-git-upload-pack-result
+            Date:
+                - Fri, 30 Aug 2024 12:46:23 GMT
+            Expires:
+                - Fri, 01 Jan 1980 00:00:00 GMT
+            Pragma:
+                - no-cache
+            Server:
+                - GitHub-Babel/3.0
+            Vary:
+                - Accept-Encoding
+            X-Frame-Options:
+                - DENY
+            X-Github-Request-Id:
+                - D88C:2A7A97:D0643F:D35DA0:66D1BF1F
+        status: 200 OK
+        code: 200
+        duration: 128.54375ms

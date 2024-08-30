@@ -116,6 +116,6 @@ func (s *SkaCreate) Create() error {
 		return err
 	}
 
-	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath, "blueprintUri": blueprintProvider.RemoteURI()}).Info("Blueprint expanded under destination path.")
+	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath, "blueprintUri": blueprintProvider.RemoteURI()}).Info("blueprint expanded under destination path.")
 	return nil
 }

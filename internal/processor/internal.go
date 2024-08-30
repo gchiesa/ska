@@ -119,10 +119,10 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 			if err != nil {
 				return err
 			}
-			logger.WithFields(log.Fields{"parts": files, "multipart": relPath}).Debug("Generating Parts from Multipart.")
+			logger.WithFields(log.Fields{"parts": files, "multipart": relPath}).Debug("generating Parts from Multipart.")
 			tp.multiparts = append(tp.multiparts, multipart)
 		} else {
-			logger.WithFields(log.Fields{"filePath": relPath}).Debug("Skipping because is a directory.")
+			logger.WithFields(log.Fields{"filePath": relPath}).Debug("skipping because is a directory.")
 		}
 		return nil
 	})
@@ -154,7 +154,7 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 		if !info.IsDir() {
 			// check if the file is to process
 			if tp.multipartExistsAndHasPartials(relPath) {
-				logger.WithFields(log.Fields{"filePath": relPath}).Debug("Skipping file because it's a Multipart with Parts.")
+				logger.WithFields(log.Fields{"filePath": relPath}).Debug("skipping file because it's a Multipart with Parts.")
 				return nil
 			}
 
@@ -171,12 +171,12 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 				return err
 			}
 
-			logger.WithFields(log.Fields{"filePath": relPath}).Debug("Saving rendered file.")
+			logger.WithFields(log.Fields{"filePath": relPath}).Debug("saving rendered file.")
 			if err := os.WriteFile(absPath, []byte(buff.String()), 0o644); err != nil { //nolint:gosimple // we don't need to check the error here
 				return err
 			}
 		} else {
-			logger.WithFields(log.Fields{"filePath": relPath}).Debug("Skipping because is a directory directory.")
+			logger.WithFields(log.Fields{"filePath": relPath}).Debug("skipping because is a directory directory.")
 		}
 
 		return nil
@@ -269,12 +269,12 @@ func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 		if !info.IsDir() {
 			// is it is not a swanson file we copy to destination
 			if !tp.shouldProcessFile(relPath, tp.destinationIgnorePaths) {
-				logger.WithFields(log.Fields{"filePath": relPath}).Debug("Skipping file because should not be processed.")
+				logger.WithFields(log.Fields{"filePath": relPath}).Debug("skipping file because should not be processed.")
 				return nil
 			}
 			// not a managed file then we copy it to destination
 			if !tp.fileIsMultipart(relPath) {
-				logger.WithFields(log.Fields{"filePath": relPath, "destination": tp.destinationPathRoot}).Debug("Copying file to destination.")
+				logger.WithFields(log.Fields{"filePath": relPath, "destination": tp.destinationPathRoot}).Debug("copying file to destination.")
 				if err := copy.Copy(absPath, filepath.Join(tp.destinationPathRoot, relPath)); err != nil {
 					return err
 				}
@@ -284,7 +284,7 @@ func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 
 			// if it has no partials then we just copy as normal expanded file
 			if !mp.HasParts() {
-				logger.WithFields(log.Fields{"filePath": relPath, "destination": tp.destinationPathRoot}).Debug("Copying non multipart file to destination.")
+				logger.WithFields(log.Fields{"filePath": relPath, "destination": tp.destinationPathRoot}).Debug("copying non multipart file to destination.")
 				if err := copy.Copy(absPath, filepath.Join(tp.destinationPathRoot, relPath)); err != nil {
 					return err
 				}
@@ -292,7 +292,7 @@ func (tp *FileTreeProcessor) updateDestinationFileTree() error {
 			}
 
 			// assemble back the partial container with the rendered partials
-			logger.WithFields(log.Fields{"filePath": relPath, "destination": tp.destinationPathRoot}).Debug("Compiling Multipart file to destination.")
+			logger.WithFields(log.Fields{"filePath": relPath, "destination": tp.destinationPathRoot}).Debug("compiling Multipart file to destination.")
 			if err := mp.CompileToFile(filepath.Join(tp.destinationPathRoot, relPath), false); err != nil {
 				return err
 			}
