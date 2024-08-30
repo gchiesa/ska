@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.12](https://github.com/gchiesa/ska/compare/v0.0.11...v0.0.12) (2024-08-30)
+
+
+### Features
+
+* implement support for path inside remote repository ([f4f3edf](https://github.com/gchiesa/ska/commit/f4f3edff764c47b032420f72a10dbbf019a97d16))
+
+
+### Docs
+
+* smaller terminal demo ([921ef7f](https://github.com/gchiesa/ska/commit/921ef7fbcca152c0712c71bc982b3a1a7c14761f))
+* update demo ([4606065](https://github.com/gchiesa/ska/commit/4606065a35ecd3462c2f7989dd566552e5d325d3))
+
+
+### Other
+
+* update dependencies ([f7164cc](https://github.com/gchiesa/ska/commit/f7164ccc074372d883d16292958f10f85d602ec2))
+
 ## [0.0.11](https://github.com/gchiesa/ska/compare/v0.0.10...v0.0.11) (2024-08-16)
 
 
