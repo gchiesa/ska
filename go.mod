@@ -9,7 +9,7 @@ require (
 	github.com/apex/log v1.9.0
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.26.4
-	github.com/charmbracelet/lipgloss v0.12.1
+	github.com/charmbracelet/lipgloss v0.13.0
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 	github.com/daixiang0/gci v0.13.4
 	github.com/flosch/pongo2/v6 v6.0.0
