@@ -2,10 +2,10 @@ package contentprovider
 
 import (
 	"github.com/apex/log"
+	"github.com/go-git/go-git/v5/plumbing/transport/client"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/recorder"
-	"gopkg.in/src-d/go-git.v4/plumbing/transport/client"
-	githttp "gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"testing"
 )
 
