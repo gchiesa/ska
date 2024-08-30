@@ -28,7 +28,7 @@ require (
 	golang.org/x/tools v0.24.0
 	gopkg.in/dnaeon/go-vcr.v4 v4.0.1
 	gopkg.in/yaml.v2 v2.4.0
-	mvdan.cc/gofumpt v0.6.0
+	mvdan.cc/gofumpt v0.7.0
 )
 
 require (
