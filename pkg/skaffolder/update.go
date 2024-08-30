@@ -120,6 +120,6 @@ func (s *SkaUpdate) Update() error {
 		return err
 	}
 
-	log.WithFields(log.Fields{"method": "Update", "path": s.BaseURI, "blueprintURI": localConfig.BlueprintUpstream()}).Info("Local path updated with blueprint.")
+	log.WithFields(log.Fields{"method": "Update", "path": s.BaseURI, "blueprintURI": localConfig.BlueprintUpstream()}).Info("local path updated with blueprint.")
 	return nil
 }
