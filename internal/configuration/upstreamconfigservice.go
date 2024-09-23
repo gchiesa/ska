@@ -17,6 +17,7 @@ type UpstreamConfigInput struct {
 	Placeholder string `yaml:"placeholder"`
 	Label       string `yaml:"label"`
 	Regexp      string `yaml:"regexp,omitempty"`
+	MinLength   int    `yaml:"minLength,omitempty"`
 	MaxLength   int    `yaml:"maxLength,omitempty"`
 	Help        string `yaml:"help,omitempty"`
 	Default     string `yaml:"default,omitempty"`
