@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.13](https://github.com/gchiesa/ska/compare/v0.0.12...v0.0.13) (2024-09-23)
+
+
+### Features
+
+* implement minLength support for accepting empty variables ([4f74c95](https://github.com/gchiesa/ska/commit/4f74c95f97f2ab90bb302a7b61738570e5f12a91))
+
 ## [0.0.12](https://github.com/gchiesa/ska/compare/v0.0.11...v0.0.12) (2024-08-30)
 
 
