@@ -38,6 +38,7 @@ func NewSkaInteractiveService(formTitle string, inputs []configuration.UpstreamC
 			Placeholder: i.Placeholder,
 			Label:       i.Label,
 			RegExp:      i.Regexp,
+			MinLength:   i.MinLength,
 			MaxLength:   i.MaxLength,
 			Default:     i.Default,
 			Help:        i.Help,
