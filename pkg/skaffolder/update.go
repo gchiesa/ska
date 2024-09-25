@@ -11,29 +11,31 @@ import (
 )
 
 type SkaUpdate struct {
-	BaseURI   string
-	Variables map[string]string
-	Options   *SkaOptions
-	Log       *log.Entry
+	BaseURI     string
+	NamedConfig string
+	Variables   map[string]string
+	Options     *SkaOptions
+	Log         *log.Entry
 }
 
-func NewSkaUpdate(baseURI string, variables map[string]string, options SkaOptions) *SkaUpdate {
+func NewSkaUpdate(baseURI, namedConfig string, variables map[string]string, options SkaOptions) *SkaUpdate {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
 	return &SkaUpdate{
-		BaseURI:   baseURI,
-		Variables: variables,
-		Options:   &options,
-		Log:       logCtx,
+		BaseURI:     baseURI,
+		NamedConfig: namedConfig,
+		Variables:   variables,
+		Options:     &options,
+		Log:         logCtx,
 	}
 }
 
 func (s *SkaUpdate) Update() error {
-	localConfig := configuration.NewLocalConfigService()
+	localConfig := configuration.NewLocalConfigService(s.NamedConfig)
 
 	// read the config from the folder
-	if err := localConfig.ReadConfig(s.BaseURI); err != nil {
+	if err := localConfig.ReadValidConfig(s.BaseURI); err != nil {
 		return err
 	}
 

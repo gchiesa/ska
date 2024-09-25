@@ -13,6 +13,7 @@ import (
 type SkaCreate struct {
 	TemplateURI     string
 	DestinationPath string
+	NamedConfig     string
 	Variables       map[string]string
 	Options         *SkaOptions
 	Log             *log.Entry
@@ -23,13 +24,14 @@ type SkaOptions struct {
 	Engine         templateprovider.TemplateType // jinja or sprig
 }
 
-func NewSkaCreate(templateURI, destinationPath string, variables map[string]string, options SkaOptions) *SkaCreate {
+func NewSkaCreate(templateURI, destinationPath, namedConfig string, variables map[string]string, options SkaOptions) *SkaCreate {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
 	return &SkaCreate{
 		TemplateURI:     templateURI,
 		DestinationPath: destinationPath,
+		NamedConfig:     namedConfig,
 		Variables:       variables,
 		Options:         &options,
 		Log:             logCtx,
@@ -48,7 +50,13 @@ func (s *SkaCreate) Create() error {
 	}(blueprintProvider)
 
 	// configservice
-	localConfig := configuration.NewLocalConfigService()
+	localConfig := configuration.NewLocalConfigService(s.NamedConfig)
+
+	// check if localconfig already exist, if yes we fail
+	if localConfig.ConfigExists(s.DestinationPath) {
+		log.Infof("Default config or specified named config already exists, please use a different name for the configuration")
+		return fmt.Errorf("configuration already exists")
+	}
 
 	if err = blueprintProvider.DownloadContent(); err != nil { //nolint:govet //not a bit deal
 		return err
