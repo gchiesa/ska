@@ -12,7 +12,7 @@ import (
 )
 
 const programName = "ska"
-const githubRepo = "https://gchiesa/ska"
+const githubRepo = "https://github.com/gchiesa/ska"
 
 var commandVersion = "development"
 

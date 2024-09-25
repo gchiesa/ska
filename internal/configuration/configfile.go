@@ -3,19 +3,11 @@ package configuration
 import (
 	"github.com/apex/log"
 	"os"
-	"path/filepath"
 )
 
 type ConfigFile struct {
 	filePath string
 	log      *log.Entry
-}
-
-const configFileName = ".ska-config.yml"
-
-func NewConfigFromDirectory(dirPath string) *ConfigFile {
-	filePath := filepath.Join(dirPath, configFileName)
-	return NewConfigFromFile(filePath)
 }
 
 func NewConfigFromFile(filePath string) *ConfigFile {
