@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.14](https://github.com/gchiesa/ska/compare/v0.0.13...v0.0.14) (2024-09-25)
+
+
+### Bug Fixes
+
+* implement support for multiple local ska-config.yaml ([af43a23](https://github.com/gchiesa/ska/commit/af43a234ffcb6213446da1f0297e0d6456fa2e2a))
+* removed unused variable ([8aff9e1](https://github.com/gchiesa/ska/commit/8aff9e118d8f7378a72c3527983c749a5bb27472))
+
 ## [0.0.13](https://github.com/gchiesa/ska/compare/v0.0.12...v0.0.13) (2024-09-23)
 
 
