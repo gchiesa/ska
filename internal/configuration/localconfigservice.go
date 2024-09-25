@@ -12,7 +12,6 @@ import (
 )
 
 var ErrNoConfigSpecified = errors.New("no configuration specified and multiple configurations present")
-var ErrConfigAlreadyExists = errors.New("configuration already exists")
 
 const (
 	localConfigDirName         = ".ska-config"
