@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.15](https://github.com/gchiesa/ska/compare/v0.0.14...v0.0.15) (2024-09-28)
+
+
+### Features
+
+* implement support for automatically add ignorePaths in generated ska-config ([500768c](https://github.com/gchiesa/ska/commit/500768c995813ad8428a3c2cab1d28f2675e9f92))
+
+
+### Bug Fixes
+
+* lint issues ([0f94080](https://github.com/gchiesa/ska/commit/0f94080b951b5095f5b14b45797d96429bfc8955))
+* lint issues ([d939d5c](https://github.com/gchiesa/ska/commit/d939d5c4d36f86ddf25b4fbd82ea1645e172129d))
+
 ## [0.0.14](https://github.com/gchiesa/ska/compare/v0.0.13...v0.0.14) (2024-09-25)
 
 
