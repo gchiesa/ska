@@ -78,8 +78,20 @@ func (cs *LocalConfigService) WithExcludeMatchingFiles(ignorePaths []string) *Lo
 	return cs
 }
 
-func (cs *LocalConfigService) GetIgnorePaths() []string {
+func (cs *LocalConfigService) IgnorePaths() []string {
 	return cs.app.Config.IgnorePaths
+}
+
+func (cs *LocalConfigService) WithIgnorePaths(ignorePaths []string) *LocalConfigService {
+	cs.app.Config.IgnorePaths = ignorePaths
+	return cs
+}
+
+func (cs *LocalConfigService) WithExtendIgnorePaths(ignorePaths []string) *LocalConfigService {
+	newPaths := append(cs.app.Config.IgnorePaths, ignorePaths...) //nolint:gocritic
+	slices.Sort(newPaths)
+	cs.app.Config.IgnorePaths = slices.Compact(newPaths)
+	return cs
 }
 
 func (cs *LocalConfigService) WithVariables(variables map[string]interface{}) *LocalConfigService {
