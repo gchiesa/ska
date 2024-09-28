@@ -138,6 +138,13 @@ ignorePaths:
 - .git
 - .idea
 
+# list of path (can be templated) that will be pre-populated in the final ska-config 
+skaConfig:
+  ignorePaths:
+  - "idea/*"
+  - test-file-to-be-ignored-{{.testFileName}}.txt
+  - "*.ignored"
+
 # this is the section that SKA will consume to generate the input form.
 # each input supports the following information:
 # 

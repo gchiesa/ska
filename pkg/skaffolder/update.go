@@ -5,7 +5,8 @@ import (
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/contentprovider"
-	"github.com/gchiesa/ska/internal/processor"
+	"github.com/gchiesa/ska/internal/filetreeprocessor"
+	"github.com/gchiesa/ska/internal/stringprocessor"
 	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
 )
@@ -70,12 +71,12 @@ func (s *SkaUpdate) Update() error {
 		return fmt.Errorf("unknown template engine")
 	}
 
-	fileTreeProcessor := processor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.BaseURI,
-		processor.WithTemplateService(templateService),
-		processor.WithSourceIgnorePaths(upstreamConfig.GetIgnorePaths()),
-		processor.WithDestinationIgnorePaths(localConfig.GetIgnorePaths()))
+	fileTreeProcessor := filetreeprocessor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.BaseURI,
+		filetreeprocessor.WithTemplateService(templateService),
+		filetreeprocessor.WithSourceIgnorePaths(upstreamConfig.UpstreamIgnorePaths()),
+		filetreeprocessor.WithDestinationIgnorePaths(localConfig.IgnorePaths()))
 
-	defer func(fileTreeProcessor *processor.FileTreeProcessor) {
+	defer func(fileTreeProcessor *filetreeprocessor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
 	}(fileTreeProcessor)
 
@@ -113,10 +114,20 @@ func (s *SkaUpdate) Update() error {
 		return err
 	}
 
+	// render the ignore entries in the upstream configuration
+	var skaConfigIgnorePaths []string
+	sp := stringprocessor.NewStringProcessor(stringprocessor.WithTemplateService(templateService))
+	skaConfigIgnorePaths, err = sp.RenderSliceOfStrings(upstreamConfig.SkaConfigIgnorePaths(), vars)
+	if err != nil {
+		return err
+	}
+
 	// save the config
 	err = localConfig.
 		WithVariables(vars).
 		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
+		WithExtendIgnorePaths(localConfig.IgnorePaths()).
+		WithExtendIgnorePaths(skaConfigIgnorePaths).
 		WriteConfig(s.BaseURI)
 	if err != nil {
 		return err

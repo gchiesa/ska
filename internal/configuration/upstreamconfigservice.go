@@ -23,9 +23,14 @@ type UpstreamConfigInput struct {
 	Default     string `yaml:"default,omitempty"`
 }
 
+type SkaConfig struct {
+	IgnorePaths []string `yaml:"ignorePaths"`
+}
+
 type config struct {
 	IgnorePaths []string              `yaml:"ignorePaths"`
 	Inputs      []UpstreamConfigInput `yaml:"inputs,omitempty"`
+	SkaConfig   SkaConfig             `yaml:"skaConfig,omitempty"`
 }
 
 func NewUpstreamConfigService() *UpstreamConfigService {
@@ -55,8 +60,12 @@ func (ucs *UpstreamConfigService) LoadFromPath(path string) (*UpstreamConfigServ
 	return ucs, nil
 }
 
-func (ucs *UpstreamConfigService) GetIgnorePaths() []string {
+func (ucs *UpstreamConfigService) UpstreamIgnorePaths() []string {
 	return ucs.config.IgnorePaths
+}
+
+func (ucs *UpstreamConfigService) SkaConfigIgnorePaths() []string {
+	return ucs.config.SkaConfig.IgnorePaths
 }
 
 func (ucs *UpstreamConfigService) GetInputs() []UpstreamConfigInput {
