@@ -117,9 +117,8 @@ func (s *SkaCreate) Create() error {
 	}
 
 	// render the ignore entries in the upstream configuration
-	var skaConfigIgnorePaths []string
 	sp := stringprocessor.NewStringProcessor(stringprocessor.WithTemplateService(templateService))
-	skaConfigIgnorePaths, err = sp.RenderSliceOfStrings(upstreamConfig.SkaConfigIgnorePaths(), vars)
+	skaConfigIgnorePaths, err := sp.RenderSliceOfStrings(upstreamConfig.SkaConfigIgnorePaths(), vars)
 	if err != nil {
 		return err
 	}

@@ -115,16 +115,14 @@ func (s *SkaUpdate) Update() error {
 	}
 
 	// render the ignore entries in the upstream configuration
-	var skaConfigIgnorePaths []string
 	sp := stringprocessor.NewStringProcessor(stringprocessor.WithTemplateService(templateService))
-	skaConfigIgnorePaths, err = sp.RenderSliceOfStrings(upstreamConfig.SkaConfigIgnorePaths(), vars)
+	skaConfigIgnorePaths, err := sp.RenderSliceOfStrings(upstreamConfig.SkaConfigIgnorePaths(), vars)
 	if err != nil {
 		return err
 	}
 
 	// save the config
-	err = localConfig.
-		WithVariables(vars).
+	err = localConfig.WithVariables(vars).
 		WithBlueprintUpstream(blueprintProvider.RemoteURI()).
 		WithExtendIgnorePaths(localConfig.IgnorePaths()).
 		WithExtendIgnorePaths(skaConfigIgnorePaths).

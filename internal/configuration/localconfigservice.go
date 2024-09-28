@@ -88,7 +88,7 @@ func (cs *LocalConfigService) WithIgnorePaths(ignorePaths []string) *LocalConfig
 }
 
 func (cs *LocalConfigService) WithExtendIgnorePaths(ignorePaths []string) *LocalConfigService {
-	newPaths := append(cs.app.Config.IgnorePaths, ignorePaths...)
+	newPaths := append(cs.app.Config.IgnorePaths, ignorePaths...) //nolint:gocritic
 	slices.Sort(newPaths)
 	cs.app.Config.IgnorePaths = slices.Compact(newPaths)
 	return cs
