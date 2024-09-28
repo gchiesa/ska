@@ -107,20 +107,20 @@ func (tp *FileTreeProcessor) loadMultiparts() error {
 
 		// if it's file we copy the file to the destination
 		if !info.IsDir() {
-			multipart, err := multipart.NewMultipartFromFile(absPath, relPath)
+			m, err := multipart.NewMultipartFromFile(absPath, relPath)
 			if err != nil {
 				return err
 			}
 
-			if err = multipart.ParseParts(); err != nil { //nolint:gocritic
+			if err = m.ParseParts(); err != nil { //nolint:gocritic
 				return err
 			}
-			files, err := multipart.PartsToFiles()
+			files, err := m.PartsToFiles()
 			if err != nil {
 				return err
 			}
 			logger.WithFields(log.Fields{"parts": files, "multipart": relPath}).Debug("generating Parts from Multipart.")
-			tp.multiparts = append(tp.multiparts, multipart)
+			tp.multiparts = append(tp.multiparts, m)
 		} else {
 			logger.WithFields(log.Fields{"filePath": relPath}).Debug("skipping because is a directory.")
 		}
