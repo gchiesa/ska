@@ -1,14 +1,14 @@
-package configuration
+package localconfigservice
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/huandu/xstrings"
+	"github.com/gchiesa/ska/internal/utils"
 	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
 	"slices"
-	"time"
 )
 
 var ErrNoConfigSpecified = errors.New("no configuration specified and multiple configurations present")
@@ -99,15 +99,29 @@ func (cs *LocalConfigService) WithVariables(variables map[string]interface{}) *L
 	return cs
 }
 
+func (cs *LocalConfigService) RenameNamedConfig(dirPath, namedConfig string) error {
+	if cs.ConfigExistsWithNamedConfig(dirPath, namedConfig) {
+		return fmt.Errorf("cannot rename %s to %s because named configuration already exists on path: %s",
+			cs.namedConfig, namedConfig, dirPath)
+	}
+
+	cs.namedConfig = namedConfig
+
+	if err := cs.WriteConfig(dirPath); err != nil {
+		return err
+	}
+	return cs.DeleteConfig(dirPath)
+}
+
 func (cs *LocalConfigService) WriteConfig(dirPath string) error {
 	if err := os.MkdirAll(makeConfigPath(dirPath), 0o755); err != nil {
 		return err
 	}
 
-	cf := NewConfigFromFile(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)))
+	cf := utils.NewConfigFromFile(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)))
 
 	// get the time utc now in format "2006-01-02 15:04:05.999999999 -0700 MST"
-	cs.app.State.LastUpdate = TimeNowUTC()
+	cs.app.State.LastUpdate = timeNowUTC()
 
 	configData, err := yaml.Marshal(cs.app)
 	if err != nil {
@@ -120,16 +134,28 @@ func (cs *LocalConfigService) WriteConfig(dirPath string) error {
 	return nil
 }
 
+func (cs *LocalConfigService) ToJSON() ([]byte, error) {
+	configData, err := json.Marshal(cs.app)
+	if err != nil {
+		return nil, err
+	}
+	return configData, nil
+}
+
+func (cs *LocalConfigService) DeleteConfig(dirPath string) error {
+	return os.RemoveAll(makeConfigPath(dirPath))
+}
+
 func (cs *LocalConfigService) ReadValidConfig(dirPath string) error {
 	if hasMultipleConfigurations(makeConfigPath(dirPath)) && cs.namedConfig == "" {
 		return ErrNoConfigSpecified
 	}
 
-	cf := NewConfigFromFile(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)))
+	cf := utils.NewConfigFromFile(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)))
 	return cs.LoadConfig(cf)
 }
 
-func (cs *LocalConfigService) LoadConfig(cf *ConfigFile) error {
+func (cs *LocalConfigService) LoadConfig(cf *utils.ConfigFile) error {
 	configData, err := cf.ReadConfig()
 	if err != nil {
 		return err
@@ -145,42 +171,10 @@ func (cs *LocalConfigService) LoadConfig(cf *ConfigFile) error {
 }
 
 func (cs *LocalConfigService) ConfigExists(dirPath string) bool {
-	configFileName := makeConfigFileName(cs.namedConfig)
+	return cs.ConfigExistsWithNamedConfig(dirPath, cs.namedConfig)
+}
+
+func (cs *LocalConfigService) ConfigExistsWithNamedConfig(dirPath, namedConfig string) bool {
 	existingConfigs, _ := configEntries(makeConfigPath(dirPath))
-	return slices.Contains(existingConfigs, configFileName)
-}
-
-func TimeNowUTC() string {
-	utcTime := time.Now().UTC()
-	timeFormat := "2006-01-02 15:04:05 -0700 MST"
-	return utcTime.Format(timeFormat)
-}
-
-func makeConfigPath(dirPath string) string {
-	return filepath.Join(dirPath, localConfigDirName)
-}
-
-func makeConfigFileName(namedConfig string) string {
-	if namedConfig == "" {
-		namedConfig = localConfigFileNameDefault
-	}
-	return fmt.Sprintf("%s.%s", namedConfig, localConfigFileNameExt)
-}
-
-func hasMultipleConfigurations(dirPath string) bool {
-	entries, _ := configEntries(dirPath)
-	return len(entries) > 1
-}
-
-func configEntries(dirPath string) ([]string, error) {
-	entries, err := filepath.Glob(dirPath + "/*.yaml")
-	if err != nil {
-		return nil, err
-	}
-	result := make([]string, 0)
-	for _, entry := range entries {
-		_, _, filename := xstrings.LastPartition(entry, "/")
-		result = append(result, filename)
-	}
-	return result, nil
+	return slices.Contains(existingConfigs, namedConfig)
 }

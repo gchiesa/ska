@@ -3,27 +3,28 @@ package skaffolder //nolint:typecheck
 import (
 	"fmt"
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
+	"github.com/gchiesa/ska/internal/localconfigservice"
 	"github.com/gchiesa/ska/internal/stringprocessor"
 	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
+	"github.com/gchiesa/ska/internal/upstreamconfigservice"
 )
 
-type SkaUpdate struct {
+type SkaUpdateTask struct {
 	BaseURI     string
 	NamedConfig string
 	Variables   map[string]string
-	Options     *SkaOptions
+	Options     *SkaTaskOptions
 	Log         *log.Entry
 }
 
-func NewSkaUpdate(baseURI, namedConfig string, variables map[string]string, options SkaOptions) *SkaUpdate {
+func NewSkaUpdateTask(baseURI, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaUpdateTask {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
-	return &SkaUpdate{
+	return &SkaUpdateTask{
 		BaseURI:     baseURI,
 		NamedConfig: namedConfig,
 		Variables:   variables,
@@ -32,8 +33,8 @@ func NewSkaUpdate(baseURI, namedConfig string, variables map[string]string, opti
 	}
 }
 
-func (s *SkaUpdate) Update() error {
-	localConfig := configuration.NewLocalConfigService(s.NamedConfig)
+func (s *SkaUpdateTask) Update() error {
+	localConfig := localconfigservice.NewLocalConfigService(s.NamedConfig)
 
 	// read the config from the folder
 	if err := localConfig.ReadValidConfig(s.BaseURI); err != nil {
@@ -55,7 +56,7 @@ func (s *SkaUpdate) Update() error {
 	}
 
 	// load the config for upstream blueprint
-	upstreamConfig, err := configuration.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
+	upstreamConfig, err := upstreamconfigservice.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
 	if err != nil {
 		return err
 	}

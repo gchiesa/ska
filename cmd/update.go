@@ -14,11 +14,11 @@ type UpdateCmd struct {
 }
 
 func (c *UpdateCmd) Execute(ctx context.Context) error {
-	options := &skaffolder.SkaOptions{
+	options := &skaffolder.SkaTaskOptions{
 		NonInteractive: c.NonInteractive,
 		Engine:         ctx.Value(contextEngineKey("engine")).(templateprovider.TemplateType),
 	}
-	ska := skaffolder.NewSkaUpdate(
+	ska := skaffolder.NewSkaUpdateTask(
 		c.FolderPath,
 		c.NamedConfig,
 		c.Variables,
