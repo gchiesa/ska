@@ -99,18 +99,19 @@ func (cs *LocalConfigService) WithVariables(variables map[string]interface{}) *L
 	return cs
 }
 
-func (cs *LocalConfigService) RenameNamedConfig(dirPath, namedConfig string) error {
-	if cs.ConfigExistsWithNamedConfig(dirPath, namedConfig) {
+func (cs *LocalConfigService) RenameNamedConfig(dirPath, namedConfigNew string) error {
+	if cs.ConfigExistsWithNamedConfig(dirPath, namedConfigNew) {
 		return fmt.Errorf("cannot rename %s to %s because named configuration already exists on path: %s",
-			cs.namedConfig, namedConfig, dirPath)
+			cs.namedConfig, namedConfigNew, dirPath)
 	}
 
-	cs.namedConfig = namedConfig
+	oldConfig := cs.namedConfig
+	cs.namedConfig = namedConfigNew
 
 	if err := cs.WriteConfig(dirPath); err != nil {
 		return err
 	}
-	return cs.DeleteConfig(dirPath)
+	return deleteConfigWithName(dirPath, oldConfig)
 }
 
 func (cs *LocalConfigService) WriteConfig(dirPath string) error {
@@ -143,7 +144,7 @@ func (cs *LocalConfigService) ToJSON() ([]byte, error) {
 }
 
 func (cs *LocalConfigService) DeleteConfig(dirPath string) error {
-	return os.RemoveAll(makeConfigPath(dirPath))
+	return deleteConfigWithName(dirPath, cs.namedConfig)
 }
 
 func (cs *LocalConfigService) ReadValidConfig(dirPath string) error {

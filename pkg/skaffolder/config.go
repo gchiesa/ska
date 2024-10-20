@@ -33,7 +33,11 @@ func (c *SkaConfigTask) RenameNamedConfig(name, newName string) error {
 		return err
 	}
 
-	return localConfig.RenameNamedConfig(c.BaseURI, newName)
+	err := localConfig.RenameNamedConfig(c.BaseURI, newName)
+	if err == nil {
+		c.Log.WithFields(log.Fields{"name": name, "newName": newName}).Infof("Renamed config from %s to %s", name, newName)
+	}
+	return err
 }
 
 func (c *SkaConfigTask) DeleteConfig(name string) error {

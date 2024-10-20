@@ -3,6 +3,7 @@ package localconfigservice
 import (
 	"fmt"
 	"github.com/huandu/xstrings"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -43,4 +44,8 @@ func configEntries(dirPath string) ([]string, error) {
 		result = append(result, configEntry)
 	}
 	return result, nil
+}
+
+func deleteConfigWithName(dirPath, name string) error {
+	return os.RemoveAll(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(name)))
 }
