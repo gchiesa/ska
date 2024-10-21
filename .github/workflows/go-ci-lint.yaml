@@ -25,5 +25,4 @@ jobs:
       with:
         version: v1.56
         args: --config .golang-ci.yml
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: github-pr-check
+        github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -3,7 +3,7 @@ package tui
 import (
 	"fmt"
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/internal/configuration"
+	"github.com/gchiesa/ska/internal/upstreamconfigservice"
 	"regexp"
 )
 
@@ -30,7 +30,7 @@ type InteractiveForm struct {
 
 type Variables map[string]string
 
-func NewSkaInteractiveService(formTitle string, inputs []configuration.UpstreamConfigInput) *SkaInteractiveService {
+func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.UpstreamConfigInput) *SkaInteractiveService {
 	var interactiveInputs []InteractiveInput
 
 	for _, i := range inputs {

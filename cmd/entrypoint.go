@@ -17,21 +17,25 @@ const githubRepo = "https://github.com/gchiesa/ska"
 var commandVersion = "development"
 
 type arguments struct {
-	CreateCmd  *CreateCmd `arg:"subcommand:create"`
-	UpdateCmd  *UpdateCmd `arg:"subcommand:update"`
-	Debug      bool       `arg:"-d"`
-	JSONOutput bool       `arg:"-j,--json" help:"Enable JSON output for logging"`
-	Engine     string     `arg:"--engine" default:"sprig" help:"Template engine to use (sprig or jinja)"`
+	CreateCmd    *CreateCmd `arg:"subcommand:create"`
+	UpdateCmd    *UpdateCmd `arg:"subcommand:update"`
+	ConfigCmd    *ConfigCmd `arg:"subcommand:config"`
+	OutputFormat string     `arg:"--format" default:"table" help:"The format for output. It can be: csv,json,markdown,table"`
+	Debug        bool       `arg:"-d"`
+	JSONOutput   bool       `arg:"-j,--json" help:"Enable JSON output for logging"`
+	Engine       string     `arg:"--engine" default:"sprig" help:"Template engine to use (sprig or jinja)"`
 }
 
 type contextEngineKey string
+type consoleOutputFormat string
+
+var args arguments
 
 func Execute(version string) error {
 	commandVersion = version
 	log.SetHandler(cli.New(os.Stderr))
 	log.SetLevel(log.InfoLevel)
 
-	var args arguments
 	arg.MustParse(&args)
 
 	if args.Debug {
@@ -47,6 +51,7 @@ func Execute(version string) error {
 
 	ctx := context.TODO()
 	ctx = context.WithValue(ctx, contextEngineKey("engine"), templateprovider.GetTypeFromString(args.Engine))
+	ctx = context.WithValue(ctx, consoleOutputFormat("output-format"), args.OutputFormat)
 	switch {
 	case args.CreateCmd != nil:
 		if err := args.CreateCmd.Execute(ctx); err != nil {
@@ -55,6 +60,10 @@ func Execute(version string) error {
 	case args.UpdateCmd != nil:
 		if err := args.UpdateCmd.Execute(ctx); err != nil {
 			log.Fatalf("error executing update command: %v", err)
+		}
+	case args.ConfigCmd != nil:
+		if err := args.ConfigCmd.Execute(ctx); err != nil {
+			log.Fatalf("error executing config command: %v", err)
 		}
 	default:
 		fmt.Println("no subcommand specified, please use the --help flag to check available commands")

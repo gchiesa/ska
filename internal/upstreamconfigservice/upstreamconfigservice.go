@@ -1,7 +1,8 @@
-package configuration
+package upstreamconfigservice
 
 import (
 	"github.com/apex/log"
+	"github.com/gchiesa/ska/internal/utils"
 	"gopkg.in/yaml.v2"
 	"path/filepath"
 )
@@ -44,7 +45,7 @@ func NewUpstreamConfigService() *UpstreamConfigService {
 }
 
 func (ucs *UpstreamConfigService) LoadFromPath(path string) (*UpstreamConfigService, error) {
-	cf := NewConfigFromFile(filepath.Join(path, upstreamConfigFileName))
+	cf := utils.NewConfigFromFile(filepath.Join(path, upstreamConfigFileName))
 	configData, err := cf.ReadConfig()
 	if err != nil {
 		return nil, err
