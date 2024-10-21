@@ -12,12 +12,12 @@ type SkaConfigTask struct {
 	Log     *log.Entry
 }
 
-func NewSkaConfigTask(baseUri string) *SkaConfigTask {
+func NewSkaConfigTask(baseURI string) *SkaConfigTask {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
 	return &SkaConfigTask{
-		BaseURI: baseUri,
+		BaseURI: baseURI,
 		Log:     logCtx,
 	}
 }

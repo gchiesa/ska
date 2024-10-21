@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-func QueryJSONString(JSONText, JSONPathQuery string) (string, error) {
+func QueryJSONString(jsonText, jsonPathQuery string) (string, error) {
 	var jsonData interface{}
-	if err := json.Unmarshal([]byte(JSONText), &jsonData); err != nil {
+	if err := json.Unmarshal([]byte(jsonText), &jsonData); err != nil {
 		return "", err
 	}
 	jp := jsonpath.New("parser")
-	if err := jp.Parse(JSONPathQuery); err != nil {
+	if err := jp.Parse(jsonPathQuery); err != nil {
 		return "", err
 	}
 	var buff strings.Builder

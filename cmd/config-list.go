@@ -10,10 +10,6 @@ import (
 type ConfigListCmd struct {
 }
 
-type ConfigListResult struct {
-	entries []ConfigListResultItem `json:"entries"`
-}
-
 type ConfigListResultItem struct {
 	NamedConfig string `json:"NamedConfig" csv:"NamedConfig"`
 	LastUpdate  string `json:"LastUpdate" csv:"LastUpdate"`
@@ -28,7 +24,7 @@ func (c *ConfigListCmd) Execute(ctx context.Context) error {
 	}
 	result := make([]ConfigListResultItem, 0, len(namedConfigs))
 	for _, namedConfig := range namedConfigs {
-		lastUpdate, err := ska.QueryNamedConfigJSON(namedConfig, "{.State.LastUpdate}")
+		lastUpdate, err := ska.QueryNamedConfigJSON(namedConfig, "{.State.LastUpdate}") // nolint:govet
 		if err != nil {
 			return err
 		}
