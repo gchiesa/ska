@@ -3,15 +3,6 @@ run:
   tests: false
   timeout: 240s
   skip-dirs-use-default: true
-  skip-dirs:
-  - ^vendor$
-  - ^go/pkg/mod/*
-  - ../../../../go/pkg/mod/*
-  - ../../../../.gobrew/*
-  - .*_test\.go$
-  skip-files:
-  - .*\.pb\.go
-  - .*_generated\.go
 linters-settings:
   depguard:
     rules:
@@ -22,7 +13,7 @@ linters-settings:
         - pkg: "notexist"
           desc: "notexist is not allowed or blacklisted"
   govet:
-    check-shadowing: true
+    check-shadowing: false
   gocyclo:
     min-complexity: 15
   maligned:
@@ -66,7 +57,7 @@ linters:
   - gosec
   - gosimple
   - nakedret
-  - exportloopref
+  - copyloopvar
   - staticcheck
   - stylecheck
   - typecheck
@@ -79,6 +70,15 @@ linters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
+  exclude-files:
+  - .*\.pb\.go
+  - .*_generated\.go
+  exclude-dirs:
+  - ^vendor$
+  - ^go/pkg/mod/*
+  - ../../../../go/pkg/mod/*
+  - ../../../../.gobrew/*
+  - .*_test\.go$
   exclude-rules:
   - linters:
     - gosec
@@ -103,4 +103,6 @@ issues:
     - gosec
     text: G204
 output:
-  format: line-number
+  formats:
+  - format: colored-line-number
+    path: stdout
