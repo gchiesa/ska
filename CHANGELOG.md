@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.0.16](https://github.com/gchiesa/ska/compare/v0.0.15...v0.0.16) (2024-10-22)
+
+
+### Features
+
+* implement config rename ([0e67d51](https://github.com/gchiesa/ska/commit/0e67d5136dff66e851f4e1118b60adde3ad86ac1))
+* implement delete command ([f1cd067](https://github.com/gchiesa/ska/commit/f1cd067a560dc2ccd555c46350683de8bf8d2cda))
+* refactoring to implement config subcommands - implemented config list ([819446b](https://github.com/gchiesa/ska/commit/819446b48aa3c3e08bafde1a48e31d10312cf3f6))
+
+
+### Bug Fixes
+
+* lint issues ([10f6cad](https://github.com/gchiesa/ska/commit/10f6cad9c0d6c15bf81294df8dc44dbe8a139c52))
+
+
+### Other
+
+* update configuration ([9bd68b7](https://github.com/gchiesa/ska/commit/9bd68b728003bfc20d68542803ae9b753307875e))
+* update linter config ([2556554](https://github.com/gchiesa/ska/commit/255655456bf355560a4b177569d03b631528bab9))
+* update linter gh action ([610fc25](https://github.com/gchiesa/ska/commit/610fc25fff7a34d29af209cefb967939a4edfd69))
+
 ## [0.0.15](https://github.com/gchiesa/ska/compare/v0.0.14...v0.0.15) (2024-09-28)
 
 
