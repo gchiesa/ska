@@ -3,33 +3,34 @@ package skaffolder
 import (
 	"fmt"
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/internal/configuration"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
+	"github.com/gchiesa/ska/internal/localconfigservice"
 	"github.com/gchiesa/ska/internal/stringprocessor"
 	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
+	"github.com/gchiesa/ska/internal/upstreamconfigservice"
 )
 
-type SkaCreate struct {
+type SkaCreateTask struct {
 	TemplateURI     string
 	DestinationPath string
 	NamedConfig     string
 	Variables       map[string]string
-	Options         *SkaOptions
+	Options         *SkaTaskOptions
 	Log             *log.Entry
 }
 
-type SkaOptions struct {
+type SkaTaskOptions struct {
 	NonInteractive bool
 	Engine         templateprovider.TemplateType // jinja or sprig
 }
 
-func NewSkaCreate(templateURI, destinationPath, namedConfig string, variables map[string]string, options SkaOptions) *SkaCreate {
+func NewSkaCreateTask(templateURI, destinationPath, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaCreateTask {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
 	})
-	return &SkaCreate{
+	return &SkaCreateTask{
 		TemplateURI:     templateURI,
 		DestinationPath: destinationPath,
 		NamedConfig:     namedConfig,
@@ -39,7 +40,7 @@ func NewSkaCreate(templateURI, destinationPath, namedConfig string, variables ma
 	}
 }
 
-func (s *SkaCreate) Create() error {
+func (s *SkaCreateTask) Create() error {
 	// blueprint provider
 	blueprintProvider, err := contentprovider.ByURI(s.TemplateURI)
 	if err != nil {
@@ -51,7 +52,7 @@ func (s *SkaCreate) Create() error {
 	}(blueprintProvider)
 
 	// configservice
-	localConfig := configuration.NewLocalConfigService(s.NamedConfig)
+	localConfig := localconfigservice.NewLocalConfigService(s.NamedConfig)
 
 	// check if localconfig already exist, if yes we fail
 	if localConfig.ConfigExists(s.DestinationPath) {
@@ -64,7 +65,7 @@ func (s *SkaCreate) Create() error {
 	}
 
 	// load the config for upstream blueprint
-	upstreamConfig, err := configuration.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
+	upstreamConfig, err := upstreamconfigservice.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
 	if err != nil {
 		return err
 	}

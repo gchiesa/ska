@@ -15,11 +15,11 @@ type CreateCmd struct {
 }
 
 func (c *CreateCmd) Execute(ctx context.Context) error {
-	options := &skaffolder.SkaOptions{
+	options := &skaffolder.SkaTaskOptions{
 		NonInteractive: c.NonInteractive,
 		Engine:         ctx.Value(contextEngineKey("engine")).(templateprovider.TemplateType),
 	}
-	ska := skaffolder.NewSkaCreate(
+	ska := skaffolder.NewSkaCreateTask(
 		c.TemplateURI,
 		c.DestinationPath,
 		c.NamedConfig,
