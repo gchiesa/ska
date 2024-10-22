@@ -12,7 +12,7 @@ jobs:
     name: Golangci-lint
     runs-on: ubuntu-latest
     env:
-      GO_VERSION: '~1.22'
+      GO_VERSION: '~1.23'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Go
@@ -23,6 +23,6 @@ jobs:
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v3
       with:
-        version: v1.56
+        version: v1.61
         args: --config .golang-ci.yml
         github-token: ${{ secrets.GITHUB_TOKEN }}
