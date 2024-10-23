@@ -8,7 +8,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbletea v1.1.1
-	github.com/charmbracelet/lipgloss v0.13.0
+	github.com/charmbracelet/lipgloss v0.13.1
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 	github.com/daixiang0/gci v0.13.4
 	github.com/flosch/pongo2/v6 v6.0.0
