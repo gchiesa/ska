@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.17](https://github.com/gchiesa/ska/compare/v0.0.16...v0.0.17) (2024-11-29)
+
+
+### Features
+
+* extracted to public pkg templateprovider ([d54ba43](https://github.com/gchiesa/ska/commit/d54ba43228450e9ea2d6985db573236f00423efd))
+* introduce writeOnce fields ([b7cb8e0](https://github.com/gchiesa/ska/commit/b7cb8e001f15fa88e6ce34a12dc9d9f0d47f1635))
+
+
+### Other
+
+* update dependencies ([d9f2cb6](https://github.com/gchiesa/ska/commit/d9f2cb6d47fb28c601884bc26608f982ad871d17))
+
 ## [0.0.16](https://github.com/gchiesa/ska/compare/v0.0.15...v0.0.16) (2024-10-22)
 
 
