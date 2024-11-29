@@ -2,6 +2,7 @@ package skaffolder
 
 import (
 	"fmt"
+
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
@@ -98,6 +99,8 @@ func (s *SkaCreateTask) Create() error {
 
 	// check if interactive mode is required
 	if !s.Options.NonInteractive && interactiveService.ShouldRun() {
+		// set any potential variables set by the user
+		interactiveService.SetDefaults(s.Variables)
 		if err = interactiveService.Run(); err != nil {
 			return err
 		}

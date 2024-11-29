@@ -2,9 +2,10 @@ package tui
 
 import (
 	"fmt"
+	"regexp"
+
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/upstreamconfigservice"
-	"regexp"
 )
 
 type SkaInteractiveService struct {
@@ -21,6 +22,7 @@ type InteractiveInput struct {
 	MinLength   int    `yaml:"minLength,omitempty"`
 	MaxLength   int    `yaml:"maxLength,omitempty"`
 	Default     string `yaml:"default,omitempty"`
+	WriteOnce   bool   `yaml:"writeOnce,omitempty"`
 	Help        string `yaml:"help,omitempty"`
 	Value       string
 }
@@ -41,6 +43,7 @@ func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.U
 			MinLength:   i.MinLength,
 			MaxLength:   i.MaxLength,
 			Default:     i.Default,
+			WriteOnce:   i.WriteOnce,
 			Help:        i.Help,
 		}
 		interactiveInputs = append(interactiveInputs, *input)
