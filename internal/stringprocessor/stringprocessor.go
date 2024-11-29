@@ -3,7 +3,7 @@ package stringprocessor
 import (
 	"bytes"
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/internal/templateprovider"
+	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 func NewStringProcessor(options ...func(stringProcessor *StringProcessor)) *StringProcessor {

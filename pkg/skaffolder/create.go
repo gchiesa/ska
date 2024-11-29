@@ -2,13 +2,13 @@ package skaffolder
 
 import (
 	"fmt"
+	"github.com/gchiesa/ska/pkg/templateprovider"
 
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
 	"github.com/gchiesa/ska/internal/localconfigservice"
 	"github.com/gchiesa/ska/internal/stringprocessor"
-	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
 	"github.com/gchiesa/ska/internal/upstreamconfigservice"
 )

@@ -7,7 +7,7 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/apex/log/handlers/json"
-	"github.com/gchiesa/ska/internal/templateprovider"
+	"github.com/gchiesa/ska/pkg/templateprovider"
 	"os"
 )
 
