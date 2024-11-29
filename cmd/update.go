@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"context"
-	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/pkg/skaffolder"
+	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 type UpdateCmd struct {

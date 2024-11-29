@@ -2,7 +2,7 @@ package stringprocessor
 
 import (
 	"github.com/apex/log"
-	"github.com/gchiesa/ska/internal/templateprovider"
+	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 type StringProcessor struct {

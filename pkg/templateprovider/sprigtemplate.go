@@ -1,7 +1,7 @@
 package templateprovider
 
 import (
-	sprig "github.com/go-task/slim-sprig"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/palantir/stacktrace"
 	"io"
 	"os"

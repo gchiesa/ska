@@ -7,9 +7,9 @@ import (
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
 	"github.com/gchiesa/ska/internal/localconfigservice"
 	"github.com/gchiesa/ska/internal/stringprocessor"
-	"github.com/gchiesa/ska/internal/templateprovider"
 	"github.com/gchiesa/ska/internal/tui"
 	"github.com/gchiesa/ska/internal/upstreamconfigservice"
+	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 type SkaUpdateTask struct {
