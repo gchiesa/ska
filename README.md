@@ -1,6 +1,6 @@
 # SKA
 
-SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprints (GitHub and GitLab 
+SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprints (GitHub and GitLab
 hosted)
 
 Additionally, you can update your folder structure from the upstream blueprint to onboard new changes that are
@@ -27,7 +27,7 @@ brew install ska
 SKA is very simple to use. Just run `create` with the upstream blueprint you want to use. See below example for
 scaffolding a golang command line tool:
 
-```shell 
+```shell
 ska create --blueprint https://github.com/gchiesa/ska-golang-cli-template@master --output ~/workspace/myNewApp
 ```
 
@@ -58,7 +58,7 @@ can specify the blueprint both locally and remotely with specific URIs:
 
 * **file://** for local blueprints. E.g. `file:///Users/gchiesa/git/ska-example-template`
 * **https://** for GitHub or GitLab (soon) blueprints. You can optionally pin a specific reference (tag or branch with
-  the `@`
+  the `@`)
   symbol. E.g. `https://github.com/gchiesa/ska-example-template@v1.2.3`
 
 ### Update from upstream
@@ -92,7 +92,7 @@ project][pongo2].
 
 ### Templating with partial sections
 
-SKA offers the capability to manage only part of files.  
+SKA offers the capability to manage only part of files.
 This is generally useful to keep only a specific part of the file centrally managed by the upstream blueprint and
 let the user change the rest of the file. See as example
 the `codecov.yml` [here](https://github.com/gchiesa/ska-golang-cli-template/blob/master/codecov.yml)
@@ -131,14 +131,14 @@ To do this you need to create on the root of your blueprint folder a special fil
 simple YAML file with the following structure (see example with comments):
 
 ```yaml
-# list of path that will be ignored in the blueprint 
+# list of path that will be ignored in the blueprint
 # typically it's wise to ignore `.git` and `.idea` (and your preferred IDE) since you might use
-# the blueprint not only from remote but also from your local filesystem 
+# the blueprint not only from remote but also from your local filesystem
 ignorePaths:
 - .git
 - .idea
 
-# list of path (can be templated) that will be pre-populated in the final ska-config 
+# list of path (can be templated) that will be pre-populated in the final ska-config
 skaConfig:
   ignorePaths:
   - "idea/*"
@@ -147,7 +147,7 @@ skaConfig:
 
 # this is the section that SKA will consume to generate the input form.
 # each input supports the following information:
-# 
+#
 # * placeholder: the name of the variable you used in the template blueprint
 # * label: the label used in the form
 # * help: the help inline to be presented in the form for that specific field
@@ -159,7 +159,7 @@ inputs:
   help: The url of the github repository e.g. https://github.com/org/repo
   regexp: "^[a-z0-9-/:.]*$"
 
-# ... other inputs 
+# ... other inputs
 ```
 
 SKA will check if the file is present and if yes, then a Terminal UI interface will be used to collect the inputs.

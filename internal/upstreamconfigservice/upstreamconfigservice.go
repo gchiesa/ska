@@ -1,10 +1,11 @@
 package upstreamconfigservice
 
 import (
+	"path/filepath"
+
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/utils"
 	"gopkg.in/yaml.v2"
-	"path/filepath"
 )
 
 const upstreamConfigFileName = ".ska-upstream.yaml"
@@ -22,6 +23,7 @@ type UpstreamConfigInput struct {
 	MaxLength   int    `yaml:"maxLength,omitempty"`
 	Help        string `yaml:"help,omitempty"`
 	Default     string `yaml:"default,omitempty"`
+	WriteOnce   bool   `yaml:"writeOnce,omitempty"`
 }
 
 type SkaConfig struct {

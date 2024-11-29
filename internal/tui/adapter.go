@@ -2,9 +2,10 @@ package tui
 
 import (
 	"fmt"
-	"github.com/charmbracelet/bubbles/textinput"
 	"regexp"
 	"strings"
+
+	"github.com/charmbracelet/bubbles/textinput"
 )
 
 func NewModelFromInteractiveForm(iForm InteractiveForm, header string) *Model {
@@ -22,7 +23,7 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string) *Model {
 		t.Placeholder = iForm.Inputs[i].Help
 		t.PlaceholderStyle = helpStyle
 		// Validation
-		t.Validate = validator(iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp)
+		t.Validate = validator(iForm.Inputs[i].WriteOnce, iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp, iForm.Inputs[i].Default)
 		if iForm.Inputs[i].MaxLength > 0 {
 			t.CharLimit = iForm.Inputs[i].MaxLength
 		}
@@ -41,7 +42,7 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string) *Model {
 	return m
 }
 
-func validator(minLength int, regexpString string) func(string) error {
+func validator(writeOnce bool, minLength int, regexpString, oldValue string) func(string) error {
 	return func(s string) error {
 		if strings.TrimSpace(s) == "" && minLength > 0 {
 			return fmt.Errorf("value cannot be empty")
@@ -53,6 +54,11 @@ func validator(minLength int, regexpString string) func(string) error {
 			re := regexp.MustCompile(regexpString)
 			if !re.MatchString(s) {
 				return fmt.Errorf("invalid value. It should match %s", regexpString)
+			}
+		}
+		if writeOnce && oldValue != "" {
+			if s != oldValue {
+				return fmt.Errorf("value cannot be changed, please change it back to '%s'", oldValue)
 			}
 		}
 		return nil
