@@ -23,7 +23,7 @@ require (
 	github.com/otiai10/copy v1.14.0
 	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/xanzy/go-gitlab v0.114.0
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	golang.org/x/tools v0.24.0
