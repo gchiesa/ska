@@ -14,6 +14,7 @@ type TemplateService interface {
 	// WithErrorOnMissingKey Set error on missing key
 	WithErrorOnMissingKey(key bool)
 	IsMissingKeyError(err error) bool
+	IsOptionalError(err error) bool
 }
 
 type TemplateType int

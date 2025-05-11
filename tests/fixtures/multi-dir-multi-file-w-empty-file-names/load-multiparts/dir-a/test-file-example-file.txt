@@ -1,0 +1,9 @@
+this is a simple file test for the app {{.appName}}
+
+the version is {{.newVersion}}
+
+items:
+{{ $parts := splitList "," .listOfItems }}
+{{- range $index, $part := $parts }}
+* Part {{ $index }}: {{ $part }}
+{{- end }}

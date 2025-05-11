@@ -1,0 +1,8 @@
+this is a simple file test for the app testApp
+
+the version is 1.2.3
+
+items:
+* Part one
+* Part two
+* Part tree

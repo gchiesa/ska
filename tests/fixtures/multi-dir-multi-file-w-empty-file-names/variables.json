@@ -1,0 +1,7 @@
+{
+  "appName": "testApp",
+  "testFileName": "example-file",
+  "listOfItems": "zero,one,two",
+  "newVersion": "1.2.3",
+  "variableWithEmptyValue": ""
+}
