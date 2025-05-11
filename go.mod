@@ -17,8 +17,10 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/golangci/golangci-lint v1.58.1
 	github.com/gotesttools/gotestfmt/v2 v2.5.0
+	github.com/gruntwork-io/terratest v0.49.0
 	github.com/huandu/xstrings v1.5.0
 	github.com/jszwec/csvutil v1.10.0
+	github.com/kilianpaquier/compare v1.0.3
 	github.com/manifoldco/promptui v0.9.0
 	github.com/otiai10/copy v1.14.0
 	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
@@ -123,7 +125,6 @@ require (
 	github.com/gostaticanalysis/comment v1.4.2 // indirect
 	github.com/gostaticanalysis/forcetypeassert v0.1.0 // indirect
 	github.com/gostaticanalysis/nilerr v0.1.1 // indirect
-	github.com/gruntwork-io/terratest v0.49.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
@@ -138,7 +139,6 @@ require (
 	github.com/julz/importas v0.1.0 // indirect
 	github.com/karamaru-alpha/copyloopvar v1.1.0 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/kilianpaquier/compare v1.0.3 // indirect
 	github.com/kisielk/errcheck v1.7.0 // indirect
 	github.com/kkHAIKE/contextcheck v1.1.5 // indirect
 	github.com/kulti/thelper v0.6.3 // indirect

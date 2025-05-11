@@ -182,7 +182,7 @@ func (tp *FileTreeProcessor) renderStagingFileTree(withVariables map[string]inte
 			}
 
 			logger.WithFields(log.Fields{"filePath": relPath}).Debug("saving rendered file.")
-			if err := os.WriteFile(absPath, []byte(buff.String()), 0o644); err != nil { //nolint:gosimple // we don't need to check the error here
+			if err := os.WriteFile(absPath, buff.Bytes(), 0o644); err != nil { //nolint:gosec // we don't need to check the error here
 				return err
 			}
 		} else {

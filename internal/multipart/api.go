@@ -62,7 +62,7 @@ func (mp *Multipart) Compile(forceRecompile bool) []byte {
 	return dataContent
 }
 
-func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
+func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error { // noling:gosec
 	// if local file exists, we need to use that as content
 	if _, err := os.Stat(filePath); err == nil {
 		dataContent, err := os.ReadFile(filePath)
@@ -73,5 +73,5 @@ func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
 	}
 	// otherwise we use the multipart content
 	dataContent := mp.Compile(forceRecompile)
-	return os.WriteFile(filePath, dataContent, 0o644)
+	return os.WriteFile(filePath, dataContent, 0o644) // noling:gosec
 }

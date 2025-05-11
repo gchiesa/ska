@@ -1,12 +1,13 @@
----
+version: 2
+
 run:
   tests: false
   timeout: 240s
   skip-dirs-use-default: true
+
 linters-settings:
   depguard:
     rules:
-      # Add here those packages that you'd like to exclude or blacklist
       "Rule not allowed packages":
         files: [ ".*" ]
         deny:
@@ -24,9 +25,8 @@ linters-settings:
     min-len: 5
     min-occurrences: 3
   gocritic:
-    settings:
-      rangeValCopy:
-        sizeThreshold: 1024
+    range-val-copy:
+      size-threshold: 1024
     enabled-tags:
     - diagnostic
     - experimental
@@ -42,30 +42,25 @@ linters-settings:
   funlen:
     lines: 100
     statements: 52
+
 linters:
-  disable-all: true
+  disable:
+  - errcheck
+  - gosec
   enable:
   - bodyclose
   - unused
   - dogsled
   - dupl
-  - errcheck
-  - funlen
   - goconst
   - gocritic
-  - gofmt
-  - gosec
-  - gosimple
   - nakedret
   - staticcheck
-  - stylecheck
-  - typecheck
   - unconvert
   - unparam
   - whitespace
   - govet
-  - revive
-  - depguard
+
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
@@ -73,35 +68,23 @@ issues:
   - .*\.pb\.go
   - .*_generated\.go
   exclude-dirs:
-  - ^vendor$
-  - ^go/pkg/mod/*
+  - vendor
+  - go/pkg/mod/*
   - ../../../../go/pkg/mod/*
   - ../../../../.gobrew/*
   - .*_test\.go$
   exclude-rules:
-  - linters:
-    - gosec
+  - linters: [ gosec ]
     text: G306
-  # This is just a warning, not an error, and it's safe for the
-  # due to the 'root' command is adding a bunch of flags, and options
-  # but none of those or the length of the function is a problem, nor
-  # a cognitive-complexity issue. See the function: addPersistentFlagsToRootCMD()
-  - linters:
-    - funlen
+  - linters: [ funlen ]
     path: cmd/root\.go
-  - linters:
-    - gosec
+  - linters: [ gosec ]
     text: G404
-  # This is just a warning, not an error, and it's safe for the
-  # function RunCommand to run commands with a variable number of arguments
-  # since most of the time, it should be used by known commands.
-  # See: https://github.com/Excoriate/golang-cli-boilerplate/blob/
-  # main/pkg/utils/commands.go#L28-L28
-  - path: utils/commands\.go
-    linters:
-    - gosec
+  - linters: [ gosec ]
+    path: utils/commands\.go
     text: G204
+
 output:
   formats:
-  - format: colored-line-number
-    path: stdout
+    colored-line-number:
+      path: stdout
