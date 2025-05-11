@@ -23,6 +23,6 @@ jobs:
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v3
       with:
-        version: v1.61
+        version: v2.1.6
         args: --config .golang-ci.yml
         github-token: ${{ secrets.GITHUB_TOKEN }}
