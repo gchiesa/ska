@@ -1,6 +1,7 @@
 package templateprovider
 
 import (
+	"errors"
 	"github.com/Masterminds/sprig/v3"
 	"github.com/palantir/stacktrace"
 	"io"
@@ -8,6 +9,8 @@ import (
 	"strings"
 	"text/template"
 )
+
+var ErrOptionalContinue = errors.New("optional field was empty")
 
 type SprigTemplate struct {
 	templateFilePath string
@@ -19,6 +22,19 @@ type SprigTemplate struct {
 func NewSprigTemplate(name string) *SprigTemplate {
 	t := template.New(name)
 	t.Funcs(sprig.FuncMap())
+	// add specific SKA functions
+	skaFunctions := map[string]interface{}{
+		"optional": func(c bool, v string) (string, error) {
+			if !c {
+				return "", ErrOptionalContinue
+			}
+			if strings.TrimSpace(v) == "" {
+				return "", ErrOptionalContinue
+			}
+			return v, nil
+		},
+	}
+	t.Funcs(skaFunctions)
 	return &SprigTemplate{
 		textTemplate: t,
 	}
@@ -64,4 +80,8 @@ func (t *SprigTemplate) Execute(fp io.Writer, withVariables map[string]interface
 
 func (t *SprigTemplate) IsMissingKeyError(err error) bool {
 	return strings.Contains(err.Error(), "map has no entry for key")
+}
+
+func (t *SprigTemplate) IsOptionalError(err error) bool {
+	return errors.Is(err, ErrOptionalContinue)
 }

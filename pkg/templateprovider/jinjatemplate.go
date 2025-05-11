@@ -59,3 +59,7 @@ func (t *JinjaTemplate) WithErrorOnMissingKey(_ bool) {
 func (t *JinjaTemplate) IsMissingKeyError(err error) bool {
 	return err.Error() == "TokenError"
 }
+
+func (t *JinjaTemplate) IsOptionalError(_ error) bool {
+	return false
+}

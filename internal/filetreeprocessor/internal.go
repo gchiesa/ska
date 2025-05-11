@@ -57,7 +57,17 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 			if tp.template.IsMissingKeyError(err) {
 				logger.WithFields(log.Fields{"path": sRelPath}).Errorf("missing variable while rendering file path: %s", sRelPath)
 			}
+			if tp.template.IsOptionalError(err) {
+				logger.WithFields(log.Fields{"path": sRelPath}).Errorf("optional resource did not match the check, skipping")
+				return nil
+			}
 			return err
+		}
+
+		// if the outcome of the template is empty string we skip it
+		if strings.TrimSpace(buff.String()) == "" {
+			logger.WithFields(log.Fields{"path": sRelPath}).Warnf("skipping path: %s because template outcome is empty", sRelPath)
+			return nil
 		}
 
 		dPath := filepath.Join(dPathAbs, buff.String())
@@ -195,6 +205,9 @@ func (tp *FileTreeProcessor) shouldProcessFile(path string, ignoreList []string)
 
 	// .DS_Store is always skipped
 	if path == ".DS_Store" {
+		return false
+	}
+	if path == "." {
 		return false
 	}
 
