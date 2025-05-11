@@ -5,6 +5,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/client"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/dnaeon/go-vcr.v4/pkg/cassette"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/recorder"
 	"testing"
 )
@@ -14,7 +15,17 @@ const (
 )
 
 func TestGitHubDownloadContent(t *testing.T) {
-	r, err := recorder.New("fixtures/content-provider-github")
+	// A hook which removes Authorization headers from all requests
+	hook := func(i *cassette.Interaction) error {
+		delete(i.Request.Headers, "Authorization")
+		return nil
+	}
+	// Recorder options
+	opts := []recorder.Option{
+		recorder.WithHook(hook, recorder.AfterCaptureHook),
+		recorder.WithMatcher(cassette.NewDefaultMatcher(cassette.WithIgnoreAuthorization())),
+	}
+	r, err := recorder.New("fixtures/content-provider-github", opts...)
 	if err != nil {
 		log.Fatalf("error creating recorder: %v", err)
 	}

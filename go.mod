@@ -31,7 +31,7 @@ require (
 	github.com/xanzy/go-gitlab v0.114.0
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	golang.org/x/tools v0.26.0
-	gopkg.in/dnaeon/go-vcr.v4 v4.0.1
+	gopkg.in/dnaeon/go-vcr.v4 v4.0.2
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/client-go v0.33.0
 	mvdan.cc/gofumpt v0.6.0
