@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.19](https://github.com/gchiesa/ska/compare/v0.0.18...v0.0.19) (2025-05-11)
+
+
+### Features
+
+* fix linting ([daaebf3](https://github.com/gchiesa/ska/commit/daaebf3c5dc79345a0e1a4756b6de5588d205165))
+* new sprig function optional + additional tests ([ad7c163](https://github.com/gchiesa/ska/commit/ad7c163c9e292f7d5d9df0174b29fb83cb7d51b7))
+
+
+### Bug Fixes
+
+* security vuln update ([1fce751](https://github.com/gchiesa/ska/commit/1fce751054878b654223b800cff060652f83e66e))
+
 ## [0.0.18](https://github.com/gchiesa/ska/compare/v0.0.17...v0.0.18) (2024-11-29)
 
 
