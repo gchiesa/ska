@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.21](https://github.com/gchiesa/ska/compare/v0.0.20...v0.0.21) (2025-07-05)
+
+
+### Bug Fixes
+
+* downgrade bubbles pkg for fixing UI issue ([9b19f1f](https://github.com/gchiesa/ska/commit/9b19f1fcc691c028c8957a9f85c1d24d0a8cd53a))
+* linter issue ([68efac5](https://github.com/gchiesa/ska/commit/68efac5ac2093097033f9114302dd5c4f809c602))
+
 ## [0.0.20](https://github.com/gchiesa/ska/compare/v0.0.19...v0.0.20) (2025-07-05)
 
 
