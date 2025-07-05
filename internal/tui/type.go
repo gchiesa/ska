@@ -6,6 +6,7 @@ import (
 
 type Model struct {
 	header        string
+	showBanner    bool
 	focusIndex    int
 	inputs        []textinput.Model
 	err           error

@@ -9,10 +9,11 @@ import (
 )
 
 type SkaInteractiveService struct {
-	formTitle  string
-	formConfig *InteractiveForm
-	variables  map[string]string
-	log        *log.Entry
+	formTitle      string
+	formConfig     *InteractiveForm
+	formShowBanner bool
+	variables      map[string]string
+	log            *log.Entry
 }
 
 type InteractiveInput struct {
@@ -71,7 +72,7 @@ func (s *SkaInteractiveService) Run() error {
 	}
 	s.disableWithLoggingInvalidRegExp()
 
-	tui := NewModelFromInteractiveForm(*s.formConfig, s.formTitle)
+	tui := NewModelFromInteractiveForm(*s.formConfig, s.formTitle, s.formShowBanner)
 
 	if err := tui.Execute(); err != nil {
 		return err
@@ -93,6 +94,11 @@ func (s *SkaInteractiveService) SetDefaults(variables map[string]string) {
 			s.formConfig.Inputs[i].Default = v
 		}
 	}
+}
+
+func (s *SkaInteractiveService) SetShowBanner(enabled bool) *SkaInteractiveService {
+	s.formShowBanner = enabled
+	return s
 }
 
 func (s *SkaInteractiveService) disableWithLoggingInvalidRegExp() {

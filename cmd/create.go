@@ -17,6 +17,7 @@ type CreateCmd struct {
 func (c *CreateCmd) Execute(ctx context.Context) error {
 	options := &skaffolder.SkaTaskOptions{
 		NonInteractive: c.NonInteractive,
+		ShowBanner:     true,
 		Engine:         ctx.Value(contextEngineKey("engine")).(templateprovider.TemplateType),
 	}
 	ska := skaffolder.NewSkaCreateTask(

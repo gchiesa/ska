@@ -8,10 +8,11 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 )
 
-func NewModelFromInteractiveForm(iForm InteractiveForm, header string) *Model {
+func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanner bool) *Model {
 	m := &Model{
-		header: header,
-		inputs: make([]textinput.Model, len(iForm.Inputs)),
+		header:     header,
+		showBanner: showBanner,
+		inputs:     make([]textinput.Model, len(iForm.Inputs)),
 	}
 
 	for i := range iForm.Inputs {
