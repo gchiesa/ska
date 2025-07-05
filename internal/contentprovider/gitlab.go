@@ -2,7 +2,8 @@ package contentprovider
 
 import (
 	"github.com/apex/log"
-	"github.com/xanzy/go-gitlab"
+	gitlab "gitlab.com/gitlab-org/api/client-go"
+
 	"net/http"
 	"os"
 	"path/filepath"
@@ -49,7 +50,7 @@ func WithHTTPClient(httpClient *http.Client) GitLabOption {
 }
 
 func (cp *GitLab) WorkingDir() string {
-	// if filepath is set we set that one as working directory
+	// if filepath is set, we set that one as working directory
 	if cp.repositoryFilePath != "" {
 		wd := filepath.Join(cp.workingDir, cp.repositoryFilePath)
 		cp.log.WithFields(log.Fields{"repositoryFilePath": cp.repositoryFilePath}).Debugf("using repository file path: %s", wd)
