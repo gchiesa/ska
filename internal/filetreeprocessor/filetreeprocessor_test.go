@@ -27,11 +27,13 @@ func TestBuildStagingFileTree(t *testing.T) {
 	logger := log.WithFields(log.Fields{})
 
 	testCases := []struct {
-		name        string
-		fixtureName string
+		name              string
+		fixtureName       string
+		sourceIgnorePaths []string
 	}{
-		{"build staging file tree -> single-file-flat-dir", "single-file-flat-dir"},
-		{"build staging file tree -> multi-dir-multi-file-w-empty-file-names", "multi-dir-multi-file-w-empty-file-names"},
+		{"build staging file tree -> single-file-flat-dir", "single-file-flat-dir", []string{}},
+		{"build staging file tree -> multi-dir-multi-file-w-empty-file-names", "multi-dir-multi-file-w-empty-file-names", []string{}},
+		{"build staging file tree -> multi-dir-with-ignore-all-except-dirA", "multi-dir-with-ignore-all-except-dirA", []string{"*", "!dir-a/", "!dir-a/**"}},
 	}
 
 	for _, tc := range testCases {
@@ -45,6 +47,7 @@ func TestBuildStagingFileTree(t *testing.T) {
 				workingDir:          tempWorkindDirFolder,
 				template:            tplSvc,
 				log:                 logger,
+				sourceIgnorePaths:   tc.sourceIgnorePaths,
 			}
 			variables, err := loadVariables(t, fixturePath, variablesFile)
 			assert.NoError(t, err)
@@ -63,11 +66,13 @@ func TestRenderStagingFiles(t *testing.T) {
 	logger := log.WithFields(log.Fields{})
 
 	testCases := []struct {
-		name        string
-		fixtureName string
+		name              string
+		fixtureName       string
+		sourceIgnorePaths []string
 	}{
-		{"rendering staging files -> single-file-flat-dir", "single-file-flat-dir"},
-		{"rendering staging files -> multi-dir-multi-file-w-empty-file-names", "multi-dir-multi-file-w-empty-file-names"},
+		{"rendering staging files -> single-file-flat-dir", "single-file-flat-dir", []string{}},
+		{"rendering staging files -> multi-dir-multi-file-w-empty-file-names", "multi-dir-multi-file-w-empty-file-names", []string{}},
+		{"rendering staging files -> multi-dir-with-ignore-all-except-dirA", "multi-dir-with-ignore-all-except-dirA", []string{"*", "!dir-a/", "!dir-a/**"}},
 	}
 
 	for _, tc := range testCases {
@@ -81,6 +86,7 @@ func TestRenderStagingFiles(t *testing.T) {
 				workingDir:          tempWorkindDirFolder,
 				template:            tplSvc,
 				log:                 logger,
+				sourceIgnorePaths:   tc.sourceIgnorePaths,
 			}
 			variables, err := loadVariables(t, fixturePath, variablesFile)
 			assert.NoError(t, err)

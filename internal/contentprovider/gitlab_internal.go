@@ -3,7 +3,7 @@ package contentprovider
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/xanzy/go-gitlab"
+	"gitlab.com/gitlab-org/api/client-go"
 	"io"
 	"os"
 	"path/filepath"
@@ -25,8 +25,19 @@ func (cp *GitLab) validateRemoteURI() error {
 	return nil
 }
 
+func retrieveGitLabAccessToken(additionalTokenVars ...string) string {
+	defaults := []string{"GITLAB_TOKEN", "GITLAB_ACCESS_TOKEN", "GITLAB_PRIVATE_TOKEN"}
+
+	for _, additionalTokenVar := range append(defaults, additionalTokenVars...) {
+		if val, ok := os.LookupEnv(additionalTokenVar); ok {
+			return val
+		}
+	}
+	return ""
+}
+
 func (cp *GitLab) downloadRepoZipArchive() (zipArchive string, err error) {
-	token := os.Getenv("GITLAB_PRIVATE_TOKEN")
+	token := retrieveGitLabAccessToken()
 
 	gitlabClient, err := gitlab.NewClient(token, cp.gitlabOptions...)
 	if err != nil {
@@ -94,7 +105,7 @@ func (cp *GitLab) unzipArchive(dst, archivePath string) error {
 			return err
 		}
 
-		// open the dstFilePath as file
+		// open the dstFilePath as a file
 		dstFile, err := os.OpenFile(dstFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, item.Mode())
 		if err != nil {
 			panic(err)
