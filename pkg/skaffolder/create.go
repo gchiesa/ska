@@ -24,6 +24,7 @@ type SkaCreateTask struct {
 
 type SkaTaskOptions struct {
 	NonInteractive bool
+	ShowBanner     bool
 	Engine         templateprovider.TemplateType // jinja or sprig
 }
 
@@ -95,7 +96,7 @@ func (s *SkaCreateTask) Create() error {
 
 	interactiveService := tui.NewSkaInteractiveService(
 		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI),
-		upstreamConfig.GetInputs())
+		upstreamConfig.GetInputs()).SetShowBanner(s.Options.ShowBanner)
 
 	// check if interactive mode is required
 	if !s.Options.NonInteractive && interactiveService.ShouldRun() {

@@ -19,6 +19,7 @@ var (
 	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#416767"}
 	highlight = lipgloss.AdaptiveColor{Light: "#83ADF4", Dark: "#83ADF4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
+	good      = lipgloss.AdaptiveColor{Light: "#32a71d", Dark: "#32a71d"}
 	bad       = lipgloss.AdaptiveColor{Light: "#CE1E00", Dark: "#CE1E00"}
 
 	headerStyle = lipgloss.NewStyle().
@@ -30,6 +31,8 @@ var (
 	noStyle      = lipgloss.NewStyle()
 	helpStyle    = blurredStyle
 	errorStyle   = lipgloss.NewStyle().Foreground(bad).MarginTop(2).MarginBottom(1)
+	goodTick     = lipgloss.NewStyle().Foreground(good)
+	badTick      = lipgloss.NewStyle().Foreground(bad)
 )
 
 func (m *Model) Init() tea.Cmd {
@@ -87,14 +90,22 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) View() string {
 	var builder strings.Builder
 
-	figure.Write(&builder, banner)
-	builder.WriteString("Your scaffolding buddy!\n")
-	builder.WriteRune('\n')
+	if m.showBanner {
+		figure.Write(&builder, banner)
+		builder.WriteString("Your scaffolding buddy!\n")
+		builder.WriteRune('\n')
+	}
+
 	builder.WriteString(headerStyle.Render(m.header))
 	builder.WriteRune('\n')
 	builder.WriteString("Please fill the required fields below:\n\n")
 	for i := range m.inputs {
-		builder.WriteRune('⇨')
+		if m.inputs[i].Validate(m.inputs[i].Value()) == nil {
+			builder.WriteString(goodTick.Render("✔"))
+		} else {
+			builder.WriteString(badTick.Render("✖"))
+		}
+
 		builder.WriteString(fmt.Sprintf(" %s ", m.inputs[i].View()))
 		builder.WriteRune('\n')
 	}
