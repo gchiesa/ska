@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.20](https://github.com/gchiesa/ska/compare/v0.0.19...v0.0.20) (2025-07-05)
+
+
+### Features
+
+* banner optional when used as lib and improved ui ([9d2bf39](https://github.com/gchiesa/ska/commit/9d2bf397fb7eae3e7a17ce0d0a3e62031cd8b7aa))
+* update gitlab client and add some test for gitignore ([6388313](https://github.com/gchiesa/ska/commit/6388313bf93622f519ed15c51bfbd91fde79bf4c))
+
+
+### Bug Fixes
+
+* **security:** update goviper ([3ee82b3](https://github.com/gchiesa/ska/commit/3ee82b38f12f17e5272bbf35c0c619196893024c))
+
 ## [0.0.19](https://github.com/gchiesa/ska/compare/v0.0.18...v0.0.19) (2025-05-11)
 
 
