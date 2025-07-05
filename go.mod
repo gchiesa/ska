@@ -4,6 +4,8 @@ go 1.24.0
 
 toolchain go1.24.3
 
+ignore tests
+
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/alexflint/go-arg v1.5.1
