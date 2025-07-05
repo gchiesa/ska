@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.22](https://github.com/gchiesa/ska/compare/v0.0.21...v0.0.22) (2025-07-05)
+
+
+### Bug Fixes
+
+* add goignore for skipping invalid files while consuming pkg ([f834981](https://github.com/gchiesa/ska/commit/f834981d26e2b7b9443571a2f49047946781881e))
+* wrong path ([297a822](https://github.com/gchiesa/ska/commit/297a822b2985a15e9732b05d2822ea6eee42c0a0))
+
 ## [0.0.21](https://github.com/gchiesa/ska/compare/v0.0.20...v0.0.21) (2025-07-05)
 
 
