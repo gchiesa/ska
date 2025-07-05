@@ -15,12 +15,13 @@ type (
 )
 
 var (
-	banner    = figure.NewFigure(configuration.AppIdentifier, "doom", true)
 	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#416767"}
 	highlight = lipgloss.AdaptiveColor{Light: "#83ADF4", Dark: "#83ADF4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
 	good      = lipgloss.AdaptiveColor{Light: "#32a71d", Dark: "#32a71d"}
 	bad       = lipgloss.AdaptiveColor{Light: "#CE1E00", Dark: "#CE1E00"}
+
+	banner = figure.NewFigure(configuration.AppIdentifier, "doom", true)
 
 	headerStyle = lipgloss.NewStyle().
 			BorderStyle(lipgloss.NormalBorder()).
@@ -29,7 +30,7 @@ var (
 	focusedStyle = lipgloss.NewStyle().Bold(true).Foreground(highlight)
 	blurredStyle = lipgloss.NewStyle().Bold(false).Foreground(subtle)
 	noStyle      = lipgloss.NewStyle()
-	helpStyle    = blurredStyle
+	helpStyle    = blurredStyle.AlignHorizontal(lipgloss.Right).Italic(true)
 	errorStyle   = lipgloss.NewStyle().Foreground(bad).MarginTop(2).MarginBottom(1)
 	goodTick     = lipgloss.NewStyle().Foreground(good)
 	badTick      = lipgloss.NewStyle().Foreground(bad)

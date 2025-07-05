@@ -15,11 +15,19 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 		inputs:     make([]textinput.Model, len(iForm.Inputs)),
 	}
 
+	// calculate max placeholder length
+	var maxPromptLength int
+	for i := range iForm.Inputs {
+		maxPromptLength = max(maxPromptLength, len(iForm.Inputs[i].Label))
+	}
+
+	promptFormat := fmt.Sprintf("%%-%ds: ", maxPromptLength)
 	for i := range iForm.Inputs {
 		t := textinput.New()
 
 		// Prompt
-		t.Prompt = fmt.Sprintf("%s: ", iForm.Inputs[i].Label)
+		t.Prompt = fmt.Sprintf(promptFormat, iForm.Inputs[i].Label)
+
 		// Placeholder
 		t.Placeholder = iForm.Inputs[i].Help
 		t.PlaceholderStyle = helpStyle

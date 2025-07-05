@@ -90,7 +90,7 @@ func (s *SkaUpdateTask) Update() error {
 	var interactiveServiceVariables map[string]string
 
 	interactiveService := tui.NewSkaInteractiveService(
-		fmt.Sprintf("Variables for blueprint: %s", localConfig.BlueprintUpstream()),
+		fmt.Sprintf("Blueprint: %s", localConfig.BlueprintUpstream()),
 		upstreamConfig.GetInputs()).SetShowBanner(s.Options.ShowBanner)
 
 	// check if interactive mode is required
