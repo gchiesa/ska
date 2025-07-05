@@ -21,8 +21,7 @@ var (
 	good      = lipgloss.AdaptiveColor{Light: "#32a71d", Dark: "#32a71d"}
 	bad       = lipgloss.AdaptiveColor{Light: "#CE1E00", Dark: "#CE1E00"}
 
-	banner      = figure.NewFigure(configuration.AppIdentifier, "doom", true)
-	bannerStyle = lipgloss.NewStyle().Foreground(special).MarginBottom(1).MarginTop(1).AlignHorizontal(lipgloss.Right)
+	banner = figure.NewFigure(configuration.AppIdentifier, "doom", true)
 
 	headerStyle = lipgloss.NewStyle().
 			BorderStyle(lipgloss.NormalBorder()).
