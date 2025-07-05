@@ -95,7 +95,7 @@ func (s *SkaCreateTask) Create() error {
 	var interactiveServiceVariables map[string]string
 
 	interactiveService := tui.NewSkaInteractiveService(
-		fmt.Sprintf("Variables for blueprint: %s", s.TemplateURI),
+		fmt.Sprintf("Blueprint: %s", s.TemplateURI),
 		upstreamConfig.GetInputs()).SetShowBanner(s.Options.ShowBanner)
 
 	// check if interactive mode is required
