@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.24](https://github.com/gchiesa/ska/compare/v0.0.23...v0.0.24) (2025-07-06)
+
+
+### Bug Fixes
+
+* logging issue and missing path default for config ([d83da86](https://github.com/gchiesa/ska/commit/d83da862287ad0310c0cd6fdc7af1b49272ef7a0))
+
 ## [0.0.23](https://github.com/gchiesa/ska/compare/v0.0.22...v0.0.23) (2025-07-06)
 
 
