@@ -10,7 +10,7 @@ type ConfigCmd struct {
 	*ConfigListCmd   `arg:"subcommand:list"`
 	*ConfigRenameCmd `arg:"subcommand:rename"`
 	*ConfigDeleteCmd `arg:"subcommand:delete"`
-	FolderPath       string `arg:"-p,--path,required" help:"Local path where the .ska-config folder is located"`
+	FolderPath       string `arg:"-p,--path" default:"." help:"Local path where the .ska-config folder is located"`
 }
 
 type configFolderPath string
