@@ -58,7 +58,7 @@ func (tp *FileTreeProcessor) buildStagingFileTree(withVariables map[string]inter
 				logger.WithFields(log.Fields{"path": sRelPath}).Errorf("missing variable while rendering file path: %s", sRelPath)
 			}
 			if tp.template.IsOptionalError(err) {
-				logger.WithFields(log.Fields{"path": sRelPath}).Errorf("optional resource did not match the check, skipping")
+				logger.WithFields(log.Fields{"path": sRelPath}).Infof("optional resource did not match the check, skipping")
 				return nil
 			}
 			return err
