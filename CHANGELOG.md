@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.23](https://github.com/gchiesa/ska/compare/v0.0.22...v0.0.23) (2025-07-06)
+
+
+### Bug Fixes
+
+* adding ignores ([785621e](https://github.com/gchiesa/ska/commit/785621e017705b3a29d5d71dc85e5715c4d12b12))
+* removing clutter ([9c5a15b](https://github.com/gchiesa/ska/commit/9c5a15b3de1f9a728f7377da7780d2e4a310beb1))
+* update test to let goproxy able to zip the pkg ([f21709f](https://github.com/gchiesa/ska/commit/f21709f2ed314f6dc7ef01b2e1a3adb57b538614))
+
 ## [0.0.22](https://github.com/gchiesa/ska/compare/v0.0.21...v0.0.22) (2025-07-05)
 
 
