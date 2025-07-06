@@ -1,3 +1,0 @@
-# this should be expanded only if .appName == test
-
-{{.appName}} is test

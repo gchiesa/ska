@@ -1,0 +1,19 @@
+---
+scenarios:
+  multi-dir-multi-file-w-empty-file-names:
+    blueprint:
+    - name: "dir-a"
+      type: directory
+      content:
+      - name: "test-file-{{.testFileName}}.txt"
+        type: file
+        content: |
+          this is a simple file test for the app {{.appName}}
+
+          the version is {{.newVersion}}
+
+          items:
+          {{ $parts := splitList "," .listOfItems }}
+          {{- range $index, $part := $parts }}
+          * Part {{ $index }}: {{ $part }}
+          {{- end }}
