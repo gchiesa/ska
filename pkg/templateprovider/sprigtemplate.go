@@ -33,6 +33,12 @@ func NewSprigTemplate(name string) *SprigTemplate {
 			}
 			return v, nil
 		},
+		"empty": func(v string) bool {
+			return strings.TrimSpace(v) == ""
+		},
+		"notempty": func(v string) bool {
+			return strings.TrimSpace(v) != ""
+		},
 	}
 	t.Funcs(skaFunctions)
 	return &SprigTemplate{
