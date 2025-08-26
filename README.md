@@ -6,22 +6,9 @@
 <h4 align="center">Your scaffolding buddy!</h4>
 <hr/>
 <p align="center">
-  <a href="https://pkg.go.dev/github.com/gchiesa/ska">
-    <img src="https://pkg.go.dev/badge/github.com/gchiesa/ska.svg">
-  </a>
-  <a href="https://github.com/gchiesa/ska/actions/workflows/go-ci-lint.yaml">
-    <img src="https://github.com/gchiesa/ska/actions/workflows/go-ci-lint.yaml/badge.svg" alt="Go linter">
-  </a>
-  <a href="https://github.com/gchiesa/ska/actions/workflows/go-ci-test.yaml">
-    <img src="https://github.com/gchiesa/ska/actions/workflows/go-ci-test.yaml/badge.svg" alt="Go unit tests">
-  </a>
-  <a href="https://goreportcard.com/report/github.com/gchiesa/ska">
-    <img src="https://goreportcard.com/badge/github.com/gchiesa/ska" alt="Go Report Card">
-  </a>
-  <a href="https://github.com/gchiesa/ska/network/dependents">
-    <img src="https://img.shields.io/badge/Used%20By-2-blue" alt="Used By"> 
-  </a>
+  <a href="https://pkg.go.dev/github.com/gchiesa/ska"><img src="https://pkg.go.dev/badge/github.com/gchiesa/ska.svg"></a> <a href="https://github.com/gchiesa/ska/actions/workflows/go-ci-lint.yaml"><img src="https://github.com/gchiesa/ska/actions/workflows/go-ci-lint.yaml/badge.svg" alt="Go linter"></a> <a href="https://github.com/gchiesa/ska/actions/workflows/go-ci-test.yaml"><img src="https://github.com/gchiesa/ska/actions/workflows/go-ci-test.yaml/badge.svg" alt="Go unit tests"></a> <a href="https://goreportcard.com/report/github.com/gchiesa/ska"><img src="https://goreportcard.com/badge/github.com/gchiesa/ska" alt="Go Report Card"></a> <a href="https://github.com/gchiesa/ska/network/dependents"><img src="https://img.shields.io/badge/Used%20By-2-blue" alt="Used By"></a>
 </p>
+
 
 SKA is a "skaffolding" tool that allows you to expand folders based on local or remote blueprint templates (GitHub and
 GitLab hosted or local filesystem).
