@@ -1,5 +1,6 @@
 package templateprovider
 
+// ByType returns a TemplateService implementation by TemplateType.
 func ByType(templateType TemplateType, name string) TemplateService {
 	var ts TemplateService
 	switch templateType {
@@ -11,6 +12,8 @@ func ByType(templateType TemplateType, name string) TemplateService {
 	return ts
 }
 
+// GetTypeFromString parses a template type string ("sprig" or "jinja") and
+// returns the corresponding TemplateType. It returns -1 for unknown values.
 func GetTypeFromString(templateType string) TemplateType {
 	switch templateType {
 	case "sprig":

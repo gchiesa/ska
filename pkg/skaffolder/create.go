@@ -1,7 +1,10 @@
+// Package skaffolder exposes the high-level API to create and update a destination
+// directory from a remote or local blueprint using different template engines.
 package skaffolder
 
 import (
 	"fmt"
+
 	"github.com/gchiesa/ska/pkg/templateprovider"
 
 	"github.com/apex/log"
@@ -13,21 +16,36 @@ import (
 	"github.com/gchiesa/ska/internal/upstreamconfigservice"
 )
 
+// SkaCreateTask defines the parameters and options for expanding a blueprint
+// into a destination path. Use NewSkaCreateTask to construct it and call Create
+// to render files under DestinationPath.
 type SkaCreateTask struct {
-	TemplateURI     string
+	// TemplateURI is the URI to the blueprint (e.g. local path or remote github/gitlab URL).
+	TemplateURI string
+	// DestinationPath is the folder where the blueprint will be rendered.
 	DestinationPath string
-	NamedConfig     string
-	Variables       map[string]string
-	Options         *SkaTaskOptions
-	Log             *log.Entry
+	// NamedConfig is the optional configuration name stored under .ska-config.
+	NamedConfig string
+	// Variables contains key/value pairs used by the template engine.
+	Variables map[string]string
+	// Options controls interactive mode and template engine.
+	Options *SkaTaskOptions
+	// Log is a contextual logger used by the task.
+	Log *log.Entry
 }
 
+// SkaTaskOptions controls the behavior of create/update tasks.
+//   - NonInteractive: when true, skip TUI prompts and use provided variables only
+//   - ShowBanner: when true, display the interactive banner when using TUI
+//   - Engine: select the template engine (sprig or jinja)
 type SkaTaskOptions struct {
 	NonInteractive bool
 	ShowBanner     bool
 	Engine         templateprovider.TemplateType // jinja or sprig
 }
 
+// NewSkaCreateTask constructs a SkaCreateTask with the provided parameters.
+// The returned task can be executed via (*SkaCreateTask).Create.
 func NewSkaCreateTask(templateURI, destinationPath, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaCreateTask {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
@@ -42,6 +60,8 @@ func NewSkaCreateTask(templateURI, destinationPath, namedConfig string, variable
 	}
 }
 
+// Create expands the blueprint referred by TemplateURI into DestinationPath.
+// It optionally prompts for variables unless NonInteractive is set.
 func (s *SkaCreateTask) Create() error {
 	// blueprint provider
 	blueprintProvider, err := contentprovider.ByURI(s.TemplateURI)

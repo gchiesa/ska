@@ -2,6 +2,7 @@ package skaffolder //nolint:typecheck
 
 import (
 	"fmt"
+
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
@@ -12,14 +13,24 @@ import (
 	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
+// SkaUpdateTask updates an existing destination directory from its recorded
+// blueprint upstream. Use NewSkaUpdateTask to construct it and call Update
+// to apply changes.
 type SkaUpdateTask struct {
-	BaseURI     string
+	// BaseURI is the path to the destination directory containing .ska-config.
+	BaseURI string
+	// NamedConfig selects which configuration (if multiple) to use in .ska-config.
 	NamedConfig string
-	Variables   map[string]string
-	Options     *SkaTaskOptions
-	Log         *log.Entry
+	// Variables contains key/value overrides merged with the stored variables.
+	Variables map[string]string
+	// Options controls interactive prompts and template engine selection.
+	Options *SkaTaskOptions
+	// Log is a contextual logger used by the task.
+	Log *log.Entry
 }
 
+// NewSkaUpdateTask constructs a SkaUpdateTask with the provided parameters.
+// The returned task can be executed via (*SkaUpdateTask).Update.
 func NewSkaUpdateTask(baseURI, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaUpdateTask {
 	logCtx := log.WithFields(log.Fields{
 		"pkg": "skaffolder",
@@ -33,6 +44,9 @@ func NewSkaUpdateTask(baseURI, namedConfig string, variables map[string]string, 
 	}
 }
 
+// Update downloads the upstream blueprint recorded in the destination's
+// .ska-config and applies changes to the destination directory. It optionally
+// prompts for variables unless NonInteractive is set.
 func (s *SkaUpdateTask) Update() error {
 	localConfig := localconfigservice.NewLocalConfigService(s.NamedConfig)
 
