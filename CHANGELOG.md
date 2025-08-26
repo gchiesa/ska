@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.0](https://github.com/gchiesa/ska/compare/v0.0.24...v1.0.0) (2025-08-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* bumping to v1.x release model
+
+### Features
+
+* bumping to v1.x release model ([439cd60](https://github.com/gchiesa/ska/commit/439cd60e3c16828f265ff6c9e1c85d79c3c9973a))
+
+
+### Docs
+
+* update pkg docs ([2240bfb](https://github.com/gchiesa/ska/commit/2240bfba091ce169b2e7d80ec0895f44b892d9a8))
+* update README.md and add use-cases ([9c9f8c2](https://github.com/gchiesa/ska/commit/9c9f8c2f3e44f2bd896d8c312d13bdf1938fb0a4))
+
+
+### Other
+
+* release v1.0.0 ([3433993](https://github.com/gchiesa/ska/commit/3433993f453d45afe1a3927c1dfa5ca7649cc2e7))
+
 ## [0.0.24](https://github.com/gchiesa/ska/compare/v0.0.23...v0.0.24) (2025-07-06)
 
 
