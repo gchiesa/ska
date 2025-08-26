@@ -2,14 +2,17 @@ package filetreeprocessor
 
 import (
 	"encoding/json"
+	"errors"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/pkg/templateprovider"
 	"github.com/gruntwork-io/terratest/modules/git"
 	compare "github.com/kilianpaquier/compare/pkg"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -38,7 +41,8 @@ func TestBuildStagingFileTree(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			fixturePath := getFixtureBasePath(t, tc.fixtureName)
+			fixturePath, err := provisionScenario(t, tc.fixtureName)
+			assert.NoError(t, err)
 			tempWorkindDirFolder := t.TempDir()
 			tempDestinationFolder := t.TempDir()
 			tp := &FileTreeProcessor{
@@ -77,7 +81,8 @@ func TestRenderStagingFiles(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			fixturePath := getFixtureBasePath(t, tc.fixtureName)
+			fixturePath, err := provisionScenario(t, tc.fixtureName)
+			assert.NoError(t, err)
 			tempWorkindDirFolder := t.TempDir()
 			tempDestinationFolder := t.TempDir()
 			tp := &FileTreeProcessor{
@@ -103,8 +108,88 @@ func TestRenderStagingFiles(t *testing.T) {
 	}
 }
 
-func getFixtureBasePath(t *testing.T, fixtureName string) string {
-	return filepath.Join(git.GetRepoRoot(t), "tests", "fixtures", fixtureName)
+// YAML-driven fixture provisioning
+
+type fileNode struct {
+	Content string              `yaml:"content,omitempty"`
+	Files   map[string]fileNode `yaml:",inline"`
+}
+
+type fixtureYAML struct {
+	Variables map[string]interface{}         `yaml:"variables"`
+	Blueprint map[string]fileNode            `yaml:"blueprint"`
+	Expected  map[string]map[string]fileNode `yaml:"expected"`
+}
+
+type scenariosYAML struct {
+	Scenarios map[string]fixtureYAML `yaml:"scenarios"`
+}
+
+// writeTree writes a map-based tree into basePath
+func writeTree(basePath string, tree map[string]fileNode) error {
+	for name, node := range tree {
+		p := filepath.Join(basePath, name)
+		// if node has nested files, treat it as dir
+		if len(node.Files) > 0 {
+			if err := os.MkdirAll(p, 0o755); err != nil {
+				return err
+			}
+			if err := writeTree(p, node.Files); err != nil {
+				return err
+			}
+			continue
+		}
+		// it's a file (can be empty content)
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			return err
+		}
+		if err := os.WriteFile(p, []byte(node.Content), 0o644); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// provisionScenario loads internal/filetreeprocessor/fixtures/scenarios.yaml, picks the named scenario,
+// and materializes it into a temporary directory with blueprint, variables.json and expected folders.
+func provisionScenario(t *testing.T, scenarioName string) (string, error) {
+	root := filepath.Join(git.GetRepoRoot(t), "internal", "filetreeprocessor", "fixtures")
+	data, err := os.ReadFile(filepath.Join(root, "scenarios.yaml"))
+	if err != nil {
+		return "", err
+	}
+	var sc scenariosYAML
+	if err := yaml.Unmarshal(data, &sc); err != nil {
+		return "", err
+	}
+	fx, ok := sc.Scenarios[scenarioName]
+	if !ok {
+		return "", errors.New("scenario not found: " + scenarioName)
+	}
+	base := t.TempDir()
+	// create blueprint
+	if err := os.MkdirAll(filepath.Join(base, blueprintFolder), 0o755); err != nil {
+		return "", err
+	}
+	if err := writeTree(filepath.Join(base, blueprintFolder), fx.Blueprint); err != nil {
+		return "", err
+	}
+	// write variables.json
+	vdata, _ := json.Marshal(fx.Variables)
+	if err := os.WriteFile(filepath.Join(base, variablesFile), vdata, 0o644); err != nil {
+		return "", err
+	}
+	// expected directories
+	for key, tree := range fx.Expected {
+		dirPath := filepath.Join(base, key)
+		if err := os.MkdirAll(dirPath, 0o755); err != nil {
+			return "", err
+		}
+		if err := writeTree(dirPath, tree); err != nil {
+			return "", err
+		}
+	}
+	return base, nil
 }
 
 func loadVariables(t *testing.T, path, variablesFile string) (map[string]interface{}, error) {
@@ -117,4 +202,8 @@ func loadVariables(t *testing.T, path, variablesFile string) (map[string]interfa
 		return nil, err
 	}
 	return variables, nil
+}
+
+func getFixtureBasePath(t *testing.T, fixtureName string) string {
+	return filepath.Join(git.GetRepoRoot(t), "tests", "fixtures", fixtureName)
 }

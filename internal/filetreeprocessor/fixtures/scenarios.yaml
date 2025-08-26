@@ -1,0 +1,287 @@
+scenarios:
+  single-file-flat-dir:
+    variables:
+      appName: testApp
+      testFileName: example-file
+      listOfItems: "zero,one,two"
+      newVersion: "1.2.3"
+    blueprint:
+      "test-file-{{.testFileName}}.txt":
+        content: |-
+          this is a simple file test for the app {{.appName}}
+          
+          the version is {{.newVersion}}
+          
+          items:
+          {{ $parts := splitList "," .listOfItems }}
+          {{- range $index, $part := $parts }}
+          * Part {{ $index }}: {{ $part }}
+          {{- end }}
+    expected:
+      build-staging-file-tree:
+        test-file-example-file.txt:
+          content: |-
+            this is a simple file test for the app {{.appName}}
+            
+            the version is {{.newVersion}}
+            
+            items:
+            {{ $parts := splitList "," .listOfItems }}
+            {{- range $index, $part := $parts }}
+            * Part {{ $index }}: {{ $part }}
+            {{- end }}
+      load-multiparts:
+        test-file-example-file.txt:
+          content: |-
+            this is a simple file test for the app {{.appName}}
+            
+            the version is {{.newVersion}}
+            
+            items:
+            {{ $parts := splitList "," .listOfItems }}
+            {{- range $index, $part := $parts }}
+            * Part {{ $index }}: {{ $part }}
+            {{- end }}
+      render-staging-tree:
+        test-file-example-file.txt:
+          content: |-
+            this is a simple file test for the app testApp
+            
+            the version is 1.2.3
+            
+            items:
+            
+            * Part 0: zero
+            * Part 1: one
+            * Part 2: two
+      update-destination-file-tree:
+        test-file-example-file.txt:
+          content: |-
+            this is a simple file test for the app testApp
+            
+            the version is 1.2.3
+            
+            items:
+            
+            * Part 0: zero
+            * Part 1: one
+            * Part 2: two
+  multi-dir-multi-file-w-empty-file-names:
+    variables:
+      appName: testApp
+      testFileName: example-file
+      listOfItems: "zero,one,two"
+      newVersion: "1.2.3"
+      variableWithEmptyValue: ""
+    blueprint:
+      dir-a:
+        "test-file-{{.testFileName}}.txt":
+          content: |-
+            this is a simple file test for the app {{.appName}}
+            
+            the version is {{.newVersion}}
+            
+            items:
+            {{ $parts := splitList "," .listOfItems }}
+            {{- range $index, $part := $parts }}
+            * Part {{ $index }}: {{ $part }}
+            {{- end }}
+      dir-b:
+        test-file2.yaml:
+          content: |-
+            ---
+            This line has a replacement with name newVersion: {{.newVersion}}
+      "dir-{{.appName}}":
+        test-file2.yaml:
+          content: |-
+            ---
+            This file should exists and contain the app: {{.appName}}
+      "{{optional (notempty .variableWithEmptyValue) .variableWithEmptyValue}}":
+        test-file2.yaml:
+          content: |-
+            ---
+            # This file should not exist
+            appName: {{.appName}}
+    expected:
+      build-staging-file-tree:
+        dir-a:
+          test-file-example-file.txt:
+            content: |-
+              this is a simple file test for the app {{.appName}}
+
+              the version is {{.newVersion}}
+
+              items:
+              {{ $parts := splitList "," .listOfItems }}
+              {{- range $index, $part := $parts }}
+              * Part {{ $index }}: {{ $part }}
+              {{- end }}
+
+        dir-b:
+          test-file2.yaml:
+            content: |-
+              ---
+              This line has a replacement with name newVersion: {{.newVersion}}
+
+        dir-testApp:
+          test-file2.yaml:
+            content: |-
+              ---
+              This file should exists and contain the app: {{.appName}}
+
+      load-multiparts:
+        dir-a:
+          test-file-example-file.txt:
+            content: |-
+              this is a simple file test for the app {{.appName}}
+
+              the version is {{.newVersion}}
+
+              items:
+              {{ $parts := splitList "," .listOfItems }}
+              {{- range $index, $part := $parts }}
+              * Part {{ $index }}: {{ $part }}
+              {{- end }}
+
+        dir-b:
+          test-file2.yaml:
+            content: |-
+              ---
+              This line has a replacement with name newVersion: {{.newVersion}}
+
+        dir-testApp:
+          test-file2.yaml:
+            content: |-
+              ---
+              This file should exists and contain the app: {{.appName}}
+
+      render-staging-tree:
+        dir-a:
+          test-file-example-file.txt:
+            content: |-
+              this is a simple file test for the app testApp
+              
+              the version is 1.2.3
+              
+              items:
+              
+              * Part 0: zero
+              * Part 1: one
+              * Part 2: two
+        dir-b:
+          test-file2.yaml:
+            content: |-
+              ---
+              This line has a replacement with name newVersion: 1.2.3
+
+        dir-testApp:
+          test-file2.yaml:
+            content: |-
+              ---
+              This file should exists and contain the app: testApp
+
+      update-destination-file-tree:
+        test-file-example-file.txt:
+          content: |-
+            this is a simple file test for the app testApp
+
+            the version is 1.2.3
+
+            items:
+            * Part one
+            * Part two
+            * Part tree
+
+  multi-dir-with-ignore-all-except-dirA:
+    variables:
+      appName: testApp
+      testFileName: example-file
+      listOfItems: "zero,one,two"
+      newVersion: "1.2.3"
+      variableWithEmptyValue: ""
+    blueprint:
+      dir-a:
+        "test-file-{{.testFileName}}.txt":
+          content: |-
+            this is a simple file test for the app {{.appName}}
+            
+            the version is {{.newVersion}}
+            
+            items:
+            {{ $parts := splitList "," .listOfItems }}
+            {{- range $index, $part := $parts }}
+            * Part {{ $index }}: {{ $part }}
+            {{- end }}
+      dir-b:
+        test-file2.yaml:
+          content: |-
+            ---
+            This line has a replacement with name newVersion: {{.newVersion}}
+
+      "dir-{{.appName}}":
+        test-file2.yaml:
+          content: |-
+            ---
+            This file should exists and contain the app: {{.appName}}
+
+      "{{optional (notempty .variableWithEmptyValue) .variableWithEmptyValue}}":
+        test-file2.yaml:
+          content: |-
+            ---
+            # This file should not exist
+            appName: {{.appName}}
+
+    expected:
+      build-staging-file-tree:
+        dir-a:
+          test-file-example-file.txt:
+            content: |-
+              this is a simple file test for the app {{.appName}}
+
+              the version is {{.newVersion}}
+
+              items:
+              {{ $parts := splitList "," .listOfItems }}
+              {{- range $index, $part := $parts }}
+              * Part {{ $index }}: {{ $part }}
+              {{- end }}
+
+      load-multiparts:
+        dir-a:
+          test-file-example-file.txt:
+            content: |-
+              this is a simple file test for the app {{.appName}}
+
+              the version is {{.newVersion}}
+
+              items:
+              {{ $parts := splitList "," .listOfItems }}
+              {{- range $index, $part := $parts }}
+              * Part {{ $index }}: {{ $part }}
+              {{- end }}
+
+      render-staging-tree:
+        dir-a:
+          test-file-example-file.txt:
+            content: |-
+              this is a simple file test for the app testApp
+              
+              the version is 1.2.3
+              
+              items:
+              
+              * Part 0: zero
+              * Part 1: one
+              * Part 2: two
+      update-destination-file-tree:
+        test-file-example-file.txt:
+          content: |-
+            this is a simple file test for the app testApp
+
+            the version is 1.2.3
+            
+            items:
+            * Part one
+            * Part two
+            * Part tree
+
