@@ -17,6 +17,8 @@ type Part struct {
 	refFileBasename  string
 	id               string
 	content          []byte
+	adoptType        string
+	adoptArg         string
 }
 
 var (
@@ -64,6 +66,12 @@ func NewPart(fromRefFileURI, id string) *Part {
 	}
 }
 
+func (p *Part) SetAdopt(opType, arg string) *Part {
+	p.adoptType = opType
+	p.adoptArg = arg
+	return p
+}
+
 func (p *Part) RefFileBasename() string {
 	return p.refFileBasename
 }
@@ -75,3 +83,6 @@ func (p *Part) RefFilePath() string {
 func (p *Part) ID() string {
 	return p.id
 }
+
+func (p *Part) AdoptType() string { return p.adoptType }
+func (p *Part) AdoptArg() string  { return p.adoptArg }
