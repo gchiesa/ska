@@ -1,0 +1,3 @@
+# ska-start:my-section + ska-inject-after:@start
+managed v1
+# ska-end

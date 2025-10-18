@@ -1,0 +1,5 @@
+non part first line
+; ska-start:my-part
+part content
+; ska-end
+non part last line

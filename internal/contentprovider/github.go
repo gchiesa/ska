@@ -2,12 +2,13 @@ package contentprovider
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/apex/log"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"os"
-	"path/filepath"
 )
 
 type GitHub struct {

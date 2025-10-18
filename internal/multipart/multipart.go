@@ -5,60 +5,62 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 
+	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/part"
 )
+
+type Multipart struct {
+	id              string
+	refFileURI      string
+	contentOriginal []byte
+	contentCompiled []byte
+	parts           []part.Part
+	log             *log.Entry
+}
+
+func NewMultipartFromFile(filePath, id string) (*Multipart, error) {
+	fileData, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("error reading file %s: %w", filePath, part.ErrMultipartError)
+	}
+	if ok := isValidContent(fileData); !ok {
+		return nil, fmt.Errorf("invalid contentOriginal for partial container: %w", part.ErrInvalidContent)
+	}
+
+	logCtx := log.WithFields(log.Fields{
+		"pkg": "multipart",
+	})
+
+	return &Multipart{
+		id:              id,
+		refFileURI:      filePath,
+		contentOriginal: fileData,
+		log:             logCtx,
+	}, nil
+}
+
+func (mp *Multipart) ID() string {
+	return mp.id
+}
+
+func (mp *Multipart) Parts() []part.Part {
+	return mp.parts
+}
 
 func (mp *Multipart) ParseParts() error {
 	if !isValidContent(mp.contentOriginal) {
 		return fmt.Errorf("invalid contentOriginal for partial container (file: %s): %w", mp.refFileURI, part.ErrInvalidContent)
 	}
-	reSection := getPartialsRegexp()
-
-	matches := reSection.FindAllSubmatch(mp.contentOriginal, -1)
-
-	for _, match := range matches {
-		fullHeader := strings.TrimSpace(string(match[1]))
-		cleanMatch := string(match[2])
-		sectionName, adoptType, adoptArg := parseHeader(fullHeader)
-		partial := part.NewPart(mp.refFileURI, sectionName).WithContent([]byte(cleanMatch))
-		if adoptType != "" {
-			partial = partial.SetAdopt(adoptType, adoptArg)
-		}
-		mp.parts = append(mp.parts, *partial)
+	parts, err := part.ParseParts(mp.contentOriginal, mp.refFileURI)
+	if err != nil {
+		return err
 	}
+	mp.parts = parts
 	return nil
 }
 
-// parseHeader splits the header "<section> [+ directive:arg]" into components
-func parseHeader(header string) (sectionName, adoptType, adoptArg string) {
-	// default: no directive, whole header is sectionName
-	sectionName = strings.TrimSpace(header)
-	adoptType, adoptArg = "", ""
-	if strings.Contains(header, "+") {
-		parts := strings.SplitN(header, "+", 2)
-		sectionName = strings.TrimSpace(parts[0])
-		directive := strings.TrimSpace(parts[1])
-		// normalize
-		directive = strings.TrimSpace(directive)
-		// supported directives
-		supported := []string{"ska-inject-after:", "ska-inject-before:", "ska-replace-match:"}
-		for _, pref := range supported {
-			if strings.HasPrefix(directive, pref) {
-				adoptType = strings.TrimSuffix(pref, ":")
-				adoptArg = strings.TrimSpace(strings.TrimPrefix(directive, pref))
-				// strip optional angle brackets
-				if strings.HasPrefix(adoptArg, "<") && strings.HasSuffix(adoptArg, ">") {
-					adoptArg = strings.TrimSuffix(strings.TrimPrefix(adoptArg, "<"), ">")
-				}
-				break
-			}
-		}
-	}
-	return
-}
-
+// PartsToFiles generates individual files for each part in the current multipart and returns a list of the generated file paths.
 func (mp *Multipart) PartsToFiles() ([]string, error) {
 	workDir := filepath.Dir(mp.refFileURI)
 	fileList := make([]string, 0)
@@ -77,6 +79,7 @@ func (mp *Multipart) HasParts() bool {
 	return len(mp.parts) > 0
 }
 
+// Compile processes the original content by injecting or replacing parts, optionally forcing re-compilation.
 func (mp *Multipart) Compile(forceRecompile bool) []byte {
 	if mp.contentCompiled != nil && !forceRecompile {
 		return mp.contentCompiled
@@ -181,4 +184,17 @@ func replaceMatch(base []byte, regex string, payload string) []byte {
 	}
 	start, end := idxs[0], idxs[1]
 	return append(append(base[:start], []byte(payload)...), base[end:]...)
+}
+
+// validatePartialsInContent return error if the contentOriginal contains invalid partials
+func isValidContent(content []byte) bool {
+	reStart := regexp.MustCompile(part.DelimiterStart)
+	reEnd := regexp.MustCompile(part.DelimiterEnd)
+	reSection := regexp.MustCompile("(?s)" + part.DelimiterStart + "(.*?)" + part.DelimiterEnd) //nolint:goconst //keeping for better readability
+
+	// is if the number of section matches with the number of starts and ends valid
+	startEntries := reStart.FindAll(content, -1)
+	endEntries := reEnd.FindAll(content, -1)
+	sections := reSection.FindAll(content, -1)
+	return len(startEntries) == len(sections) && len(endEntries) == len(sections)
 }

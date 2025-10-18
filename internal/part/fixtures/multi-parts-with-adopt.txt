@@ -1,0 +1,9 @@
+; preamble
+; ska-start:alpha + ska-inject-before:@start
+alpha 1
+alpha 2
+; ska-end
+between
+; ska-start:beta + ska-inject-after:@end
+beta only line
+; ska-end

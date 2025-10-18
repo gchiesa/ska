@@ -1,0 +1,6 @@
+# ska-start:my-section
+managed v1
+# ska-end
+Header
+Body
+Footer
