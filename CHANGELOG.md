@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/gchiesa/ska/compare/v1.1.3...v1.1.4) (2026-01-10)
+
+
+### Bug Fixes
+
+* fix sbom generation ([bdbafd2](https://github.com/gchiesa/ska/commit/bdbafd2ab1d8963a9d29903d773792e7077c379e))
+
 ## [1.1.3](https://github.com/gchiesa/ska/compare/v1.1.2...v1.1.3) (2026-01-10)
 
 
