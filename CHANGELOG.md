@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/gchiesa/ska/compare/v1.1.0...v1.1.1) (2026-01-10)
+
+
+### Bug Fixes
+
+* fix issue with go-releaser ([87bb780](https://github.com/gchiesa/ska/commit/87bb7808b4cb235c774ffdf30f95872bde3621fb))
+
 ## [1.1.0](https://github.com/gchiesa/ska/compare/v1.0.0...v1.1.0) (2026-01-10)
 
 
