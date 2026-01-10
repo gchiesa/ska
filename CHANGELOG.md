@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/gchiesa/ska/compare/v1.1.1...v1.1.2) (2026-01-10)
+
+
+### Bug Fixes
+
+* fix publishing issue ([3875054](https://github.com/gchiesa/ska/commit/3875054434c478785d07766b68b8d76e68c887c7))
+
 ## [1.1.1](https://github.com/gchiesa/ska/compare/v1.1.0...v1.1.1) (2026-01-10)
 
 
