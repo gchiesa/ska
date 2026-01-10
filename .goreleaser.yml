@@ -47,9 +47,9 @@ homebrew_casks:
     name: homebrew-ska
     branch: main
     token: "{{ .Env.SKA_HOMEBREW_TOKEN }}"
-    # yamllint disable-line rule:comments rule:line-length
-    url:
-      template: https://github.com/gchiesa/ska/releases/download/{{ .Tag }}/{{ .ArtifactName }}
+  # yamllint disable-line rule:comments rule:line-length
+  url:
+    template: https://github.com/gchiesa/ska/releases/download/{{ .Tag }}/{{ .ArtifactName }}
   commit_author:
     name: Giuseppe Chiesa
     email: mail@giuseppechiesa.it
