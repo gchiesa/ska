@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/gchiesa/ska/compare/v1.0.0...v1.1.0) (2026-01-10)
+
+
+### Features
+
+* fix match replace functionality ([77c7b47](https://github.com/gchiesa/ska/commit/77c7b474c9dc6fa27e1a2e77511d93500c02ab96))
+* new feature to onboard existing snippets ([2e749af](https://github.com/gchiesa/ska/commit/2e749afb86637cd8f162e1c20bb1d75f9a2e41f6))
+* new feature to onboard existing snippets ([2e749af](https://github.com/gchiesa/ska/commit/2e749afb86637cd8f162e1c20bb1d75f9a2e41f6))
+* onboard snippet ([2a3f4d1](https://github.com/gchiesa/ska/commit/2a3f4d1d7720a9948f4c9c0ee361085962180558))
+* onboard snippet ([a6c43c0](https://github.com/gchiesa/ska/commit/a6c43c0a7066c963916b1dedde6bce07b7358f78))
+* refactor to use mise ([99cbb0b](https://github.com/gchiesa/ska/commit/99cbb0ba18c95e05e2ed7f4df18d91d054ceabde))
+* update dependencies ([6557666](https://github.com/gchiesa/ska/commit/6557666c28bb57f6a2d628e658d665d3aae7ce7e))
+* update dependencies ([2056316](https://github.com/gchiesa/ska/commit/20563161940e554e1126ac4150e93674702b88a6))
+* update naming ([ffb29b5](https://github.com/gchiesa/ska/commit/ffb29b5f5388c24d9ede9fad94425bc4bb332534))
+* update script invocation for windows compatibility ([416885a](https://github.com/gchiesa/ska/commit/416885ab2379a9d1bc2a8e4aa124dbdc2fe3d73f))
+
 ## [1.0.0](https://github.com/gchiesa/ska/compare/v1.0.0...v1.0.0) (2025-08-26)
 
 
