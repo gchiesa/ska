@@ -15,15 +15,3 @@ func getPartialsRegexp() *regexp.Regexp {
 	pattern := fmt.Sprintf(`(?m)(?s)^\s*.{1}\s*%s:(.*?)\s*\n(.*?)^\s*.{1}\s*%s`, regexp.QuoteMeta(DelimiterStart), regexp.QuoteMeta(DelimiterEnd))
 	return regexp.MustCompile(pattern)
 }
-
-func buildReplaceRegexp(partialKey string) *regexp.Regexp {
-	keyPart := "(.*?)"
-	if partialKey != "" {
-		keyPart = regexp.QuoteMeta(partialKey)
-	}
-	pattern := fmt.Sprintf(`(?m)(?s)`+
-		`(\s*.{1}\s*%s)`+`:(%s)\s*`+
-		`(.*?)`+
-		`(^\s*.{1}\s*%s)`, regexp.QuoteMeta(DelimiterStart), keyPart, regexp.QuoteMeta(DelimiterEnd))
-	return regexp.MustCompile(pattern)
-}

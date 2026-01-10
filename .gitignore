@@ -9,3 +9,7 @@ dist/
 idea/
 .idea/
 
+.DS_Store
+
+# Test output
+test-output.json

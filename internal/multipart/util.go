@@ -2,15 +2,10 @@ package multipart
 
 import (
 	"fmt"
-	"github.com/gchiesa/ska/internal/part"
 	"regexp"
-)
 
-func getPartialsRegexp() *regexp.Regexp {
-	// `(?m)(?s)^\s*.{1}\s*%s:(.*?)\s*\n(.*?)^\s*.{1}\s*%s`gm
-	pattern := fmt.Sprintf(`(?m)(?s)^\s*.{1}\s*%s:(.*?)\s*\n(.*?)^\s*.{1}\s*%s`, regexp.QuoteMeta(part.DelimiterStart), regexp.QuoteMeta(part.DelimiterEnd))
-	return regexp.MustCompile(pattern)
-}
+	"github.com/gchiesa/ska/internal/part"
+)
 
 func buildReplaceRegexp(partialKey string) *regexp.Regexp {
 	keyPart := "(.*?)"

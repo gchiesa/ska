@@ -17,7 +17,6 @@ type Part struct {
 	adoptType        string // e.g. replace-match, inject-before, inject-after
 	adoptArg         string // e.g. @start, @end, /^.*$/
 	content          []byte
-	contentWrapped   []byte
 }
 
 var (
