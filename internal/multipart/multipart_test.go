@@ -254,3 +254,25 @@ func TestAdoptReplaceMatchWholeAndGroup(t *testing.T) {
 		})
 	}
 }
+
+func TestReplaceMatchMultiline(t *testing.T) {
+	// Test that replaceMatch correctly handles multiline content with ^ and $ anchors
+	base := []byte(`FROM alpine:3.20
+COPY my-test-app /usr/bin/my-test-app
+ENTRYPOINT ["/usr/bin/my-test-app"]
+`)
+	regex := `^FROM .*$`
+	payload := `# ska-start:new-base
+FROM ubuntu:latest
+# ska-end`
+
+	result := replaceMatch(base, regex, payload)
+
+	expected := `# ska-start:new-base
+FROM ubuntu:latest
+# ska-end
+COPY my-test-app /usr/bin/my-test-app
+ENTRYPOINT ["/usr/bin/my-test-app"]
+`
+	assert.Equal(t, expected, string(result))
+}

@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/part"
@@ -117,22 +118,26 @@ func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
 			mp.log.Errorf("error reading file. %s: %v", p.RefFileBasename(), err)
 			continue
 		}
+		// First check if a managed block for this section already exists (for idempotency)
 		re := buildReplaceRegexp(p.ID())
 		if re.Match(dataContent) {
-			// standard managed replace
+			// Replace existing managed block with updated content
 			dataContent = re.ReplaceAll(dataContent, []byte(`${1}:${2}`+"\n"+string(compiledPartial)+`${4}`))
 			continue
 		}
-		// if no match and adopt directive is present, perform injection/replacement
-		switch p.AdoptType() {
-		case "ska-inject-after":
-			dataContent = injectRelative(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)), true)
-		case "ska-inject-before":
-			dataContent = injectRelative(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)), false)
-		case "ska-replace-match":
-			dataContent = replaceMatch(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)))
-		default:
-			// no directive, nothing to inject
+		// No existing block - if a special adopt type is requested, process it
+		if p.AdoptType() != "" {
+			switch p.AdoptType() {
+			case "ska-inject-after":
+				dataContent = injectRelative(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)), true)
+			case "ska-inject-before":
+				dataContent = injectRelative(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)), false)
+			case "ska-replace-match":
+				dataContent = replaceMatch(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)))
+			default:
+				// no directive, nothing to inject
+			}
+			continue
 		}
 	}
 	mp.contentCompiled = dataContent
@@ -148,42 +153,67 @@ func buildManagedBlock(sectionName string, content []byte) []byte {
 // injectRelative injects payload before/after an anchor (@start, @end, or regex). If anchor not found (regex), appends at end.
 func injectRelative(base []byte, anchor string, payload string, after bool) []byte {
 	if anchor == "@start" {
-		if after {
-			return append([]byte(payload), base...)
-		}
-		return append([]byte(payload), base...)
+		result := make([]byte, 0, len(payload)+len(base))
+		result = append(result, payload...)
+		result = append(result, base...)
+		return result
 	}
 	if anchor == "@end" {
-		return append(base, []byte(payload)...)
+		result := make([]byte, 0, len(base)+len(payload))
+		result = append(result, base...)
+		result = append(result, payload...)
+		return result
 	}
 	// treat as regex
 	re := regexp.MustCompile(anchor)
 	loc := re.FindIndex(base)
 	if loc == nil {
 		// not found, append at end
-		return append(base, []byte(payload)...)
+		result := make([]byte, 0, len(base)+len(payload))
+		result = append(result, base...)
+		result = append(result, payload...)
+		return result
 	}
+	// Build result in a new slice to avoid overwriting base's underlying array
+	var pos int
 	if after {
-		return append(append(base[:loc[1]], []byte(payload)...), base[loc[1]:]...)
+		pos = loc[1]
+	} else {
+		pos = loc[0]
 	}
-	// before
-	return append(append(base[:loc[0]], []byte(payload)...), base[loc[0]:]...)
+	result := make([]byte, 0, len(base)+len(payload))
+	result = append(result, base[:pos]...)
+	result = append(result, payload...)
+	result = append(result, base[pos:]...)
+	return result
 }
 
-// replaceMatch replaces the first regex match (or its single capture group if present) with the payload
+// replaceMatch replaces the first regex match (or its single capture group if present) with the payload.
+// If the regex contains ^ or $ anchors but no (?m) flag, multiline mode is automatically enabled
+// so that ^ and $ match line boundaries instead of just the start/end of the entire string.
 func replaceMatch(base []byte, regex string, payload string) []byte {
+	// Enable multiline mode if regex uses ^ or $ anchors but doesn't already have (?m)
+	if (strings.Contains(regex, "^") || strings.Contains(regex, "$")) && !strings.Contains(regex, "(?m)") {
+		regex = "(?m)" + regex
+	}
 	re := regexp.MustCompile(regex)
 	idxs := re.FindSubmatchIndex(base)
 	if idxs == nil {
 		return base
 	}
 	// if there's exactly one capture group, replace the group range; else replace whole match
+	var start, end int
 	if len(idxs) == 4 {
-		start, end := idxs[2], idxs[3]
-		return append(append(base[:start], []byte(payload)...), base[end:]...)
+		start, end = idxs[2], idxs[3]
+	} else {
+		start, end = idxs[0], idxs[1]
 	}
-	start, end := idxs[0], idxs[1]
-	return append(append(base[:start], []byte(payload)...), base[end:]...)
+	// Build result in a new slice to avoid overwriting base's underlying array
+	result := make([]byte, 0, start+len(payload)+len(base)-end)
+	result = append(result, base[:start]...)
+	result = append(result, payload...)
+	result = append(result, base[end:]...)
+	return result
 }
 
 // validatePartialsInContent return error if the contentOriginal contains invalid partials
