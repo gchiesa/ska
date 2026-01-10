@@ -19,7 +19,7 @@ run = "bash .ci/scripts/install.sh"
 
 [tasks.run]
 description = "Run the application"
-run = "bash .ci/scripts/run.sh"
+run = "bash .ci/scripts/local.sh"
 
 [tasks.test]
 description = "Run tests with gotestsum and tparse summary"
