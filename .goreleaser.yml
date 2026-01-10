@@ -40,7 +40,7 @@ nfpms:
       mode: 0644
 sboms:
 - artifacts: archive
-  args: ["scan", "$artifact", "--output", "spdx-json=$document"]
+  args: ["$artifact", "--output", "spdx-json=$document"]
 homebrew_casks:
 - repository:
     owner: gchiesa
