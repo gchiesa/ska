@@ -1,0 +1,51 @@
+[tools]
+go = "1.24"
+"github:golangci/golangci-lint" = "v2.1.6"
+"go:github.com/mfridman/tparse" = "latest"
+"go:gotest.tools/gotestsum" = "latest"
+"go:mvdan.cc/gofumpt" = "latest"
+"go:github.com/daixiang0/gci" = "latest"
+
+[env]
+PROJECT_NAME = "ska"
+
+[tasks.build]
+description = "Build the Go binary"
+run = "bash .ci/scripts/build.sh"
+
+[tasks.install]
+description = "Install the Go binary"
+run = "bash .ci/scripts/install.sh"
+
+[tasks.run]
+description = "Run the application"
+run = "bash .ci/scripts/local.sh"
+
+[tasks.test]
+description = "Run tests with gotestsum and tparse summary"
+run = "bash .ci/scripts/test.sh"
+depends = ["clean"]
+
+[tasks.cover]
+description = "Run tests with coverage report"
+run = "bash .ci/scripts/cover.sh"
+
+[tasks.lint]
+description = "Run golangci-lint"
+run = "bash .ci/scripts/lint.sh"
+
+[tasks.fmt]
+description = "Format Go files with gofumpt and gci"
+run = "bash .ci/scripts/fmt.sh"
+
+[tasks.clean]
+description = "Clean build artifacts"
+run = "bash .ci/scripts/clean.sh"
+
+[tasks.bootstrap]
+description = "Install build dependencies"
+run = "bash .ci/scripts/bootstrap.sh"
+
+[tasks.pre-commit]
+description = "Run pre-commit hooks"
+run = "bash .ci/scripts/pre-commit.sh"

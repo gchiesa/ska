@@ -16,5 +16,11 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: ${{ env.GO_VERSION }}
+
+    - name: Setup mise
+      uses: jdx/mise-action@v2
+      with:
+        experimental: true
+
     - name: Test
-      run: make test
+      run: mise task run test

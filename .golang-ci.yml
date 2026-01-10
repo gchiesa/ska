@@ -1,90 +1,89 @@
-version: 2
+version: "2"
 
 run:
   tests: false
   timeout: 240s
-  skip-dirs-use-default: true
 
 linters-settings:
   depguard:
     rules:
       "Rule not allowed packages":
-        files: [ ".*" ]
+        files: [".*"]
         deny:
-        - pkg: "notexist"
-          desc: "notexist is not allowed or blacklisted"
+          - pkg: "notexist"
+            desc: "notexist is not allowed or blacklisted"
   govet:
-    check-shadowing: false
+    disable:
+      - shadow
   gocyclo:
     min-complexity: 15
-  maligned:
-    suggest-new: true
   dupl:
     threshold: 100
   goconst:
     min-len: 5
     min-occurrences: 3
   gocritic:
-    range-val-copy:
-      size-threshold: 1024
     enabled-tags:
-    - diagnostic
-    - experimental
-    - opinionated
-    - performance
-    - style
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
     disabled-checks:
-    - singleCaseSwitch
-    - hugeParam
-    - appendCombine
-    - sloppyReassign
-    - whyNoLint
+      - singleCaseSwitch
+      - hugeParam
+      - appendCombine
+      - sloppyReassign
+      - whyNoLint
   funlen:
     lines: 100
     statements: 52
 
 linters:
   disable:
-  - errcheck
-  - gosec
+    - errcheck
+    - gosec
   enable:
-  - bodyclose
-  - unused
-  - dogsled
-  - dupl
-  - goconst
-  - gocritic
-  - nakedret
-  - staticcheck
-  - unconvert
-  - unparam
-  - whitespace
-  - govet
+    - bodyclose
+    - unused
+    - dogsled
+    - dupl
+    - goconst
+    - gocritic
+    - nakedret
+    - staticcheck
+    - unconvert
+    - unparam
+    - whitespace
+    - govet
 
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
   exclude-files:
-  - .*\.pb\.go
-  - .*_generated\.go
+    - .*\.pb\.go
+    - .*_generated\.go
   exclude-dirs:
-  - vendor
-  - go/pkg/mod/*
-  - ../../../../go/pkg/mod/*
-  - ../../../../.gobrew/*
-  - .*_test\.go$
+    - vendor
+    - go/pkg/mod/*
+    - ../../../../go/pkg/mod/*
+    - ../../../../.gobrew/*
+    - .*_test\.go$
   exclude-rules:
-  - linters: [ gosec ]
-    text: G306
-  - linters: [ funlen ]
-    path: cmd/root\.go
-  - linters: [ gosec ]
-    text: G404
-  - linters: [ gosec ]
-    path: utils/commands\.go
-    text: G204
+    - linters: [gosec]
+      text: G306
+    - linters: [funlen]
+      path: cmd/root\.go
+    - linters: [gosec]
+      text: G404
+    - linters: [gosec]
+      path: utils/commands\.go
+      text: G204
 
 output:
   formats:
-    colored-line-number:
+    text:
       path: stdout
+      print-issued-lines: true
+      print-linter-name: true
+      colors: true

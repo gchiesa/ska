@@ -1,0 +1,10 @@
+first line
+; ska-start:part-1
+content 1 line a
+content 1 line b
+; ska-end
+middle non-part line
+; ska-start:part-2
+content 2 line a
+; ska-end
+last line

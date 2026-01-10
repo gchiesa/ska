@@ -3,12 +3,13 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/alexflint/go-arg"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/apex/log/handlers/json"
 	"github.com/gchiesa/ska/pkg/templateprovider"
-	"os"
 )
 
 const programName = "ska"

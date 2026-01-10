@@ -11,18 +11,11 @@ jobs:
   golangci:
     name: Golangci-lint
     runs-on: ubuntu-latest
-    env:
-      GO_VERSION: '~1.23'
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: ${{ env.GO_VERSION }}
-        cache: false
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v8
-      with:
-        version: v2.1.6
-        args: --config .golang-ci.yml
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          experimental: true
+      - name: Lint
+        run: mise task run lint

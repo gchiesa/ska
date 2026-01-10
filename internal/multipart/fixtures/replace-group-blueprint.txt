@@ -1,0 +1,3 @@
+# ska-start:r2 + ska-replace-match:MIDDLE(.*)END
+Y
+# ska-end
