@@ -5,14 +5,34 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textinput"
 )
+
+type Model struct {
+	header        string
+	showBanner    bool
+	focusIndex    int
+	entries       []inputEntry // new unified entry system
+	err           error
+	exitWithCtrlC bool
+}
+
+// inputEntry represents a single input in the form (either text or list)
+type inputEntry struct {
+	inputType InputType
+	textInput textinput.Model
+	listModel list.Model
+	label     string
+	prompt    string // formatted prompt (e.g., "Label      : ")
+	selected  string // selected value for list inputs
+}
 
 func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanner bool) *Model {
 	m := &Model{
 		header:     header,
 		showBanner: showBanner,
-		inputs:     make([]textinput.Model, len(iForm.Inputs)),
+		entries:    make([]inputEntry, len(iForm.Inputs)),
 	}
 
 	// calculate max placeholder length
@@ -23,30 +43,52 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 
 	promptFormat := fmt.Sprintf("%%-%ds: ", maxPromptLength)
 	for i := range iForm.Inputs {
-		t := textinput.New()
+		inputType := iForm.Inputs[i].Type
+		if inputType == "" {
+			inputType = InputTypeText
+		}
 
-		// Prompt
-		t.Prompt = fmt.Sprintf(promptFormat, iForm.Inputs[i].Label)
+		entry := inputEntry{
+			inputType: inputType,
+			label:     iForm.Inputs[i].Label,
+			prompt:    fmt.Sprintf(promptFormat, iForm.Inputs[i].Label),
+		}
 
-		// Placeholder
-		t.Placeholder = iForm.Inputs[i].Help
-		t.PlaceholderStyle = helpStyle
-		// Validation
-		t.Validate = validator(iForm.Inputs[i].WriteOnce, iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp, iForm.Inputs[i].Default)
-		if iForm.Inputs[i].MaxLength > 0 {
-			t.CharLimit = iForm.Inputs[i].MaxLength
+		if inputType == InputTypeList {
+			// Create list input
+			entry.listModel = createListWidget(iForm.Inputs[i])
+			// Set default selection if provided
+			if iForm.Inputs[i].Default != "" {
+				entry.selected = iForm.Inputs[i].Default
+			}
+		} else {
+			// Create text input (default)
+			t := textinput.New()
+
+			// Prompt
+			t.Prompt = fmt.Sprintf(promptFormat, iForm.Inputs[i].Label)
+
+			// Placeholder
+			t.Placeholder = iForm.Inputs[i].Help
+			t.PlaceholderStyle = helpStyle
+			// Validation
+			t.Validate = validator(iForm.Inputs[i].WriteOnce, iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp, iForm.Inputs[i].Default)
+			if iForm.Inputs[i].MaxLength > 0 {
+				t.CharLimit = iForm.Inputs[i].MaxLength
+			}
+			// Default
+			if iForm.Inputs[i].Default != "" {
+				t.SetValue(iForm.Inputs[i].Default)
+			}
+			// First Item
+			if i == 0 {
+				t.Focus()
+				t.PromptStyle = focusedStyle
+				t.TextStyle = noStyle
+			}
+			entry.textInput = t
 		}
-		// Default
-		if iForm.Inputs[i].Default != "" {
-			t.SetValue(iForm.Inputs[i].Default)
-		}
-		// First Item
-		if i == 0 {
-			t.Focus()
-			t.PromptStyle = focusedStyle
-			t.TextStyle = noStyle
-		}
-		m.inputs[i] = t
+		m.entries[i] = entry
 	}
 	return m
 }

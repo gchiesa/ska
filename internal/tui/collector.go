@@ -2,12 +2,13 @@ package tui
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gchiesa/ska/internal/configuration"
-	"strings"
 )
 
 type (
@@ -34,6 +35,14 @@ var (
 	errorStyle   = lipgloss.NewStyle().Foreground(bad).MarginTop(2).MarginBottom(1)
 	goodTick     = lipgloss.NewStyle().Foreground(good)
 	badTick      = lipgloss.NewStyle().Foreground(bad)
+
+	listLabelStyle = lipgloss.NewStyle().Bold(true).Foreground(highlight)
+
+	// listBoxStyle creates a rounded border around the list dropdown
+	listBoxStyle = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(highlight).
+			Padding(0, 1)
 )
 
 func (m *Model) Init() tea.Cmd {
@@ -41,51 +50,121 @@ func (m *Model) Init() tea.Cmd {
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmds = make([]tea.Cmd, len(m.inputs))
+	var cmds []tea.Cmd
 
-	for i := range m.inputs {
-		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+	// Update all entries based on their type
+	for i := range m.entries {
+		// we process the update on the list only if the list is opened
+		if i == m.focusIndex && m.entries[i].inputType == InputTypeList {
+			var cmd tea.Cmd
+			m.entries[i].listModel, cmd = m.entries[i].listModel.Update(msg)
+			cmds = append(cmds, cmd)
+			// Update selected value if item is selected
+			if item := m.entries[i].listModel.SelectedItem(); item != nil {
+				m.entries[i].selected = item.(listItem).title
+			}
+		} else {
+			var cmd tea.Cmd
+			m.entries[i].textInput, cmd = m.entries[i].textInput.Update(msg)
+			cmds = append(cmds, cmd)
+		}
 	}
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		currentEntry := &m.entries[m.focusIndex]
+
 		switch msg.Type {
 		case tea.KeyCtrlS:
+			// Validate all entries
 			var i int
-			for i = range m.inputs {
-				if err := m.inputs[i].Validate(m.inputs[i].Value()); err != nil {
-					m.err = err
+			for i = range m.entries {
+				if m.entries[i].inputType == InputTypeText {
+					if err := m.entries[i].textInput.Validate(m.entries[i].textInput.Value()); err != nil {
+						m.err = err
+						break
+					}
+				}
+				// List inputs are always valid (selection is required)
+				if m.entries[i].inputType == InputTypeList && m.entries[i].selected == "" {
+					m.err = fmt.Errorf("please select an item for %s", m.entries[i].label)
 					break
 				}
 			}
 			if m.err != nil {
-				m.focusInput(i)
+				m.focusEntry(i)
 			} else {
 				return m, tea.Quit
 			}
-		case tea.KeyEnter, tea.KeyDown, tea.KeyTab:
-			if m.focusIndex == len(m.inputs) {
+
+		case tea.KeyEnter:
+			// For list inputs, Enter selects and moves to next
+			if currentEntry.inputType == InputTypeList {
+				if item := currentEntry.listModel.SelectedItem(); item != nil {
+					currentEntry.selected = item.(listItem).title
+				}
+				m.nextEntryIfNoError()
+			} else {
+				// For text inputs, Enter moves to next
+				if m.focusIndex == len(m.entries)-1 {
+					// Last entry, check if we should quit
+					return m, tea.Quit
+				}
+				m.nextEntryIfNoError()
+			}
+
+		case tea.KeyTab:
+			m.nextEntryIfNoError()
+
+		case tea.KeyShiftTab:
+			m.prevEntryIfNoError()
+
+		case tea.KeyCtrlC, tea.KeyEsc:
+			if currentEntry.inputType == InputTypeList {
+				// if we are here we just want to exit from the list and go to the previous item
+				// we need to delete the cmd created by the list update above that would otherwise exit the application
+				cmds[m.focusIndex] = nil
+				m.prevEntryIfNoError()
+			} else {
+				m.exitWithCtrlC = true
 				return m, tea.Quit
 			}
-			m.nextInputIfNoError()
-		case tea.KeyCtrlC, tea.KeyEsc:
-			m.exitWithCtrlC = true
-			return m, tea.Quit
-		case tea.KeyShiftTab, tea.KeyCtrlP, tea.KeyUp:
-			m.prevInputIfNoError()
+
+		case tea.KeyUp, tea.KeyDown:
+			// For list inputs, let the list handle up/down
+			if currentEntry.inputType == InputTypeList {
+				// Already handled above in the list update
+			} else {
+				// For text inputs, navigate between entries
+				if msg.Type == tea.KeyDown {
+					m.nextEntryIfNoError()
+				} else {
+					m.prevEntryIfNoError()
+				}
+			}
 		}
 
-		for i := range m.inputs {
-			m.inputs[i].PromptStyle = noStyle
-			m.inputs[i].Blur()
-		}
-		m.inputs[m.focusIndex].PromptStyle = focusedStyle
-		m.inputs[m.focusIndex].Focus()
+		// Update focus styles
+		m.updateFocusStyles()
 
 	case errMsg:
 		m.err = msg
 	}
 	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) updateFocusStyles() {
+	for i := range m.entries {
+		if m.entries[i].inputType == InputTypeText {
+			if i == m.focusIndex {
+				m.entries[i].textInput.PromptStyle = focusedStyle
+				m.entries[i].textInput.Focus()
+			} else {
+				m.entries[i].textInput.PromptStyle = noStyle
+				m.entries[i].textInput.Blur()
+			}
+		}
+	}
 }
 
 func (m *Model) View() string {
@@ -100,16 +179,51 @@ func (m *Model) View() string {
 	builder.WriteString(headerStyle.Render(m.header))
 	builder.WriteRune('\n')
 	builder.WriteString("Please fill the required fields below:\n\n")
-	for i := range m.inputs {
-		if m.inputs[i].Validate(m.inputs[i].Value()) == nil {
-			builder.WriteString(goodTick.Render("✔"))
-		} else {
-			builder.WriteString(badTick.Render("✖"))
-		}
 
-		builder.WriteString(fmt.Sprintf(" %s ", m.inputs[i].View()))
-		builder.WriteRune('\n')
+	for i := range m.entries {
+		entry := &m.entries[i]
+
+		if entry.inputType == InputTypeList {
+			// Render list input
+			hasSelection := entry.selected != ""
+			if hasSelection {
+				builder.WriteString(goodTick.Render("✔"))
+			} else {
+				builder.WriteString(badTick.Render("✖"))
+			}
+
+			if i == m.focusIndex {
+				// Show the label and list dropdown when focused
+				builder.WriteString(fmt.Sprintf(" %s\n", listLabelStyle.Render(entry.prompt)))
+				// Indent the list box to align with where the value would appear
+				// "✔ " = 2 chars, then prompt length
+				indent := strings.Repeat(" ", 2+len(entry.prompt))
+				listView := listBoxStyle.Render(entry.listModel.View())
+				// Add indent to each line of the list
+				lines := strings.Split(listView, "\n")
+				for _, line := range lines {
+					builder.WriteString(indent + line + "\n")
+				}
+			} else {
+				// Show just label and selected value when not focused (aligned with text inputs)
+				selectedDisplay := entry.selected
+				if selectedDisplay == "" {
+					selectedDisplay = "(none selected)"
+				}
+				builder.WriteString(fmt.Sprintf(" %s%s\n", entry.prompt, selectedDisplay))
+			}
+		} else {
+			// Render text input
+			if entry.textInput.Validate(entry.textInput.Value()) == nil {
+				builder.WriteString(goodTick.Render("✔"))
+			} else {
+				builder.WriteString(badTick.Render("✖"))
+			}
+			builder.WriteString(fmt.Sprintf(" %s ", entry.textInput.View()))
+			builder.WriteRune('\n')
+		}
 	}
+
 	builder.WriteRune('\n')
 	builder.WriteString(helpStyle.Render(" ↑, ↓: navigate, enter: confirm, ctrl+c: quit, ctrl+s: save"))
 	if m.err != nil {
@@ -125,42 +239,75 @@ func (m *Model) Execute() error {
 	return nil
 }
 
-func (m *Model) focusInput(id int) {
-	m.inputs[m.focusIndex].Blur()
+func (m *Model) focusEntry(id int) {
+	// Blur current entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.entries[m.focusIndex].textInput.Blur()
+	}
 	m.focusIndex = id
-	m.inputs[m.focusIndex].Focus()
+	// Focus new entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.entries[m.focusIndex].textInput.Focus()
+	}
 }
 
-// nextInput focuses the next input field
-func (m *Model) nextInputIfNoError() {
-	m.err = m.inputs[m.focusIndex].Err
-	if m.err != nil {
-		return
+// nextEntryIfNoError focuses the next entry
+func (m *Model) nextEntryIfNoError() {
+	// Check for errors on current entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.err = m.entries[m.focusIndex].textInput.Err
+		if m.err != nil {
+			return
+		}
 	}
-	m.inputs[m.focusIndex].Blur()
-	m.focusIndex = (m.focusIndex + 1) % len(m.inputs)
-	m.inputs[m.focusIndex].Focus()
+
+	// Blur current entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.entries[m.focusIndex].textInput.Blur()
+	}
+
+	m.focusIndex = (m.focusIndex + 1) % len(m.entries)
+
+	// Focus new entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.entries[m.focusIndex].textInput.Focus()
+	}
 }
 
-// prevInputIfNoError focuses the previous input field
-func (m *Model) prevInputIfNoError() {
-	m.err = m.inputs[m.focusIndex].Err
-	if m.err != nil {
-		return
+// prevEntryIfNoError focuses the previous entry
+func (m *Model) prevEntryIfNoError() {
+	// Check for errors on current entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.err = m.entries[m.focusIndex].textInput.Err
+		if m.err != nil {
+			return
+		}
 	}
-	m.inputs[m.focusIndex].Blur()
+
+	// Blur current entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.entries[m.focusIndex].textInput.Blur()
+	}
+
 	m.focusIndex--
-	// Wrap around
 	if m.focusIndex < 0 {
-		m.focusIndex = len(m.inputs) - 1
+		m.focusIndex = len(m.entries) - 1
 	}
-	m.inputs[m.focusIndex].Focus()
+
+	// Focus new entry
+	if m.entries[m.focusIndex].inputType == InputTypeText {
+		m.entries[m.focusIndex].textInput.Focus()
+	}
 }
 
 func (m *Model) GetVariablesForInteractiveForm(iForm InteractiveForm) map[string]string {
 	variables := make(map[string]string)
 	for i := range iForm.Inputs {
-		variables[iForm.Inputs[i].Placeholder] = m.inputs[i].Value()
+		if m.entries[i].inputType == InputTypeList {
+			variables[iForm.Inputs[i].Placeholder] = m.entries[i].selected
+		} else {
+			variables[iForm.Inputs[i].Placeholder] = m.entries[i].textInput.Value()
+		}
 	}
 	return variables
 }
