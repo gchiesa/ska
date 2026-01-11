@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/gchiesa/ska/compare/v1.1.5...v1.1.6) (2026-01-11)
+
+
+### Bug Fixes
+
+* revert to old brew formula ([251ace6](https://github.com/gchiesa/ska/commit/251ace677363f6450566cd34616ba0bc73e05280))
+* updating sbom preparation ([29a8b54](https://github.com/gchiesa/ska/commit/29a8b5422d3ecc541f376923eebf0a26200d5845))
+
 ## [1.1.5](https://github.com/gchiesa/ska/compare/v1.1.4...v1.1.5) (2026-01-11)
 
 
