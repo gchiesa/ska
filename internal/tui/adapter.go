@@ -95,6 +95,10 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 
 // Banner shows the SKA banner either with text or graphical interface
 func (m *Model) Banner() error {
+	if !m.showBanner {
+		return nil
+	}
+
 	if !CanUseGraphic() {
 		println(TextBanner())
 		return nil
