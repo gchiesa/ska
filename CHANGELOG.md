@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0](https://github.com/gchiesa/ska/compare/v1.1.6...v1.2.0) (2026-01-11)
+
+
+### Features
+
+* add support for list type inputs ([d76c90c](https://github.com/gchiesa/ska/commit/d76c90c6057a57b32cf099df3718796164ea3379))
+* cleanup deps ([f95ad33](https://github.com/gchiesa/ska/commit/f95ad332e1c64e44530fb674c6e3a7955a931e96))
+* fix check if banner is disabled ([879ba6d](https://github.com/gchiesa/ska/commit/879ba6d8efb89386e9dad6955e224057292a512c))
+* new graphical banner if terminal supports it ([69dbcf9](https://github.com/gchiesa/ska/commit/69dbcf9906e04cbafee2cd3c4be41bb5cf585ad1))
+
 ## [1.1.6](https://github.com/gchiesa/ska/compare/v1.1.5...v1.1.6) (2026-01-11)
 
 
