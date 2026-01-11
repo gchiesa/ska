@@ -16,14 +16,16 @@ type UpstreamConfigService struct {
 }
 
 type UpstreamConfigInput struct {
-	Placeholder string `yaml:"placeholder"`
-	Label       string `yaml:"label"`
-	Regexp      string `yaml:"regexp,omitempty"`
-	MinLength   int    `yaml:"minLength,omitempty"`
-	MaxLength   int    `yaml:"maxLength,omitempty"`
-	Help        string `yaml:"help,omitempty"`
-	Default     string `yaml:"default,omitempty"`
-	WriteOnce   bool   `yaml:"writeOnce,omitempty"`
+	Placeholder string   `yaml:"placeholder"`
+	Label       string   `yaml:"label"`
+	Type        string   `yaml:"type,omitempty"` // "text" (default) or "list"
+	Regexp      string   `yaml:"regexp,omitempty"`
+	MinLength   int      `yaml:"minLength,omitempty"`
+	MaxLength   int      `yaml:"maxLength,omitempty"`
+	Help        string   `yaml:"help,omitempty"`
+	Default     string   `yaml:"default,omitempty"`
+	WriteOnce   bool     `yaml:"writeOnce,omitempty"`
+	Items       []string `yaml:"items,omitempty"` // Static list items for list type
 }
 
 type SkaConfig struct {

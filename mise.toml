@@ -17,7 +17,7 @@ run = "bash .ci/scripts/build.sh"
 description = "Install the Go binary"
 run = "bash .ci/scripts/install.sh"
 
-[tasks.run]
+[tasks.local]
 description = "Run the application"
 run = "bash .ci/scripts/local.sh"
 

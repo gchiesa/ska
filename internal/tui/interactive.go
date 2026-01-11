@@ -16,16 +16,30 @@ type SkaInteractiveService struct {
 	log            *log.Entry
 }
 
+// InputType defines the type of input (text or list)
+type InputType string
+
+const (
+	InputTypeText InputType = "text"
+	InputTypeList InputType = "list"
+)
+
+// ItemsFunc is a function that returns items for a list input
+type ItemsFunc func() []string
+
 type InteractiveInput struct {
-	Placeholder string `yaml:"placeholder"`
-	Label       string `yaml:"label"`
-	RegExp      string `yaml:"regexp,omitempty"`
-	MinLength   int    `yaml:"minLength,omitempty"`
-	MaxLength   int    `yaml:"maxLength,omitempty"`
-	Default     string `yaml:"default,omitempty"`
-	WriteOnce   bool   `yaml:"writeOnce,omitempty"`
-	Help        string `yaml:"help,omitempty"`
+	Placeholder string    `yaml:"placeholder"`
+	Label       string    `yaml:"label"`
+	Type        InputType `yaml:"type,omitempty"` // "text" (default) or "list"
+	RegExp      string    `yaml:"regexp,omitempty"`
+	MinLength   int       `yaml:"minLength,omitempty"`
+	MaxLength   int       `yaml:"maxLength,omitempty"`
+	Default     string    `yaml:"default,omitempty"`
+	WriteOnce   bool      `yaml:"writeOnce,omitempty"`
+	Help        string    `yaml:"help,omitempty"`
 	Value       string
+	Items       []string  `yaml:"items,omitempty"` // Static list items for list type
+	ItemsFunc   ItemsFunc `yaml:"-"`               // Function to generate list items dynamically (not serialized)
 }
 type InteractiveForm struct {
 	Inputs []InteractiveInput `yaml:"inputs"`
@@ -37,15 +51,22 @@ func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.U
 	var interactiveInputs []InteractiveInput
 
 	for _, i := range inputs {
+		inputType := InputType(i.Type)
+		if inputType == "" {
+			inputType = InputTypeText
+		}
+
 		input := &InteractiveInput{
 			Placeholder: i.Placeholder,
 			Label:       i.Label,
+			Type:        inputType,
 			RegExp:      i.Regexp,
 			MinLength:   i.MinLength,
 			MaxLength:   i.MaxLength,
 			Default:     i.Default,
 			WriteOnce:   i.WriteOnce,
 			Help:        i.Help,
+			Items:       i.Items,
 		}
 		interactiveInputs = append(interactiveInputs, *input)
 	}
