@@ -3,6 +3,7 @@ module github.com/gchiesa/ska
 go 1.24.0
 
 require (
+	github.com/BourgeoisBear/rasterm v1.1.2
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/alexflint/go-arg v1.5.1
 	github.com/apex/log v1.9.0
