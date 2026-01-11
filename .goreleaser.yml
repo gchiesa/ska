@@ -40,34 +40,31 @@ nfpms:
       mode: 0644
 sboms:
 - artifacts: archive
-  args: ["$artifact", "--output", "spdx-json=$document"]
-homebrew_casks:
+brews:
 - repository:
     owner: gchiesa
     name: homebrew-ska
     branch: main
     token: "{{ .Env.SKA_HOMEBREW_TOKEN }}"
   # yamllint disable-line rule:comments rule:line-length
-  binaries:
-    - ska
-  url:
-    template: https://github.com/gchiesa/ska/releases/download/{{ .Tag }}/{{ .ArtifactName }}
+  url_template: https://github.com/gchiesa/ska/releases/download/{{ .Tag }}/{{ .ArtifactName }}
   commit_author:
     name: Giuseppe Chiesa
     email: mail@giuseppechiesa.it
-  directory: Casks
+  directory: Formula
   homepage: https://github.com/gchiesa/ska
   description: >-
     SKA is a CLI and Library to scaffold, maintain and update from upstream blueprint your projects.
+  license: MIT
 archives:
 - wrap_in_directory: true
   format_overrides:
   - goos: windows
-    formats: [zip]
+    format: zip
 checksum:
   name_template: checksums.txt
 snapshot:
-  version_template: '{{ .Tag }}-next'
+  name_template: '{{ .Tag }}-next'
 changelog:
   disable: true
   sort: asc
