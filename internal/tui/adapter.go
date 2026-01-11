@@ -93,6 +93,15 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 	return m
 }
 
+// Banner shows the SKA banner either with text or graphical interface
+func (m *Model) Banner() error {
+	if !CanUseGraphic() {
+		println(TextBanner())
+		return nil
+	}
+	return GraphicalBanner()
+}
+
 func validator(writeOnce bool, minLength int, regexpString, oldValue string) func(string) error {
 	return func(s string) error {
 		if strings.TrimSpace(s) == "" && minLength > 0 {

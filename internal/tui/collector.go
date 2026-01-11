@@ -7,8 +7,6 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/common-nighthawk/go-figure"
-	"github.com/gchiesa/ska/internal/configuration"
 )
 
 type (
@@ -21,8 +19,6 @@ var (
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
 	good      = lipgloss.AdaptiveColor{Light: "#32a71d", Dark: "#32a71d"}
 	bad       = lipgloss.AdaptiveColor{Light: "#CE1E00", Dark: "#CE1E00"}
-
-	banner = figure.NewFigure(configuration.AppIdentifier, "doom", true)
 
 	headerStyle = lipgloss.NewStyle().
 			BorderStyle(lipgloss.NormalBorder()).
@@ -169,12 +165,6 @@ func (m *Model) updateFocusStyles() {
 
 func (m *Model) View() string {
 	var builder strings.Builder
-
-	if m.showBanner {
-		figure.Write(&builder, banner)
-		builder.WriteString("Your scaffolding buddy!\n")
-		builder.WriteRune('\n')
-	}
 
 	builder.WriteString(headerStyle.Render(m.header))
 	builder.WriteRune('\n')

@@ -95,6 +95,9 @@ func (s *SkaInteractiveService) Run() error {
 
 	tui := NewModelFromInteractiveForm(*s.formConfig, s.formTitle, s.formShowBanner)
 
+	if err := tui.Banner(); err != nil {
+		return err
+	}
 	if err := tui.Execute(); err != nil {
 		return err
 	}
