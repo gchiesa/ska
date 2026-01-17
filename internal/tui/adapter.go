@@ -15,7 +15,6 @@ type Model struct {
 	focusIndex       int
 	entries          []inputEntry    // new unified entry system
 	readonlyLabelMap map[string]bool // readonlyLabelMap map of labels which are readonly
-	writeOnceEnabled bool            // writeOnceEnabled enable the readonly management
 	err              error
 	exitWithCtrlC    bool
 }
@@ -80,7 +79,7 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 			t.Placeholder = iForm.Inputs[i].Help
 			t.PlaceholderStyle = helpStyle
 			// Validation
-			t.Validate = validator(iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp, iForm.Inputs[i].Default)
+			t.Validate = validator(iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp)
 			if iForm.Inputs[i].MaxLength > 0 {
 				t.CharLimit = iForm.Inputs[i].MaxLength
 			}
@@ -103,7 +102,7 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 
 func (m *Model) SetWriteOnce(isEnabled bool) *Model {
 	// update the state on the labels
-	for k, _ := range m.readonlyLabelMap {
+	for k := range m.readonlyLabelMap {
 		m.readonlyLabelMap[k] = isEnabled
 	}
 	return m
@@ -122,7 +121,7 @@ func (m *Model) Banner() error {
 	return GraphicalBanner()
 }
 
-func validator(minLength int, regexpString, oldValue string) func(string) error {
+func validator(minLength int, regexpString string) func(string) error {
 	return func(s string) error {
 		if strings.TrimSpace(s) == "" && minLength > 0 {
 			return fmt.Errorf("value cannot be empty")
