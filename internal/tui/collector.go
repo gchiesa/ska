@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/apex/log"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -182,17 +183,28 @@ func (m *Model) View() string {
 				builder.WriteString(badTick.Render("✖"))
 			}
 
+			// if the list is focused
 			if i == m.focusIndex {
 				// Show the label and list dropdown when focused
-				builder.WriteString(fmt.Sprintf(" %s\n", listLabelStyle.Render(entry.prompt)))
-				// Indent the list box to align with where the value would appear
+				builder.WriteString(fmt.Sprintf(" %s", listLabelStyle.Render(entry.prompt)))
+
+				// Calculate the indentation of the list box to align with where the value would appear
 				// "✔ " = 2 chars, then prompt length
-				indent := strings.Repeat(" ", 2+len(entry.prompt))
+				indentRemainingBoxLines := strings.Repeat(" ", 2+len(entry.prompt))
+
+				// render the listbox widget
 				listView := listBoxStyle.Render(entry.listModel.View())
-				// Add indent to each line of the list
+
+				// write the first line of the listbox widget next to the prompt
 				lines := strings.Split(listView, "\n")
-				for _, line := range lines {
-					builder.WriteString(indent + line + "\n")
+				if len(lines) == 0 {
+					log.Fatal("error while building the listbox. Exiting")
+				}
+				builder.WriteString(lines[0] + "\n")
+
+				// add indentRemainingBoxLines to each remaining line of the list
+				for _, line := range lines[1:] {
+					builder.WriteString(indentRemainingBoxLines + line + "\n")
 				}
 			} else {
 				// Show just label and selected value when not focused (aligned with text inputs)

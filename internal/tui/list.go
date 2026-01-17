@@ -63,13 +63,26 @@ func createListWidget(input InteractiveInput) list.Model {
 		}
 	}
 
-	// List height = visible items only (no title, status bar, or help)
-	listWidget := list.New(items, delegate, maxItemWidth+6, visibleItems)
+	widgetHeight := listMaxItems
+	if widgetHeight > visibleItems {
+		widgetHeight = visibleItems
+	}
+	hasPagination := len(items) > visibleItems
+	if hasPagination {
+		widgetHeight += 1
+	}
+	hasFilter := len(items) > visibleItems
+	if hasFilter {
+		widgetHeight += 1
+	}
+	// height is the maxItems + 1 for help and + 1 because I don't know
+	listWidget := list.New(items, delegate, maxItemWidth+6, widgetHeight+3)
 	listWidget.SetShowTitle(false)
 	listWidget.SetShowStatusBar(false)
-	listWidget.SetShowHelp(false)
-	listWidget.SetShowPagination(len(items) > listMaxItems) // Only show pagination if needed
-	listWidget.SetFilteringEnabled(true)
+	listWidget.SetShowHelp(true)
+	listWidget.SetShowPagination(hasPagination)
+	listWidget.SetFilteringEnabled(hasFilter)
+	listWidget.DisableQuitKeybindings()
 
 	// Select the default item if provided
 	if input.Default != "" {
