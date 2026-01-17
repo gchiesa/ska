@@ -43,6 +43,19 @@ var (
 )
 
 func (m *Model) Init() tea.Cmd {
+	// since there might be readonly entries, we need to calculate the initial focus index
+	m.focusIndex = len(m.entries) - 1
+	for {
+		m.focusIndex = (m.focusIndex + 1) % len(m.entries)
+		if readonly, ok := m.readonlyLabelMap[m.entries[m.focusIndex].label]; ok {
+			if readonly {
+				continue
+			}
+		}
+		break
+	}
+	m.updateFocusStyles()
+
 	return textinput.Blink
 }
 
@@ -268,7 +281,16 @@ func (m *Model) nextEntryIfNoError() {
 		m.entries[m.focusIndex].textInput.Blur()
 	}
 
-	m.focusIndex = (m.focusIndex + 1) % len(m.entries)
+	// move the focus to the next non-readonly entry
+	for {
+		m.focusIndex = (m.focusIndex + 1) % len(m.entries)
+		if readonly, ok := m.readonlyLabelMap[m.entries[m.focusIndex].label]; ok {
+			if readonly {
+				continue
+			}
+		}
+		break
+	}
 
 	// Focus new entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
@@ -291,9 +313,18 @@ func (m *Model) prevEntryIfNoError() {
 		m.entries[m.focusIndex].textInput.Blur()
 	}
 
-	m.focusIndex--
-	if m.focusIndex < 0 {
-		m.focusIndex = len(m.entries) - 1
+	// move the focus to the next non-readonly entry
+	for {
+		m.focusIndex--
+		if m.focusIndex < 0 {
+			m.focusIndex = len(m.entries) - 1
+		}
+		if readonly, ok := m.readonlyLabelMap[m.entries[m.focusIndex].label]; ok {
+			if readonly {
+				continue
+			}
+		}
+		break
 	}
 
 	// Focus new entry
