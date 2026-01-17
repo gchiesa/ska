@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1](https://github.com/gchiesa/ska/compare/v1.2.0...v1.2.1) (2026-01-17)
+
+
+### Bug Fixes
+
+* cosmetic fix on list ([162445e](https://github.com/gchiesa/ska/commit/162445e95d8e99b8b4a7bb936e47901b06ba9c29))
+* fix writeonce implementation ([6f2ecac](https://github.com/gchiesa/ska/commit/6f2ecac6323cf41b2cdd1475ecfd8cbd12ed5c24))
+* fix writeonce implementation ([e266f64](https://github.com/gchiesa/ska/commit/e266f6439c89524e0a045900f4e1c03165a3336f))
+
 ## [1.2.0](https://github.com/gchiesa/ska/compare/v1.1.6...v1.2.0) (2026-01-11)
 
 
