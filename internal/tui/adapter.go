@@ -10,12 +10,13 @@ import (
 )
 
 type Model struct {
-	header        string
-	showBanner    bool
-	focusIndex    int
-	entries       []inputEntry // new unified entry system
-	err           error
-	exitWithCtrlC bool
+	header           string
+	showBanner       bool
+	focusIndex       int
+	entries          []inputEntry    // new unified entry system
+	readonlyLabelMap map[string]bool // readonlyLabelMap map of labels which are readonly
+	err              error
+	exitWithCtrlC    bool
 }
 
 // inputEntry represents a single input in the form (either text or list)
@@ -30,9 +31,10 @@ type inputEntry struct {
 
 func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanner bool) *Model {
 	m := &Model{
-		header:     header,
-		showBanner: showBanner,
-		entries:    make([]inputEntry, len(iForm.Inputs)),
+		header:           header,
+		showBanner:       showBanner,
+		entries:          make([]inputEntry, len(iForm.Inputs)),
+		readonlyLabelMap: make(map[string]bool, len(iForm.Inputs)),
 	}
 
 	// calculate max placeholder length
@@ -54,6 +56,11 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 			prompt:    fmt.Sprintf(promptFormat, iForm.Inputs[i].Label),
 		}
 
+		// fill the map with readonly labels
+		if iForm.Inputs[i].WriteOnce {
+			m.readonlyLabelMap[entry.label] = false
+		}
+
 		if inputType == InputTypeList {
 			// Create list input
 			entry.listModel = createListWidget(iForm.Inputs[i])
@@ -72,7 +79,7 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 			t.Placeholder = iForm.Inputs[i].Help
 			t.PlaceholderStyle = helpStyle
 			// Validation
-			t.Validate = validator(iForm.Inputs[i].WriteOnce, iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp, iForm.Inputs[i].Default)
+			t.Validate = validator(iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp)
 			if iForm.Inputs[i].MaxLength > 0 {
 				t.CharLimit = iForm.Inputs[i].MaxLength
 			}
@@ -93,6 +100,14 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 	return m
 }
 
+func (m *Model) SetWriteOnce(isEnabled bool) *Model {
+	// update the state on the labels
+	for k := range m.readonlyLabelMap {
+		m.readonlyLabelMap[k] = isEnabled
+	}
+	return m
+}
+
 // Banner shows the SKA banner either with text or graphical interface
 func (m *Model) Banner() error {
 	if !m.showBanner {
@@ -106,7 +121,7 @@ func (m *Model) Banner() error {
 	return GraphicalBanner()
 }
 
-func validator(writeOnce bool, minLength int, regexpString, oldValue string) func(string) error {
+func validator(minLength int, regexpString string) func(string) error {
 	return func(s string) error {
 		if strings.TrimSpace(s) == "" && minLength > 0 {
 			return fmt.Errorf("value cannot be empty")
@@ -118,11 +133,6 @@ func validator(writeOnce bool, minLength int, regexpString, oldValue string) fun
 			re := regexp.MustCompile(regexpString)
 			if !re.MatchString(s) {
 				return fmt.Errorf("invalid value. It should match %s", regexpString)
-			}
-		}
-		if writeOnce && oldValue != "" {
-			if s != oldValue {
-				return fmt.Errorf("value cannot be changed, please change it back to '%s'", oldValue)
 			}
 		}
 		return nil

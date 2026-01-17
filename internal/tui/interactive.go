@@ -9,11 +9,12 @@ import (
 )
 
 type SkaInteractiveService struct {
-	formTitle      string
-	formConfig     *InteractiveForm
-	formShowBanner bool
-	variables      map[string]string
-	log            *log.Entry
+	formTitle        string
+	formConfig       *InteractiveForm
+	formShowBanner   bool
+	variables        map[string]string
+	writeOnceEnabled bool // writeOnceEnabled enable the readonly management
+	log              *log.Entry
 }
 
 // InputType defines the type of input (text or list)
@@ -78,6 +79,11 @@ func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.U
 	}
 }
 
+func (s *SkaInteractiveService) SetWriteOnce(isEnabled bool) *SkaInteractiveService {
+	s.writeOnceEnabled = isEnabled
+	return s
+}
+
 func (s *SkaInteractiveService) ShouldRun() bool {
 	if len(s.formConfig.Inputs) == 0 {
 		s.log.Info("no inputs in the interactive config.")
@@ -93,7 +99,8 @@ func (s *SkaInteractiveService) Run() error {
 	}
 	s.disableWithLoggingInvalidRegExp()
 
-	tui := NewModelFromInteractiveForm(*s.formConfig, s.formTitle, s.formShowBanner)
+	tui := NewModelFromInteractiveForm(*s.formConfig, s.formTitle, s.formShowBanner).
+		SetWriteOnce(s.writeOnceEnabled)
 
 	if err := tui.Banner(); err != nil {
 		return err
