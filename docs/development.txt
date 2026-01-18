@@ -1,0 +1,222 @@
+================================================================================
+                    SKA Documentation - Local Development Guide
+================================================================================
+
+This document explains how to build and preview the SKA documentation website
+locally on your laptop.
+
+Production URL: https://ska.gchiesa.dev
+
+--------------------------------------------------------------------------------
+PREREQUISITES
+--------------------------------------------------------------------------------
+
+Before you begin, ensure you have the following installed:
+
+1. Node.js (version 18.14.1 or higher)
+   - Check: node --version
+   - Install: https://nodejs.org/ or use nvm/fnm
+
+2. npm or pnpm (comes with Node.js)
+   - Check: npm --version
+
+--------------------------------------------------------------------------------
+INITIAL SETUP
+--------------------------------------------------------------------------------
+
+Navigate to the docs folder and install dependencies:
+
+    cd docs
+    npm install
+
+This will install:
+- Astro (static site generator)
+- Starlight (documentation theme)
+- Tailwind CSS (styling)
+- Other required dependencies
+
+--------------------------------------------------------------------------------
+LOCAL DEVELOPMENT
+--------------------------------------------------------------------------------
+
+Start the development server:
+
+    npm run dev
+
+This will:
+- Start a local server at http://localhost:4321/
+- Enable hot module replacement (HMR) for instant updates
+- Watch for file changes and auto-reload
+
+Open your browser to: http://localhost:4321/
+
+--------------------------------------------------------------------------------
+BUILDING FOR PRODUCTION
+--------------------------------------------------------------------------------
+
+Create a production build:
+
+    npm run build
+
+The built site will be in the `dist/` folder.
+
+Preview the production build locally:
+
+    npm run preview
+
+This serves the built site at http://localhost:4321/
+
+--------------------------------------------------------------------------------
+PROJECT STRUCTURE
+--------------------------------------------------------------------------------
+
+docs/
+├── astro.config.mjs      # Astro + Starlight configuration
+├── tailwind.config.mjs   # Tailwind CSS configuration
+├── package.json          # Project dependencies
+├── src/
+│   ├── assets/           # Images and static assets
+│   ├── components/       # Custom Astro components
+│   ├── content/
+│   │   └── docs/         # Documentation markdown files
+│   │       ├── getting-started/
+│   │       ├── concepts/
+│   │       └── use-cases/
+│   ├── pages/
+│   │   └── index.astro   # Custom landing page
+│   └── styles/
+│       ├── custom.css    # Custom CSS styles
+│       └── tailwind.css  # Tailwind directives
+└── public/               # Static files (favicon, CNAME, etc.)
+
+--------------------------------------------------------------------------------
+ADDING DOCUMENTATION
+--------------------------------------------------------------------------------
+
+To add new documentation pages:
+
+1. Create a new .md or .mdx file in the appropriate folder under
+   src/content/docs/
+
+2. Add frontmatter at the top of the file:
+
+   ---
+   title: Your Page Title
+   description: Brief description for SEO and previews.
+   ---
+
+3. Write your content using Markdown.
+
+4. If you want the page in the sidebar, add it to astro.config.mjs
+   in the `sidebar` configuration array.
+
+Example - Adding a new use case:
+
+1. Create file: src/content/docs/use-cases/my-new-case.md
+2. Add to sidebar in astro.config.mjs:
+
+   {
+     label: 'Use Cases',
+     items: [
+       // ... existing items
+       { label: 'My New Case', slug: 'use-cases/my-new-case' },
+     ],
+   },
+
+--------------------------------------------------------------------------------
+EDITING THE LANDING PAGE
+--------------------------------------------------------------------------------
+
+The landing page is a custom Astro component at:
+
+    src/pages/index.astro
+
+It uses Tailwind CSS for styling. Edit this file to:
+- Update the hero section
+- Modify the features grid
+- Change the code preview examples
+- Update call-to-action buttons
+
+--------------------------------------------------------------------------------
+AUTOMATIC DEPLOYMENT
+--------------------------------------------------------------------------------
+
+The site is automatically deployed to GitHub Pages when changes are pushed
+to the `docs/` folder on the main branch.
+
+Deployment workflow: .github/workflows/deploy-docs.yml
+
+How it works:
+1. Push changes to docs/ folder on main branch
+2. GitHub Actions automatically triggers
+3. Site is built and deployed to GitHub Pages
+4. Available at https://ska.gchiesa.dev
+
+Manual deployment trigger:
+- Go to Actions tab in GitHub
+- Select "Deploy Documentation" workflow
+- Click "Run workflow"
+
+--------------------------------------------------------------------------------
+CUSTOM DOMAIN SETUP (ONE-TIME)
+--------------------------------------------------------------------------------
+
+To configure the custom domain ska.gchiesa.dev:
+
+1. In your DNS provider, create a CNAME record:
+   - Name: ska
+   - Value: gchiesa.github.io
+
+2. In GitHub repository settings:
+   - Go to Settings > Pages
+   - Under "Build and deployment", select "GitHub Actions"
+   - Under "Custom domain", enter: ska.gchiesa.dev
+   - Check "Enforce HTTPS"
+
+3. Wait for DNS propagation (can take up to 24 hours)
+
+The CNAME file in docs/public/ ensures the custom domain persists
+across deployments.
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+Issue: "Cannot find module" errors
+Fix: Run `npm install` to ensure all dependencies are installed
+
+Issue: Port 4321 already in use
+Fix: Use a different port: `npm run dev -- --port 3000`
+
+Issue: Changes not reflecting
+Fix: Stop the dev server (Ctrl+C) and restart with `npm run dev`
+
+Issue: Build fails with type errors
+Fix: Check that all frontmatter in .md files is valid YAML
+
+Issue: Deployment not triggering
+Fix: Ensure changes are in the docs/ folder and pushed to main branch
+
+Issue: Custom domain not working
+Fix: Check DNS settings and wait for propagation. Verify CNAME file exists.
+
+--------------------------------------------------------------------------------
+USEFUL COMMANDS
+--------------------------------------------------------------------------------
+
+npm run dev        Start development server
+npm run build      Build for production
+npm run preview    Preview production build
+npm run astro      Run Astro CLI commands
+
+--------------------------------------------------------------------------------
+RESOURCES
+--------------------------------------------------------------------------------
+
+- Astro Docs: https://docs.astro.build
+- Starlight Docs: https://starlight.astro.build
+- Tailwind Docs: https://tailwindcss.com/docs
+- Markdown Guide: https://www.markdownguide.org
+- GitHub Pages Custom Domains: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
+
+================================================================================

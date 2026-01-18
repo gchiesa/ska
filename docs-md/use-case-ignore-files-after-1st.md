@@ -37,7 +37,7 @@ ignorePaths:
 # Files/folders that SKA should ignore in your generated project on future updates
 skaConfig:
   ignorePaths:
-  - "docs/changelog.md"
+  - "docs-md/changelog.md"
   - "local/*.env"
   - "configs/example-{{ .appName }}.yaml"
   - "*.local"

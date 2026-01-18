@@ -1,0 +1,315 @@
+---
+import '../styles/tailwind.css';
+import '../styles/custom.css';
+
+const features = [
+  {
+    title: 'Dynamic Forms',
+    description: 'Interactive Terminal UI captures template variables with validation, defaults, and inline help.',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    color: 'sky',
+  },
+  {
+    title: 'Central Updates',
+    description: 'Roll out template changes across all scaffolded projects. No more one-shot code generation.',
+    icon: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+    color: 'violet',
+  },
+  {
+    title: 'Partial Management',
+    description: 'Keep specific file sections centrally managed while developers customize the rest freely.',
+    icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z',
+    color: 'rose',
+  },
+  {
+    title: 'Multi-Source',
+    description: 'Pull blueprints from GitHub, GitLab, or local filesystem with version pinning support.',
+    icon: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9',
+    color: 'emerald',
+  },
+  {
+    title: 'Go Templates + Sprig',
+    description: 'Powerful templating with Go Template framework plus 100+ Sprig functions included.',
+    icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+    color: 'amber',
+  },
+  {
+    title: 'Config Management',
+    description: 'Manage multiple SKA configurations in the same folder. Update each template independently.',
+    icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+    color: 'cyan',
+  },
+];
+
+const colorClasses = {
+  sky: { bg: 'bg-sky-100', text: 'text-sky-600', border: 'border-sky-200' },
+  violet: { bg: 'bg-violet-100', text: 'text-violet-600', border: 'border-violet-200' },
+  rose: { bg: 'bg-rose-100', text: 'text-rose-600', border: 'border-rose-200' },
+  emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600', border: 'border-emerald-200' },
+  amber: { bg: 'bg-amber-100', text: 'text-amber-600', border: 'border-amber-200' },
+  cyan: { bg: 'bg-cyan-100', text: 'text-cyan-600', border: 'border-cyan-200' },
+};
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SKA - Your scaffolding buddy. A powerful templating tool for Platform Engineers with dynamic forms, central updates, and partial file management." />
+    <title>SKA - Your Scaffolding Buddy</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-white text-slate-900 font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2 group">
+          <div class="bg-[#0f172a] rounded-lg p-1.5 shadow-md">
+            <img
+              src="/logo.png"
+              alt="SKA"
+              class="h-9 w-auto"
+            />
+          </div>
+        </a>
+        <div class="flex items-center gap-6">
+          <a href="/getting-started/introduction/" class="text-slate-600 hover:text-slate-900 transition-colors text-sm font-medium">Docs</a>
+          <a href="/use-cases/multiple-template-subfolders/" class="text-slate-600 hover:text-slate-900 transition-colors text-sm font-medium">Use Cases</a>
+          <a href="https://github.com/gchiesa/ska" target="_blank" rel="noopener" class="text-slate-600 hover:text-slate-900 transition-colors">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center pt-20 px-6 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
+      <!-- Background decoration -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-1/4 w-72 h-72 bg-sky-100 rounded-full blur-3xl opacity-60"></div>
+        <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-violet-100 rounded-full blur-3xl opacity-50"></div>
+      </div>
+
+      <div class="relative z-10 max-w-4xl mx-auto text-center">
+        <!-- Centered Logo -->
+        <div class="mb-8 animate-slide-up">
+          <div class="inline-block bg-[#0f172a] rounded-2xl p-4 shadow-xl">
+            <img
+              src="/logo.png"
+              alt="SKA Logo"
+              class="h-28 md:h-36 w-auto"
+            />
+          </div>
+        </div>
+
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-sm font-medium mb-6 animate-slide-up animate-delay-100">
+          <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+          Built for Platform Engineers
+        </div>
+
+        <!-- Main Heading -->
+        <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6 animate-slide-up animate-delay-200">
+          Your<br />
+          <span class="bg-gradient-to-r from-sky-600 via-violet-600 to-rose-500 bg-clip-text text-transparent">Scaffolding Buddy</span>
+        </h1>
+
+        <!-- Subheading -->
+        <p class="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto mb-10 animate-slide-up animate-delay-300">
+          Scaffold projects from centrally maintained templates.
+          Update them over time. Keep your standards in sync.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-slide-up animate-delay-400">
+          <a href="/getting-started/quick-start/" class="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-violet-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg shadow-sky-500/25 hover:shadow-sky-500/40 hover:-translate-y-0.5 transition-all">
+            Get Started
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+          <a href="https://github.com/gchiesa/ska" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white text-slate-700 px-8 py-4 rounded-xl font-semibold border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+
+        <!-- Code Preview -->
+        <div class="max-w-2xl mx-auto animate-slide-up animate-delay-500">
+          <div class="bg-slate-900 rounded-2xl shadow-2xl shadow-slate-900/20 overflow-hidden text-left">
+            <div class="flex items-center gap-2 px-4 py-3 bg-slate-800 border-b border-slate-700">
+              <div class="w-3 h-3 rounded-full bg-red-500"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500"></div>
+              <span class="ml-3 text-slate-400 text-sm font-mono">Terminal</span>
+            </div>
+            <div class="p-6 font-mono text-sm md:text-base">
+              <div class="flex items-start gap-3 mb-3">
+                <span class="text-emerald-400 select-none">$</span>
+                <span>
+                  <span class="text-sky-400">ska</span>
+                  <span class="text-slate-300"> create</span>
+                  <span class="text-violet-400"> --blueprint</span>
+                  <span class="text-amber-300"> github.com/org/template@v1.0</span>
+                </span>
+              </div>
+              <div class="flex items-start gap-3 mb-3">
+                <span class="text-emerald-400 select-none">$</span>
+                <span>
+                  <span class="text-sky-400">ska</span>
+                  <span class="text-slate-300"> update</span>
+                  <span class="text-violet-400"> --path</span>
+                  <span class="text-amber-300"> .</span>
+                </span>
+              </div>
+              <div class="text-slate-400">
+                <span class="text-emerald-400">&#10003;</span> Project updated with latest template changes
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Bento Grid -->
+    <section class="py-24 px-6 bg-slate-50">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-5xl font-bold mb-4 text-slate-900">
+            Everything you need for<br />
+            <span class="bg-gradient-to-r from-sky-600 via-violet-600 to-rose-500 bg-clip-text text-transparent">scalable scaffolding</span>
+          </h2>
+          <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+            SKA combines the simplicity of template expansion with powerful features for maintaining consistency across your organization.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((feature) => {
+            const colors = colorClasses[feature.color as keyof typeof colorClasses];
+            return (
+              <div class="bg-white rounded-2xl p-8 border border-slate-200 hover:border-slate-300 hover:shadow-lg hover:-translate-y-1 transition-all">
+                <div class={`w-12 h-12 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center mb-6`}>
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d={feature.icon} />
+                  </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-3 text-slate-900">{feature.title}</h3>
+                <p class="text-slate-600 leading-relaxed">{feature.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-24 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-5xl font-bold mb-4 text-slate-900">
+            Simple yet <span class="bg-gradient-to-r from-sky-600 to-violet-600 bg-clip-text text-transparent">powerful</span>
+          </h2>
+          <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+            Three commands to transform how your team manages project templates.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mx-auto mb-6 border border-sky-200">
+              <span class="text-3xl font-bold">1</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-3 text-slate-900">Create</h3>
+            <p class="text-slate-600 mb-4">Scaffold a new project from any Git-hosted or local blueprint template.</p>
+            <code class="inline-block px-4 py-2 bg-slate-100 rounded-lg text-sm text-sky-700 font-mono">ska create --blueprint url</code>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center mx-auto mb-6 border border-violet-200">
+              <span class="text-3xl font-bold">2</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-3 text-slate-900">Customize</h3>
+            <p class="text-slate-600 mb-4">Edit your project freely. SKA tracks what's yours vs. what's centrally managed.</p>
+            <code class="inline-block px-4 py-2 bg-slate-100 rounded-lg text-sm text-violet-700 font-mono"># edit your files</code>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6 border border-emerald-200">
+              <span class="text-3xl font-bold">3</span>
+            </div>
+            <h3 class="text-xl font-semibold mb-3 text-slate-900">Update</h3>
+            <p class="text-slate-600 mb-4">Pull in upstream template changes without losing your customizations.</p>
+            <code class="inline-block px-4 py-2 bg-slate-100 rounded-lg text-sm text-emerald-700 font-mono">ska update --path .</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 px-6 bg-slate-50">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-gradient-to-br from-sky-600 to-violet-600 rounded-3xl p-12 text-center text-white shadow-xl shadow-sky-500/20">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            Ready to streamline your scaffolding?
+          </h2>
+          <p class="text-lg text-sky-100 mb-8 max-w-xl mx-auto">
+            Install SKA in seconds and start creating maintainable project templates today.
+          </p>
+          <div class="bg-slate-900 rounded-xl inline-block text-left mb-8 shadow-lg">
+            <div class="flex items-center gap-2 px-4 py-2 bg-slate-800 rounded-t-xl border-b border-slate-700">
+              <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+            </div>
+            <div class="px-6 py-4 font-mono text-sm">
+              <div class="flex items-center gap-3">
+                <span class="text-emerald-400 select-none">$</span>
+                <span>
+                  <span class="text-sky-400">brew</span>
+                  <span class="text-slate-300"> tap gchiesa/ska &&</span>
+                  <span class="text-sky-400"> brew</span>
+                  <span class="text-slate-300"> install ska</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="/getting-started/installation/" class="inline-flex items-center gap-2 bg-white text-sky-700 px-8 py-4 rounded-xl font-semibold hover:bg-sky-50 transition-colors">
+              Installation Guide
+            </a>
+            <a href="/getting-started/quick-start/" class="inline-flex items-center gap-2 bg-white/10 text-white px-8 py-4 rounded-xl font-semibold border border-white/20 hover:bg-white/20 transition-colors">
+              Quick Start Tutorial
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 bg-white border-t border-slate-200">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <div class="bg-[#0f172a] rounded-md p-1 shadow-sm">
+            <img src="/logo.png" alt="SKA" class="h-6 w-auto" />
+          </div>
+          <span class="text-slate-300">|</span>
+          <span class="text-slate-500 text-sm">Made with care by Giuseppe Chiesa</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-slate-500">
+          <a href="/getting-started/introduction/" class="hover:text-slate-900 transition-colors">Documentation</a>
+          <a href="https://github.com/gchiesa/ska" target="_blank" rel="noopener" class="hover:text-slate-900 transition-colors">GitHub</a>
+          <a href="https://pkg.go.dev/github.com/gchiesa/ska" target="_blank" rel="noopener" class="hover:text-slate-900 transition-colors">Go Docs</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

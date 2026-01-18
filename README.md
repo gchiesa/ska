@@ -124,13 +124,13 @@ More information is available with `ska --help`.
 
 The following links are examples of how you can use SKA in various common use cases:
 
-* [central repository with multiple templates in subfolders](docs/use-case-multiple-template-subfolders.md)
+* [central repository with multiple templates in subfolders](docs-md/use-case-multiple-template-subfolders.md)
 
-* [centrally maintain only a part of a file](docs/use-case-partial-management.md)
+* [centrally maintain only a part of a file](docs-md/use-case-partial-management.md)
 
-* [ignore files after 1st templating](docs/use-case-ignore-files-after-1st.md)
+* [ignore files after 1st templating](docs-md/use-case-ignore-files-after-1st.md)
 
-* [manage multiple ska templates in the same folder](docs/use-case-manage-multiple-templates-same-folder.md)
+* [manage multiple ska templates in the same folder](docs-md/use-case-manage-multiple-templates-same-folder.md)
 
 ## Integrate SKA in your project
 
