@@ -12,7 +12,7 @@ jobs:
     name: Golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Setup mise
         uses: jdx/mise-action@v2
         with:
