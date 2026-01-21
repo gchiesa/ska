@@ -25,13 +25,17 @@ var (
 			BorderStyle(lipgloss.NormalBorder()).
 			PaddingLeft(2).PaddingRight(2).Foreground(special)
 
-	focusedStyle = lipgloss.NewStyle().Bold(true).Foreground(highlight)
-	blurredStyle = lipgloss.NewStyle().Bold(false).Foreground(subtle)
-	noStyle      = lipgloss.NewStyle()
-	helpStyle    = blurredStyle.AlignHorizontal(lipgloss.Right).Italic(true)
-	errorStyle   = lipgloss.NewStyle().Foreground(bad).MarginTop(2).MarginBottom(1)
-	goodTick     = lipgloss.NewStyle().Foreground(good)
-	badTick      = lipgloss.NewStyle().Foreground(bad)
+	focusedStyle       = lipgloss.NewStyle().Bold(true).Foreground(highlight)
+	blurredStyle       = lipgloss.NewStyle().Bold(false).Foreground(subtle)
+	readonlyStyle      = lipgloss.NewStyle().Bold(false).Foreground(subtle).Faint(true)
+	readonlyValueStyle = lipgloss.NewStyle().Bold(true).Foreground(subtle).Faint(true).Transform(func(s string) string {
+		return "🔒 " + strings.TrimSpace(s)
+	})
+	noStyle    = lipgloss.NewStyle()
+	helpStyle  = blurredStyle.AlignHorizontal(lipgloss.Right).Italic(true)
+	errorStyle = lipgloss.NewStyle().Foreground(bad).MarginTop(2).MarginBottom(1)
+	goodTick   = lipgloss.NewStyle().Foreground(good)
+	badTick    = lipgloss.NewStyle().Foreground(bad)
 
 	listLabelStyle = lipgloss.NewStyle().Bold(true).Foreground(highlight)
 
@@ -75,7 +79,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		} else {
 			var cmd tea.Cmd
-			m.entries[i].textInput, cmd = m.entries[i].textInput.Update(msg)
+			m.entries[i].textModel, cmd = m.entries[i].textModel.Update(msg)
 			cmds = append(cmds, cmd)
 		}
 	}
@@ -90,7 +94,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			var i int
 			for i = range m.entries {
 				if m.entries[i].inputType == InputTypeText {
-					if err := m.entries[i].textInput.Validate(m.entries[i].textInput.Value()); err != nil {
+					if err := m.entries[i].textModel.Validate(m.entries[i].textModel.Value()); err != nil {
 						m.err = err
 						break
 					}
@@ -139,19 +143,6 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.exitWithCtrlC = true
 				return m, tea.Quit
 			}
-
-		case tea.KeyUp, tea.KeyDown:
-			// For list inputs, let the list handle up/down
-			if currentEntry.inputType == InputTypeList {
-				// Already handled above in the list update
-			} else {
-				// For text inputs, navigate between entries
-				if msg.Type == tea.KeyDown {
-					m.nextEntryIfNoError()
-				} else {
-					m.prevEntryIfNoError()
-				}
-			}
 		}
 
 		// Update focus styles
@@ -167,11 +158,22 @@ func (m *Model) updateFocusStyles() {
 	for i := range m.entries {
 		if m.entries[i].inputType == InputTypeText {
 			if i == m.focusIndex {
-				m.entries[i].textInput.PromptStyle = focusedStyle
-				m.entries[i].textInput.Focus()
+				m.entries[i].textModel.PromptStyle = focusedStyle
+				m.entries[i].textModel.Focus()
 			} else {
-				m.entries[i].textInput.PromptStyle = noStyle
-				m.entries[i].textInput.Blur()
+				m.entries[i].textModel.PromptStyle = noStyle
+				m.entries[i].textModel.Blur()
+			}
+		}
+		// style differently the readonly
+		if readonly, ok := m.readonlyLabelMap[m.entries[i].label]; ok {
+			if readonly {
+				if m.entries[i].inputType == InputTypeList {
+					m.entries[i].inputType = InputTypeText
+					m.entries[i].textModel.SetValue(m.entries[i].selected)
+				}
+				m.entries[i].textModel.PromptStyle = readonlyStyle
+				m.entries[i].textModel.TextStyle = readonlyValueStyle
 			}
 		}
 	}
@@ -229,18 +231,18 @@ func (m *Model) View() string {
 			}
 		} else {
 			// Render text input
-			if entry.textInput.Validate(entry.textInput.Value()) == nil {
+			if entry.textModel.Validate(entry.textModel.Value()) == nil {
 				builder.WriteString(goodTick.Render("✔"))
 			} else {
 				builder.WriteString(badTick.Render("✖"))
 			}
-			builder.WriteString(fmt.Sprintf(" %s ", entry.textInput.View()))
+			builder.WriteString(fmt.Sprintf(" %s ", entry.textModel.View()))
 			builder.WriteRune('\n')
 		}
 	}
 
 	builder.WriteRune('\n')
-	builder.WriteString(helpStyle.Render(" ↑, ↓: navigate, enter: confirm, ctrl+c: quit, ctrl+s: save"))
+	builder.WriteString(helpStyle.Render(" tab/shift+tab: navigate, enter: confirm, ctrl+c: quit, ctrl+s: save"))
 	if m.err != nil {
 		builder.WriteString(errorStyle.Render(m.err.Error()))
 	}
@@ -257,12 +259,12 @@ func (m *Model) Execute() error {
 func (m *Model) focusEntry(id int) {
 	// Blur current entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.entries[m.focusIndex].textInput.Blur()
+		m.entries[m.focusIndex].textModel.Blur()
 	}
 	m.focusIndex = id
 	// Focus new entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.entries[m.focusIndex].textInput.Focus()
+		m.entries[m.focusIndex].textModel.Focus()
 	}
 }
 
@@ -270,7 +272,7 @@ func (m *Model) focusEntry(id int) {
 func (m *Model) nextEntryIfNoError() {
 	// Check for errors on current entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.err = m.entries[m.focusIndex].textInput.Err
+		m.err = m.entries[m.focusIndex].textModel.Err
 		if m.err != nil {
 			return
 		}
@@ -278,7 +280,7 @@ func (m *Model) nextEntryIfNoError() {
 
 	// Blur current entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.entries[m.focusIndex].textInput.Blur()
+		m.entries[m.focusIndex].textModel.Blur()
 	}
 
 	// move the focus to the next non-readonly entry
@@ -294,7 +296,7 @@ func (m *Model) nextEntryIfNoError() {
 
 	// Focus new entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.entries[m.focusIndex].textInput.Focus()
+		m.entries[m.focusIndex].textModel.Focus()
 	}
 }
 
@@ -302,7 +304,7 @@ func (m *Model) nextEntryIfNoError() {
 func (m *Model) prevEntryIfNoError() {
 	// Check for errors on current entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.err = m.entries[m.focusIndex].textInput.Err
+		m.err = m.entries[m.focusIndex].textModel.Err
 		if m.err != nil {
 			return
 		}
@@ -310,7 +312,7 @@ func (m *Model) prevEntryIfNoError() {
 
 	// Blur current entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.entries[m.focusIndex].textInput.Blur()
+		m.entries[m.focusIndex].textModel.Blur()
 	}
 
 	// move the focus to the next non-readonly entry
@@ -329,7 +331,7 @@ func (m *Model) prevEntryIfNoError() {
 
 	// Focus new entry
 	if m.entries[m.focusIndex].inputType == InputTypeText {
-		m.entries[m.focusIndex].textInput.Focus()
+		m.entries[m.focusIndex].textModel.Focus()
 	}
 }
 
@@ -339,7 +341,7 @@ func (m *Model) GetVariablesForInteractiveForm(iForm InteractiveForm) map[string
 		if m.entries[i].inputType == InputTypeList {
 			variables[iForm.Inputs[i].Placeholder] = m.entries[i].selected
 		} else {
-			variables[iForm.Inputs[i].Placeholder] = m.entries[i].textInput.Value()
+			variables[iForm.Inputs[i].Placeholder] = m.entries[i].textModel.Value()
 		}
 	}
 	return variables

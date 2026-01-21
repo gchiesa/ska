@@ -22,7 +22,7 @@ type Model struct {
 // inputEntry represents a single input in the form (either text or list)
 type inputEntry struct {
 	inputType InputType
-	textInput textinput.Model
+	textModel textinput.Model
 	listModel list.Model
 	label     string
 	prompt    string // formatted prompt (e.g., "Label      : ")
@@ -61,6 +61,35 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 			m.readonlyLabelMap[entry.label] = false
 		}
 
+		// Create text input (default)
+		t := textinput.New()
+
+		// Prompt
+		t.Prompt = fmt.Sprintf(promptFormat, iForm.Inputs[i].Label)
+
+		// Placeholder
+		t.Placeholder = iForm.Inputs[i].Help
+		t.PlaceholderStyle = helpStyle
+
+		// Validation
+		t.Validate = validator(iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp)
+		if iForm.Inputs[i].MaxLength > 0 {
+			t.CharLimit = iForm.Inputs[i].MaxLength
+		}
+
+		// Default
+		if iForm.Inputs[i].Default != "" {
+			t.SetValue(iForm.Inputs[i].Default)
+		}
+
+		// First Item
+		if i == 0 {
+			t.Focus()
+			t.PromptStyle = focusedStyle
+			t.TextStyle = noStyle
+		}
+		entry.textModel = t
+
 		if inputType == InputTypeList {
 			// Create list input
 			entry.listModel = createListWidget(iForm.Inputs[i])
@@ -68,32 +97,6 @@ func NewModelFromInteractiveForm(iForm InteractiveForm, header string, showBanne
 			if iForm.Inputs[i].Default != "" {
 				entry.selected = iForm.Inputs[i].Default
 			}
-		} else {
-			// Create text input (default)
-			t := textinput.New()
-
-			// Prompt
-			t.Prompt = fmt.Sprintf(promptFormat, iForm.Inputs[i].Label)
-
-			// Placeholder
-			t.Placeholder = iForm.Inputs[i].Help
-			t.PlaceholderStyle = helpStyle
-			// Validation
-			t.Validate = validator(iForm.Inputs[i].MinLength, iForm.Inputs[i].RegExp)
-			if iForm.Inputs[i].MaxLength > 0 {
-				t.CharLimit = iForm.Inputs[i].MaxLength
-			}
-			// Default
-			if iForm.Inputs[i].Default != "" {
-				t.SetValue(iForm.Inputs[i].Default)
-			}
-			// First Item
-			if i == 0 {
-				t.Focus()
-				t.PromptStyle = focusedStyle
-				t.TextStyle = noStyle
-			}
-			entry.textInput = t
 		}
 		m.entries[i] = entry
 	}
