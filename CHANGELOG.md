@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.2](https://github.com/gchiesa/ska/compare/v1.2.1...v1.2.2) (2026-01-21)
+
+
+### Bug Fixes
+
+* improved navigation with tab key and UI for writeonce ([58a1790](https://github.com/gchiesa/ska/commit/58a17903d8210dda0765d5edcbf7494002967386))
+
+
+### Docs
+
+* fix dark mode ([569408f](https://github.com/gchiesa/ska/commit/569408f3cd64d2d6af362c6469c94277e5819743))
+* update css ([d197bf5](https://github.com/gchiesa/ska/commit/d197bf564c8d89ab843c4a20a18a6ed382495259))
+* update website for ska ([34f50b3](https://github.com/gchiesa/ska/commit/34f50b3b9d37b0fd1ea5c330db6496d850a46c33))
+
 ## [1.2.1](https://github.com/gchiesa/ska/compare/v1.2.0...v1.2.1) (2026-01-17)
 
 
