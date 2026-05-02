@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0](https://github.com/gchiesa/ska/compare/v1.2.2...v1.3.0) (2026-05-02)
+
+
+### Features
+
+* add new yaml-merge engine for deep YAML merging instead text base replacement ([e06fc49](https://github.com/gchiesa/ska/commit/e06fc49d49b1660c849e06a3cda4037a13f7f5eb))
+* fix linting ([8c469d1](https://github.com/gchiesa/ska/commit/8c469d111cd1d5c1550b6434f78b4e7d6e73847b))
+* update docs ([1abca85](https://github.com/gchiesa/ska/commit/1abca85de35a03f7be54fc4c2203836d20c066c4))
+* update vulnerable dependencies and moved to go1.26 ([760b1f4](https://github.com/gchiesa/ska/commit/760b1f435f2879e1de1b595650e92fe1000550ac))
+
+
+### Docs
+
+* update docs dependencies ([794c242](https://github.com/gchiesa/ska/commit/794c242931c5dda10909a21e7a81e365a4aeb32d))
+* update node dependency ([61e4bf8](https://github.com/gchiesa/ska/commit/61e4bf8786ce12c37c6fc2bf5d5af1f2e5eba153))
+
 ## [1.2.2](https://github.com/gchiesa/ska/compare/v1.2.1...v1.2.2) (2026-01-21)
 
 
