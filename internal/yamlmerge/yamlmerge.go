@@ -182,11 +182,12 @@ func stripCommonIndent(content []byte) ([]byte, int) {
 
 	stripped := make([]string, len(lines))
 	for i, line := range lines {
-		if strings.TrimSpace(line) == "" {
+		switch {
+		case strings.TrimSpace(line) == "":
 			stripped[i] = ""
-		} else if len(line) >= minIndent {
+		case len(line) >= minIndent:
 			stripped[i] = line[minIndent:]
-		} else {
+		default:
 			stripped[i] = line
 		}
 	}
