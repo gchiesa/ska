@@ -1,0 +1,8 @@
+preamble: true
+# ska-start:yaml-section
+test:
+  key: abc
+  version: base
+  extraKey: preserved
+# ska-end
+postamble: true
