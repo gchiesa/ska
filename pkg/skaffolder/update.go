@@ -33,7 +33,7 @@ type SkaUpdateTask struct {
 // The returned task can be executed via (*SkaUpdateTask).Update.
 func NewSkaUpdateTask(baseURI, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaUpdateTask {
 	logCtx := log.WithFields(log.Fields{
-		"pkg": "skaffolder",
+		logFieldPkg: logPkg,
 	})
 	return &SkaUpdateTask{
 		BaseURI:     baseURI,

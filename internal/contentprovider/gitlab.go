@@ -26,8 +26,8 @@ const GitLabPrefix = "https://gitlab.com/"
 
 func NewGitLab(remoteURI string, opt ...GitLabOption) (*GitLab, error) {
 	logCtx := log.WithFields(log.Fields{
-		"pkg":  "contentprovider",
-		"type": "gitlab",
+		logFieldPkg:  logPkg,
+		logFieldType: "gitlab",
 	})
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
 	if err != nil {
@@ -60,7 +60,7 @@ func (cp *GitLab) WorkingDir() string {
 }
 
 func (cp *GitLab) Cleanup() error {
-	cp.log.WithFields(log.Fields{"workingDir": cp.workingDir}).Debug("removing working dir.")
+	cp.log.WithFields(log.Fields{logFieldWorkingDir: cp.workingDir}).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err
 }

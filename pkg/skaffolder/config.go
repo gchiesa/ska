@@ -23,7 +23,7 @@ type SkaConfigTask struct {
 // NewSkaConfigTask constructs a SkaConfigTask bound to a base directory.
 func NewSkaConfigTask(baseURI string) *SkaConfigTask {
 	logCtx := log.WithFields(log.Fields{
-		"pkg": "skaffolder",
+		logFieldPkg: logPkg,
 	})
 	return &SkaConfigTask{
 		BaseURI: baseURI,
