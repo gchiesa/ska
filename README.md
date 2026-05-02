@@ -132,6 +132,8 @@ The following links are examples of how you can use SKA in various common use ca
 
 * [manage multiple ska templates in the same folder](docs-md/use-case-manage-multiple-templates-same-folder.md)
 
+* [YAML-aware updates with the yaml-merge engine](docs-md/use-case-yaml-merge-engine.md)
+
 ## Integrate SKA in your project
 
 SKA is designed for simplicity and quick usage. If you want to integrate SKA capabilities in your app or framework,
@@ -213,6 +215,42 @@ rest of the file as it is.
 This is quite useful for files where only a part should be centrally managed and the rest will be customized by the
 user, after the initial creation.
 
+### Partial section engines
+
+By default, when SKA renders a managed block into the destination file it performs a **text-based replacement** — the
+entire block content is overwritten verbatim with the rendered template output.
+
+For **YAML files** SKA also supports a `yaml-merge` engine that applies a structural, key-aware merge instead of a
+wholesale text replace:
+
+- Keys present in the upstream template override the corresponding values in the destination.
+- Keys added by the developer (not present in the template) are **preserved** across updates.
+- Comments already in the destination file survive.
+
+To activate the engine, add the bracket modifier `[engine:yaml-merge]` to the `ska-start` tag in your **blueprint**
+template:
+
+```yaml
+# ska-start[engine:yaml-merge]:observability
+observability:
+  tracing:
+    enabled: true
+    samplingRate: "{{.tracingSamplingRate}}"
+# ska-end
+```
+
+> [!NOTE]
+> The `[engine:yaml-merge]` modifier belongs only in the **blueprint** template. The destination file always uses
+> the plain `# ska-start:<id>` / `# ska-end` syntax — SKA writes it that way automatically.
+
+> [!TIP]
+> On the **first** time a managed block is created in a destination file the yaml-merge engine behaves identically to
+> the default text engine (there is nothing to merge yet). The merge semantics kick in from the **second** update
+> onwards, when an existing block is already present.
+
+For a complete worked example — including how to adopt an existing, previously-unmanaged YAML file into
+ska-managed yaml-merge blocks — see
+[USE CASE: YAML Merge Engine](docs-md/use-case-yaml-merge-engine.md).
 
 ### Template variable collection via Terminal UI
 
