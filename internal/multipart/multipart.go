@@ -9,6 +9,7 @@ import (
 
 	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/part"
+	"github.com/gchiesa/ska/internal/yamlmerge"
 )
 
 type Multipart struct {
@@ -121,8 +122,12 @@ func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
 		// First check if a managed block for this section already exists (for idempotency)
 		re := buildReplaceRegexp(p.ID())
 		if re.Match(dataContent) {
-			// Replace existing managed block with updated content
-			dataContent = re.ReplaceAll(dataContent, []byte(`${1}:${2}`+"\n"+string(compiledPartial)+`${4}`))
+			if p.Engine() == yamlmerge.EngineID {
+				dataContent = mp.applyYAMLMerge(dataContent, re, compiledPartial, p.ID())
+			} else {
+				// Default text-based replacement.
+				dataContent = re.ReplaceAll(dataContent, []byte(`${1}:${2}`+"\n"+string(compiledPartial)+`${4}`))
+			}
 			continue
 		}
 		// No existing block - if a special adopt type is requested, process it
@@ -142,6 +147,52 @@ func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
 	}
 	mp.contentCompiled = dataContent
 	return os.WriteFile(filePath, dataContent, 0o644) // noling:gosec
+}
+
+// applyYAMLMerge performs a YAML deep-merge of compiledPartial into the existing managed block
+// found in dataContent by re, and returns the updated dataContent.
+// If the merge fails, it falls back to a plain text replacement and logs the error.
+//
+// NOTE: buildReplaceRegexp's \s* (between the identifier and group-3) greedily consumes the newline
+// plus any leading whitespace of the first content line, which would strip the common indent and
+// produce invalid YAML for indented blocks. To avoid this we locate the content boundary manually:
+// we start just after the end of group-2 (the section identifier), skip inline whitespace only
+// (not the newline), then skip one newline. This preserves each line's original leading spaces.
+func (mp *Multipart) applyYAMLMerge(dataContent []byte, re *regexp.Regexp, compiledPartial []byte, partID string) []byte {
+	idxs := re.FindSubmatchIndex(dataContent)
+	if idxs == nil {
+		return dataContent
+	}
+
+	// Locate the start of the actual block content:
+	// idxs[4]:idxs[5] is group-2 (section identifier).
+	// Skip trailing inline whitespace (spaces/tabs) then one newline.
+	contentStart := idxs[5]
+	for contentStart < len(dataContent) && (dataContent[contentStart] == ' ' || dataContent[contentStart] == '\t') {
+		contentStart++
+	}
+	if contentStart < len(dataContent) && dataContent[contentStart] == '\n' {
+		contentStart++
+	}
+
+	// Content ends just before the ska-end line (start of group-4, idxs[8]).
+	contentEnd := idxs[8]
+
+	existingContent := dataContent[contentStart:contentEnd]
+	mergedContent, changedPaths, err := yamlmerge.MergeYAML(existingContent, compiledPartial)
+	if err != nil {
+		mp.log.WithFields(log.Fields{"partID": partID, "engine": "yaml-merge"}).
+			Errorf("yaml merge failed, falling back to text replacement: %v", err)
+		return re.ReplaceAll(dataContent, []byte(`${1}:${2}`+"\n"+string(compiledPartial)+`${4}`))
+	}
+	for _, path := range changedPaths {
+		mp.log.WithFields(log.Fields{"engine": "yaml-merge", "patch": path}).Debug("applying patch")
+	}
+	result := make([]byte, 0, len(dataContent)-len(existingContent)+len(mergedContent))
+	result = append(result, dataContent[:contentStart]...)
+	result = append(result, mergedContent...)
+	result = append(result, dataContent[contentEnd:]...)
+	return result
 }
 
 // buildManagedBlock creates a canonical managed block without directive in the header for idempotency

@@ -255,6 +255,105 @@ func TestAdoptReplaceMatchWholeAndGroup(t *testing.T) {
 	}
 }
 
+func TestYAMLMergeEngine_fullBlock(t *testing.T) {
+	t.Parallel()
+	// Blueprint has [engine:yaml-merge] modifier; compiled partial replaces test.version but
+	// the destination's extra key (extraKey) should be preserved.
+	tmp := t.TempDir()
+
+	bpContent, err := os.ReadFile(filepath.Join("fixtures", "yaml-merge-blueprint.txt"))
+	if err != nil {
+		t.Fatalf("read blueprint: %v", err)
+	}
+	beforeContent, err := os.ReadFile(filepath.Join("fixtures", "yaml-merge-dest-before.txt"))
+	if err != nil {
+		t.Fatalf("read before: %v", err)
+	}
+
+	bpPath := writeTempFile(t, tmp, "blue.yaml", string(bpContent))
+	m, err := NewMultipartFromFile(bpPath, "blue.yaml")
+	if err != nil {
+		t.Fatalf("multipart: %v", err)
+	}
+	if err := m.ParseParts(); err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	require := assert.New(t) // use assert as require for brevity
+	require.Equal(1, len(m.Parts()))
+	require.Equal("yaml-merge", m.Parts()[0].Engine())
+
+	// Write compiled partial: the rendered template output (test.version = v2.0).
+	partialContent := "test:\n  key: abc\n  version: v2.0\n"
+	for _, p := range m.Parts() {
+		writeTempFile(t, filepath.Dir(bpPath), p.RefFileBasename(), partialContent)
+	}
+
+	dest := writeTempFile(t, tmp, "dest.yaml", string(beforeContent))
+	if err := m.CompileToFile(dest, false); err != nil {
+		t.Fatalf("compile: %v", err)
+	}
+
+	data, _ := os.ReadFile(dest)
+	got := string(data)
+
+	// version should be updated
+	assert.Contains(t, got, "version: v2.0")
+	// extra key added by user should be preserved
+	assert.Contains(t, got, "extraKey: preserved")
+	// preamble and postamble survive
+	assert.Contains(t, got, "preamble: true")
+	assert.Contains(t, got, "postamble: true")
+}
+
+func TestYAMLMergeEngine_partialSection(t *testing.T) {
+	t.Parallel()
+	// Blueprint has a partial section with yaml-merge engine.
+	// Destination has userAdded key that must survive the merge.
+	tmp := t.TempDir()
+
+	bpContent, err := os.ReadFile(filepath.Join("fixtures", "yaml-merge-partial-blueprint.txt"))
+	if err != nil {
+		t.Fatalf("read blueprint: %v", err)
+	}
+	beforeContent, err := os.ReadFile(filepath.Join("fixtures", "yaml-merge-partial-dest-before.txt"))
+	if err != nil {
+		t.Fatalf("read before: %v", err)
+	}
+
+	bpPath := writeTempFile(t, tmp, "blue.yaml", string(bpContent))
+	m, err := NewMultipartFromFile(bpPath, "blue.yaml")
+	if err != nil {
+		t.Fatalf("multipart: %v", err)
+	}
+	if err := m.ParseParts(); err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	assert.Equal(t, 1, len(m.Parts()))
+	assert.Equal(t, "yaml-merge", m.Parts()[0].Engine())
+
+	// Write compiled partial (rendered template): test2.key2 updated to "rendered".
+	partialContent := "    test2:\n        key2: rendered\n"
+	for _, p := range m.Parts() {
+		writeTempFile(t, filepath.Dir(bpPath), p.RefFileBasename(), partialContent)
+	}
+
+	dest := writeTempFile(t, tmp, "dest.yaml", string(beforeContent))
+	if err := m.CompileToFile(dest, false); err != nil {
+		t.Fatalf("compile: %v", err)
+	}
+
+	data, _ := os.ReadFile(dest)
+	got := string(data)
+
+	// key2 should be updated
+	assert.Contains(t, got, "key2: rendered")
+	// userAdded key must be preserved
+	assert.Contains(t, got, "userAdded")
+	assert.Contains(t, got, "key3: value3")
+	// surrounding YAML structure preserved
+	assert.Contains(t, got, "version: base")
+}
+
 func TestReplaceMatchMultiline(t *testing.T) {
 	// Test that replaceMatch correctly handles multiline content with ^ and $ anchors
 	base := []byte(`FROM alpine:3.20

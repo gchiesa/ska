@@ -16,6 +16,7 @@ type Part struct {
 	id               string
 	adoptType        string // e.g. replace-match, inject-before, inject-after
 	adoptArg         string // e.g. @start, @end, /^.*$/
+	engine           string // e.g. "yaml-merge" or "" for the default text engine
 	content          []byte
 }
 
@@ -82,6 +83,12 @@ func (p *Part) ID() string {
 
 func (p *Part) AdoptType() string { return p.adoptType }
 func (p *Part) AdoptArg() string  { return p.adoptArg }
+func (p *Part) Engine() string    { return p.engine }
+
+func (p *Part) SetEngine(engine string) *Part {
+	p.engine = engine
+	return p
+}
 
 func (p *Part) WithContent(content []byte) *Part {
 	p.content = content
@@ -99,6 +106,7 @@ func (p *Part) CreateFile() error {
 
 // ParseParts extracts structured parts from the originalContent based on specific delimiters and directives in the headers.
 // It returns a slice of Part with metadata and content, or an error if parsing fails.
+// The regex now has 3 capture groups: modifiers (optional bracket group), header (identifier + directive), content.
 func ParseParts(originalContent []byte, parentRefFileURI string) ([]Part, error) {
 	var parts []Part
 	reSection := getPartialsRegexp()
@@ -106,8 +114,9 @@ func ParseParts(originalContent []byte, parentRefFileURI string) ([]Part, error)
 	matches := reSection.FindAllSubmatch(originalContent, -1)
 
 	for _, match := range matches {
-		originalHeader := strings.TrimSpace(string(match[1]))
-		content := string(match[2])
+		modifiers := strings.TrimSpace(string(match[1]))      // optional: e.g. "engine:yaml-merge"
+		originalHeader := strings.TrimSpace(string(match[2])) // e.g. "my-section + ska-inject-before:@start"
+		content := string(match[3])
 		sectionName, adoptType, adoptArg, err := parseHeader(originalHeader)
 		if err != nil {
 			return nil, err
@@ -116,9 +125,27 @@ func ParseParts(originalContent []byte, parentRefFileURI string) ([]Part, error)
 		if adoptType != "" {
 			partial = partial.SetAdopt(adoptType, adoptArg)
 		}
+		if engine := parseModifiersEngine(modifiers); engine != "" {
+			partial = partial.SetEngine(engine)
+		}
 		parts = append(parts, *partial)
 	}
 	return parts, nil
+}
+
+// parseModifiersEngine extracts the engine value from the bracket modifiers string.
+// The modifiers format is a comma-separated list of key:value pairs, e.g. "engine:yaml-merge".
+func parseModifiersEngine(modifiers string) string {
+	if modifiers == "" {
+		return ""
+	}
+	for _, token := range strings.Split(modifiers, ",") {
+		kv := strings.SplitN(strings.TrimSpace(token), ":", 2)
+		if len(kv) == 2 && strings.TrimSpace(kv[0]) == "engine" {
+			return strings.TrimSpace(kv[1])
+		}
+	}
+	return ""
 }
 
 // parseHeader splits the part header "<section> [+ directive:arg]" into components

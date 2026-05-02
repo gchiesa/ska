@@ -1,0 +1,10 @@
+test:
+  key: 123
+  version: base
+  data:
+  # ska-start:yaml-partial
+    test2:
+        key2: value2
+    userAdded:
+        key3: value3
+  # ska-end

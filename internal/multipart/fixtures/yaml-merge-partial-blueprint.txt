@@ -1,0 +1,8 @@
+test:
+  key: 123
+  version: base
+  data:
+  # ska-start[engine:yaml-merge]:yaml-partial
+    test2:
+        key2: newValue
+  # ska-end

@@ -1,0 +1,5 @@
+# ska-start[engine:yaml-merge]:yaml-section
+test:
+  key: abc
+  version: {{.newVersion}}
+# ska-end
