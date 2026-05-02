@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+const (
+	logPkg             = "contentprovider"
+	logFieldPkg        = "pkg"
+	logFieldType       = "type"
+	logFieldWorkingDir = "workingDir"
+)
+
 func parseRemoteURIV2(uri string) (url, filePath, tag string) {
 	urlWithPath, _, tag := xstrings.Partition(uri, "@")
 	urlWithNoSchema := strings.TrimPrefix(urlWithPath, "https://")

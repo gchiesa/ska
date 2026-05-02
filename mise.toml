@@ -1,6 +1,5 @@
 [tools]
-go = "1.24"
-"github:golangci/golangci-lint" = "v2.1.6"
+go = "1.26"
 "go:github.com/mfridman/tparse" = "latest"
 "go:gotest.tools/gotestsum" = "latest"
 "go:mvdan.cc/gofumpt" = "latest"

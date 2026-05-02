@@ -48,7 +48,7 @@ type SkaTaskOptions struct {
 // The returned task can be executed via (*SkaCreateTask).Create.
 func NewSkaCreateTask(templateURI, destinationPath, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaCreateTask {
 	logCtx := log.WithFields(log.Fields{
-		"pkg": "skaffolder",
+		logFieldPkg: logPkg,
 	})
 	return &SkaCreateTask{
 		TemplateURI:     templateURI,

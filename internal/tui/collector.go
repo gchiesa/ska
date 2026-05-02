@@ -201,7 +201,7 @@ func (m *Model) View() string {
 			// if the list is focused
 			if i == m.focusIndex {
 				// Show the label and list dropdown when focused
-				builder.WriteString(fmt.Sprintf(" %s", listLabelStyle.Render(entry.prompt)))
+				fmt.Fprintf(&builder, " %s", listLabelStyle.Render(entry.prompt))
 
 				// Calculate the indentation of the list box to align with where the value would appear
 				// "✔ " = 2 chars, then prompt length
@@ -227,7 +227,7 @@ func (m *Model) View() string {
 				if selectedDisplay == "" {
 					selectedDisplay = "(none selected)"
 				}
-				builder.WriteString(fmt.Sprintf(" %s%s\n", entry.prompt, selectedDisplay))
+				fmt.Fprintf(&builder, " %s%s\n", entry.prompt, selectedDisplay)
 			}
 		} else {
 			// Render text input
@@ -236,7 +236,7 @@ func (m *Model) View() string {
 			} else {
 				builder.WriteString(badTick.Render("✖"))
 			}
-			builder.WriteString(fmt.Sprintf(" %s ", entry.textModel.View()))
+			fmt.Fprintf(&builder, " %s ", entry.textModel.View())
 			builder.WriteRune('\n')
 		}
 	}

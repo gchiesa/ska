@@ -24,8 +24,8 @@ const GitHubPrefix = "https://github.com/"
 
 func NewGitHub(remoteURI string) (*GitHub, error) {
 	logCtx := log.WithFields(log.Fields{
-		"pkg":  "contentprovider",
-		"type": "github",
+		logFieldPkg:  logPkg,
+		logFieldType: "github",
 	})
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
 	if err != nil {
@@ -93,7 +93,7 @@ func (cp *GitHub) DownloadContent() error {
 }
 
 func (cp *GitHub) Cleanup() error {
-	cp.log.WithFields(log.Fields{"workingDir": cp.workingDir}).Debug("removing working dir.")
+	cp.log.WithFields(log.Fields{logFieldWorkingDir: cp.workingDir}).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err
 }

@@ -6,6 +6,13 @@ import (
 	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
+const (
+	logFieldMethod      = "method"
+	logFieldPath        = "path"
+	logFieldFilePath    = "filePath"
+	logFieldDestination = "destination"
+)
+
 type FileTreeProcessor struct {
 	sourcePath             string
 	sourceIgnorePaths      []string
