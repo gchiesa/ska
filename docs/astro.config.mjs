@@ -39,10 +39,11 @@ export default defineConfig({
         {
           label: 'Use Cases',
           items: [
-            { label: 'Multiple Template Subfolders', slug: 'use-cases/multiple-template-subfolders' },
-            { label: 'Partial File Management', slug: 'use-cases/partial-management' },
-            { label: 'Ignore Files After First Run', slug: 'use-cases/ignore-files-after-first' },
-            { label: 'Multiple Configs Same Folder', slug: 'use-cases/multiple-configs-same-folder' },
+            { label: 'Multiple Template Subfolders', slug: 'use-cases/use-case-multiple-template-subfolders' },
+            { label: 'Partial File Management', slug: 'use-cases/use-case-partial-management' },
+            { label: 'Ignore Files After First Run', slug: 'use-cases/use-case-ignore-files-after-1st' },
+            { label: 'Multiple Configs Same Folder', slug: 'use-cases/use-case-manage-multiple-templates-same-folder' },
+            { label: 'YAML-Aware Updates', slug: 'use-cases/use-case-yaml-merge-engine' },
           ],
         },
       ],
