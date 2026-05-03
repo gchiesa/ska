@@ -1,3 +1,8 @@
+---
+title: Manage Multiple SKA Configurations in the Same Folder
+description: Scaffold and independently update more than one SKA template into the same working directory.
+---
+
 # USE CASE: Manage Multiple SKA Configurations in the Same Folder
 
 It’s common to scaffold more than one SKA template into the same working directory (for example, app code + CI/pipeline

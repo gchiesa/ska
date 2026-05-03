@@ -124,15 +124,15 @@ More information is available with `ska --help`.
 
 The following links are examples of how you can use SKA in various common use cases:
 
-* [central repository with multiple templates in subfolders](docs-md/use-case-multiple-template-subfolders.md)
+* [central repository with multiple templates in subfolders](docs/src/content/docs/use-cases/use-case-multiple-template-subfolders.md)
 
-* [centrally maintain only a part of a file](docs-md/use-case-partial-management.md)
+* [centrally maintain only a part of a file](docs/src/content/docs/use-cases/use-case-partial-management.md)
 
-* [ignore files after 1st templating](docs-md/use-case-ignore-files-after-1st.md)
+* [ignore files after 1st templating](docs/src/content/docs/use-cases/use-case-ignore-files-after-1st.md)
 
-* [manage multiple ska templates in the same folder](docs-md/use-case-manage-multiple-templates-same-folder.md)
+* [manage multiple ska templates in the same folder](docs/src/content/docs/use-cases/use-case-manage-multiple-templates-same-folder.md)
 
-* [YAML-aware updates with the yaml-merge engine](docs-md/use-case-yaml-merge-engine.md)
+* [YAML-aware updates with the yaml-merge engine](docs/src/content/docs/use-cases/use-case-yaml-merge-engine.md)
 
 ## Integrate SKA in your project
 
@@ -250,7 +250,7 @@ observability:
 
 For a complete worked example — including how to adopt an existing, previously-unmanaged YAML file into
 ska-managed yaml-merge blocks — see
-[USE CASE: YAML Merge Engine](docs-md/use-case-yaml-merge-engine.md).
+[USE CASE: YAML Merge Engine](docs/src/content/docs/use-cases/use-case-yaml-merge-engine.md).
 
 ### Template variable collection via Terminal UI
 

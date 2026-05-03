@@ -1,3 +1,8 @@
+---
+title: YAML-Aware Updates with the yaml-merge Engine
+description: Keep specific YAML keys centrally managed while preserving developer additions, using SKA's structural yaml-merge engine.
+---
+
 # USE CASE: YAML-Aware Updates with the `yaml-merge` Engine
 
 This guide shows how to:

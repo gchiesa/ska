@@ -1,3 +1,8 @@
+---
+title: Manage Partial File Updates
+description: Keep a specific named section of a file centrally managed by SKA while letting developers customize everything else.
+---
+
 # USE CASE: Manage Partial File Updates
 
 This guide shows how to:

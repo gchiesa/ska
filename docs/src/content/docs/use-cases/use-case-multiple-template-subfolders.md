@@ -1,3 +1,8 @@
+---
+title: Multiple Template Subfolders
+description: Use SKA with a remote repository that hosts multiple templates in subfolders, targeting specific paths and refs.
+---
+
 # USE CASE: Multiple Template Subfolders
 
 This guide explains how to use SKA when a remote repository hosts multiple templates in subfolders (for example, one

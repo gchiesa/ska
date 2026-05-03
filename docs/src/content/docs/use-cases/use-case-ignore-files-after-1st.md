@@ -1,3 +1,8 @@
+---
+title: Ignore Files After Initial Scaffolding
+description: Pre-define which files SKA generates once and never overwrites again, keeping them under full developer control.
+---
+
 # USE CASE: Ignore Files After Initial Scaffolding
 
 Some files should be generated once and then left under full developer control. SKA supports this via ignore lists that
