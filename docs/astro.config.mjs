@@ -11,9 +11,9 @@ export default defineConfig({
         src: './src/assets/ska-logo.png',
         replacesTitle: true,
       },
-      social: {
-        github: 'https://github.com/gchiesa/ska',
-      },
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/gchiesa/ska' },
+      ],
       customCss: [
         './src/styles/tailwind.css',
         './src/styles/custom.css',
