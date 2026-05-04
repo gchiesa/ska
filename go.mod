@@ -17,7 +17,7 @@ require (
 	github.com/gruntwork-io/terratest v0.49.0
 	github.com/huandu/xstrings v1.5.0
 	github.com/jszwec/csvutil v1.10.0
-	github.com/kilianpaquier/compare v1.0.3
+	github.com/kilianpaquier/compare v1.1.1
 	github.com/manifoldco/promptui v0.9.0
 	github.com/otiai10/copy v1.14.1
 	github.com/palantir/stacktrace v0.0.0-20161112013806-78658fd2d177
