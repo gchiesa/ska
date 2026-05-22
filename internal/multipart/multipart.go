@@ -138,7 +138,11 @@ func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
 			case "ska-inject-before":
 				dataContent = injectRelative(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)), false)
 			case "ska-replace-match":
-				dataContent = replaceMatch(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)))
+				if p.Engine() == yamlmerge.EngineID {
+					dataContent = mp.adoptWithYAMLMerge(dataContent, p.AdoptArg(), compiledPartial, p.ID())
+				} else {
+					dataContent = replaceMatch(dataContent, p.AdoptArg(), string(buildManagedBlock(p.ID(), compiledPartial)))
+				}
 			default:
 				// no directive, nothing to inject
 			}
@@ -192,6 +196,48 @@ func (mp *Multipart) applyYAMLMerge(dataContent []byte, re *regexp.Regexp, compi
 	result = append(result, dataContent[:contentStart]...)
 	result = append(result, mergedContent...)
 	result = append(result, dataContent[contentEnd:]...)
+	return result
+}
+
+// adoptWithYAMLMerge handles the ska-replace-match adoption path for yaml-merge engine.
+// It extracts the regex-matched existing content, deep-merges compiledPartial into it
+// (src overrides dst keys; dst-only keys preserved), and replaces the match with a
+// managed block containing the merged result.
+func (mp *Multipart) adoptWithYAMLMerge(base []byte, regex string, compiledPartial []byte, partID string) []byte {
+	if (strings.Contains(regex, "^") || strings.Contains(regex, "$")) && !strings.Contains(regex, "(?m)") {
+		regex = "(?m)" + regex
+	}
+	re := regexp.MustCompile(regex)
+	idxs := re.FindSubmatchIndex(base)
+	if idxs == nil {
+		// No match — fall back to appending a managed block with just compiledPartial.
+		return append(append([]byte{}, base...), buildManagedBlock(partID, compiledPartial)...)
+	}
+
+	// Use capture group range when present (same convention as replaceMatch).
+	var start, end int
+	if len(idxs) == 4 {
+		start, end = idxs[2], idxs[3]
+	} else {
+		start, end = idxs[0], idxs[1]
+	}
+
+	existingContent := base[start:end]
+	mergedContent, changedPaths, err := yamlmerge.MergeYAML(existingContent, compiledPartial)
+	if err != nil {
+		mp.log.WithFields(log.Fields{"partID": partID, "engine": "yaml-merge"}).
+			Errorf("yaml merge failed during adoption, falling back to replace: %v", err)
+		return replaceMatch(base, regex, string(buildManagedBlock(partID, compiledPartial)))
+	}
+	for _, path := range changedPaths {
+		mp.log.WithFields(log.Fields{"engine": "yaml-merge", "patch": path}).Debug("applying patch (adopt)")
+	}
+
+	managed := buildManagedBlock(partID, mergedContent)
+	result := make([]byte, 0, start+len(managed)+len(base)-end)
+	result = append(result, base[:start]...)
+	result = append(result, managed...)
+	result = append(result, base[end:]...)
 	return result
 }
 

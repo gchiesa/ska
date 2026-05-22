@@ -375,3 +375,73 @@ ENTRYPOINT ["/usr/bin/my-test-app"]
 `
 	assert.Equal(t, expected, string(result))
 }
+
+func TestYAMLMergeEngine_adoptReplaceMatch(t *testing.T) {
+	t.Parallel()
+	// Destination file has NO managed block (first-time adoption via ska-replace-match).
+	// Blueprint uses yaml-merge engine with ska-replace-match to adopt the stack: section.
+	// The destination has stack.placement.primary_vpc_cidr that is NOT in the compiled partial.
+	// After adoption, primary_vpc_cidr must be preserved (not lost due to plain replacement).
+	tmp := t.TempDir()
+
+	// Correct syntax: [engine:yaml-merge] in brackets, + directive in the header after ':'
+	blueprintContent := strings.TrimSpace(`
+# ska-start[engine:yaml-merge]:stack-section + ska-replace-match:(?s)^stack:.*
+stack:
+  blueprint_ref: v1.0
+  team: platform
+# ska-end
+`) + "\n"
+
+	// Destination: plain YAML, no ska markers, has extra keys not in blueprint
+	destContent := `stack:
+  blueprint_ref: old-ref
+  team: old-team
+  placement:
+    primary_vpc_cidr: 10.128.0.0/18
+    provider: aws
+`
+
+	// Compiled partial: only blueprint keys, no primary_vpc_cidr
+	partialContent := `stack:
+  blueprint_ref: v1.21.5
+  team: aws-platform
+`
+
+	bpPath := writeTempFile(t, tmp, "blue.yaml", blueprintContent)
+	m, err := NewMultipartFromFile(bpPath, "blue.yaml")
+	if err != nil {
+		t.Fatalf("multipart: %v", err)
+	}
+	if err := m.ParseParts(); err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if len(m.Parts()) == 0 {
+		t.Fatal("expected at least one part")
+	}
+	assert.Equal(t, "yaml-merge", m.Parts()[0].Engine())
+	assert.Equal(t, "ska-replace-match", m.Parts()[0].AdoptType())
+
+	for _, p := range m.Parts() {
+		writeTempFile(t, filepath.Dir(bpPath), p.RefFileBasename(), partialContent)
+	}
+
+	dest := writeTempFile(t, tmp, "dest.yaml", destContent)
+	if err := m.CompileToFile(dest, false); err != nil {
+		t.Fatalf("compile: %v", err)
+	}
+
+	data, _ := os.ReadFile(dest)
+	got := string(data)
+	t.Logf("Result:\n%s", got)
+
+	// Blueprint keys updated
+	assert.Contains(t, got, "blueprint_ref: v1.21.5", "blueprint_ref should be updated from compiled partial")
+	assert.Contains(t, got, "team: aws-platform", "team should be updated from compiled partial")
+	// Dst-only keys preserved
+	assert.Contains(t, got, "primary_vpc_cidr: 10.128.0.0/18", "primary_vpc_cidr (dst-only) must be preserved after adoption")
+	assert.Contains(t, got, "provider: aws", "provider (dst-only) must be preserved after adoption")
+	// Result is wrapped in a managed block
+	assert.Contains(t, got, "# ska-start:stack-section", "result must be wrapped in a managed block")
+	assert.Contains(t, got, "# ska-end", "result must be wrapped in a managed block")
+}
