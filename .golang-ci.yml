@@ -48,7 +48,6 @@ linters:
     - unused
     - dogsled
     - dupl
-    - goconst
     - gocritic
     - nakedret
     - staticcheck
