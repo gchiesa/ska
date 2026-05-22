@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.1](https://github.com/gchiesa/ska/compare/v1.3.0...v1.3.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* adoption was not using yaml-merge engine when requested ([e255d17](https://github.com/gchiesa/ska/commit/e255d1737876269f0e0f6339a18769cc3ba93417))
+
+
+### Docs
+
+* fix build error with node22 ([4d3ba19](https://github.com/gchiesa/ska/commit/4d3ba1960255f34d8d3f64018d12e5bbf841f534))
+* fix navbar link ([48f8273](https://github.com/gchiesa/ska/commit/48f827335c1e74310d4084bdd3e3a5780b79725c))
+* fix on docs sidebar ([f95f0f2](https://github.com/gchiesa/ska/commit/f95f0f2ac2e7e6850a5a61b7cf2f8b04aae8a939))
+* unified documentation ([11f47c4](https://github.com/gchiesa/ska/commit/11f47c41ce52b8ffa86ecd2dd5296b7089aacf76))
+* update docs ([11bc82a](https://github.com/gchiesa/ska/commit/11bc82a401b09aa9e798ca7c634f3acd1a533f75))
+
 ## [1.3.0](https://github.com/gchiesa/ska/compare/v1.2.2...v1.3.0) (2026-05-02)
 
 
