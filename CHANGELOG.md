@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0](https://github.com/gchiesa/ska/compare/v1.3.1...v1.4.0) (2026-06-13)
+
+
+### Features
+
+* fix issue after rebasing ([ab13c7e](https://github.com/gchiesa/ska/commit/ab13c7ed5e01f004de4be7f66ff61862efc7d47d))
+* fix logging issue ([7d26860](https://github.com/gchiesa/ska/commit/7d26860e0f32e3708fde349ff25828541864d101))
+* removed old apex logging and implement charmbracelet and slog compatible interface ([1857990](https://github.com/gchiesa/ska/commit/1857990a27c88c5e8df578bf356cf27d6603da89))
+* update deps ([7dabbc7](https://github.com/gchiesa/ska/commit/7dabbc7a53c9021a13c5cc03cd19cab10bd80acd))
+
 ## [1.3.1](https://github.com/gchiesa/ska/compare/v1.3.0...v1.3.1) (2026-05-22)
 
 
