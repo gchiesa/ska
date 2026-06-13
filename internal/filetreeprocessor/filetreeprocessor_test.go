@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/apex/log"
+	"log/slog"
+
 	"github.com/gchiesa/ska/pkg/templateprovider"
 	"github.com/gruntwork-io/terratest/modules/git"
 	compare "github.com/kilianpaquier/compare/pkg"
@@ -17,8 +18,6 @@ import (
 
 const (
 	blueprintFolder   = "blueprint"
-	resultFolder      = "update-destination-file-tree"
-	loadMultipartsDir = "load-multiparts"
 	stagingTreeFolder = "render-staging-tree"
 	workingDirFolder  = "build-staging-file-tree"
 	variablesFile     = "variables.json"
@@ -27,7 +26,7 @@ const (
 func TestBuildStagingFileTree(t *testing.T) {
 	t.Parallel()
 	tplSvc := templateprovider.ByType(templateprovider.SprigTemplateType, "sprig")
-	logger := log.WithFields(log.Fields{})
+	logger := slog.Default()
 
 	testCases := []struct {
 		name              string
@@ -67,7 +66,7 @@ func TestBuildStagingFileTree(t *testing.T) {
 func TestRenderStagingFiles(t *testing.T) {
 	t.Parallel()
 	tplSvc := templateprovider.ByType(templateprovider.SprigTemplateType, "sprig")
-	logger := log.WithFields(log.Fields{})
+	logger := slog.Default()
 
 	testCases := []struct {
 		name              string
@@ -192,7 +191,7 @@ func provisionScenario(t *testing.T, scenarioName string) (string, error) {
 	return base, nil
 }
 
-func loadVariables(t *testing.T, path, variablesFile string) (map[string]interface{}, error) {
+func loadVariables(_ *testing.T, path, variablesFile string) (map[string]interface{}, error) {
 	fileData, err := os.ReadFile(filepath.Join(path, variablesFile))
 	if err != nil {
 		return nil, err
@@ -202,8 +201,4 @@ func loadVariables(t *testing.T, path, variablesFile string) (map[string]interfa
 		return nil, err
 	}
 	return variables, nil
-}
-
-func getFixtureBasePath(t *testing.T, fixtureName string) string {
-	return filepath.Join(git.GetRepoRoot(t), "tests", "fixtures", fixtureName)
 }

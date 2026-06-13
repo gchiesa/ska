@@ -1,7 +1,8 @@
 package filetreeprocessor
 
 import (
-	"github.com/apex/log"
+	"log/slog"
+
 	"github.com/gchiesa/ska/internal/multipart"
 	"github.com/gchiesa/ska/pkg/templateprovider"
 )
@@ -21,5 +22,5 @@ type FileTreeProcessor struct {
 	workingDir             string
 	multiparts             []*multipart.Multipart
 	template               templateprovider.TemplateService
-	log                    *log.Entry
+	log                    *slog.Logger
 }

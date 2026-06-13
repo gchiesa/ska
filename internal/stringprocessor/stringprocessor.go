@@ -2,18 +2,16 @@ package stringprocessor
 
 import (
 	"bytes"
-	"github.com/apex/log"
+	"fmt"
+	"log/slog"
+
 	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 func NewStringProcessor(options ...func(stringProcessor *StringProcessor)) *StringProcessor {
-	logCtx := log.WithFields(log.Fields{
-		"pkg": "string-processor",
-	})
-
 	sp := &StringProcessor{
 		template: nil,
-		log:      logCtx,
+		log:      slog.Default().With("pkg", "string-processor"),
 	}
 	// configure options
 	for _, opt := range options {
@@ -28,8 +26,18 @@ func WithTemplateService(ts templateprovider.TemplateService) func(sp *StringPro
 	}
 }
 
+// WithLogger injects a *slog.Logger into the processor.
+// The processor will add its own "pkg" field to the received logger.
+func WithLogger(logger *slog.Logger) func(sp *StringProcessor) {
+	return func(sp *StringProcessor) {
+		if logger != nil {
+			sp.log = logger.With("pkg", "string-processor")
+		}
+	}
+}
+
 func (sp *StringProcessor) Render(text string, withVariables map[string]interface{}) (string, error) {
-	logger := sp.log.WithFields(log.Fields{"method": "Render"})
+	logger := sp.log.With("method", "Render")
 
 	if err := sp.template.FromString(text); err != nil {
 		return "", err
@@ -39,7 +47,7 @@ func (sp *StringProcessor) Render(text string, withVariables map[string]interfac
 	buff := bytes.NewBufferString("")
 	if err := sp.template.Execute(buff, withVariables); err != nil {
 		if sp.template.IsMissingKeyError(err) {
-			logger.WithFields(log.Fields{"error": err.Error()}).Errorf("missing variable while rendering string: %v", err)
+			logger.With("error", err.Error()).Error(fmt.Sprintf("missing variable while rendering string: %v", err))
 		}
 		return "", err
 	}

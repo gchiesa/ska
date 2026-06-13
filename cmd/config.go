@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/apex/log"
+	charmlog "github.com/charmbracelet/log"
 )
 
 type ConfigCmd struct {
@@ -21,15 +21,15 @@ func (c *ConfigCmd) Execute(ctx context.Context) error {
 	switch {
 	case c.ConfigListCmd != nil:
 		if err := args.ConfigCmd.ConfigListCmd.Execute(configCtx); err != nil {
-			log.Fatalf("error executing config list command: %v", err)
+			charmlog.Fatalf("error executing config list command: %v", err)
 		}
 	case c.ConfigRenameCmd != nil:
 		if err := args.ConfigCmd.ConfigRenameCmd.Execute(configCtx); err != nil {
-			log.Fatalf("error executing config rename command: %v", err)
+			charmlog.Fatalf("error executing config rename command: %v", err)
 		}
 	case c.ConfigDeleteCmd != nil:
 		if err := args.ConfigCmd.ConfigDeleteCmd.Execute(configCtx); err != nil {
-			log.Fatalf("error executing config delete command: %v", err)
+			charmlog.Fatalf("error executing config delete command: %v", err)
 		}
 	default:
 		fmt.Println("no subcommand specified, please use the --help flag to check available commands")

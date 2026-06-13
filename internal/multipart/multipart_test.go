@@ -28,16 +28,6 @@ this is a managed partial of 1 line
 this is remaining part
 `
 
-const fileExampleGood02 = `
-[test]
-This is an example of init file
-
-[section]
-; ska-start 
-this is a managed partial
-; ska-end
-`
-
 const fileExampleWrong01 = `
 This is an example 
 file.
@@ -52,30 +42,6 @@ this another managed partial of 1 line
 # ska-end 
 
 this is remaining part
-`
-
-const fileExampleWrong02 = `
-This is an example 
-file.
-
-# ska-start
-this another managed partial of 1 line with no key
-# ska-end 
-
-this is remaining part
-`
-
-const fileExampleWrong03 = `
-This is an example 
-file.
-
-# ska-start:key01
-this another managed partial of 1 line with no key
-# ska-end 
-
-# ska-start:key01
-this is remaining part with duplicate key
-# ska-end
 `
 
 func TestMultipartValidation(t *testing.T) {
@@ -145,7 +111,7 @@ func TestAdoptInjectAfterStartAndIdempotency(t *testing.T) {
 
 			// write blueprint into temp area so ref files are created there
 			bpPath := writeTempFile(t, tmp, "blue.txt", string(bpContent))
-			mpart, err := NewMultipartFromFile(bpPath, "blue.txt")
+			mpart, err := NewMultipartFromFile(bpPath, "blue.txt", nil)
 			if err != nil {
 				t.Fatalf("multipart: %v", err)
 			}
@@ -163,7 +129,7 @@ func TestAdoptInjectAfterStartAndIdempotency(t *testing.T) {
 			// destination file initially without managed block
 			dest := writeTempFile(t, tmp, "dest.txt", string(beforeContent))
 			// compile to destination (will read dest content as original)
-			if err := mpart.CompileToFile(dest, false); err != nil {
+			if err := mpart.CompileToFile(dest); err != nil {
 				t.Fatalf("compile: %v", err)
 			}
 			data, _ := os.ReadFile(dest)
@@ -179,7 +145,7 @@ func TestAdoptInjectAfterStartAndIdempotency(t *testing.T) {
 			for _, p := range mpart.Parts() {
 				writeTempFile(t, filepath.Dir(bpPath), p.RefFileBasename(), "managed v2\n")
 			}
-			if err := mpart.CompileToFile(dest, false); err != nil {
+			if err := mpart.CompileToFile(dest); err != nil {
 				t.Fatalf("compile2: %v", err)
 			}
 			data2, _ := os.ReadFile(dest)
@@ -227,7 +193,7 @@ func TestAdoptReplaceMatchWholeAndGroup(t *testing.T) {
 			}
 
 			bpPath := writeTempFile(t, tmp, "blue.txt", string(bpContent))
-			m, err := NewMultipartFromFile(bpPath, "blue.txt")
+			m, err := NewMultipartFromFile(bpPath, "blue.txt", nil)
 			if err != nil {
 				t.Fatalf("multipart: %v", err)
 			}
@@ -238,7 +204,7 @@ func TestAdoptReplaceMatchWholeAndGroup(t *testing.T) {
 				writeTempFile(t, filepath.Dir(bpPath), p.RefFileBasename(), tc.partialContent)
 			}
 			dest := writeTempFile(t, tmp, "dest.txt", string(beforeContent))
-			if err := m.CompileToFile(dest, false); err != nil {
+			if err := m.CompileToFile(dest); err != nil {
 				t.Fatalf("compile: %v", err)
 			}
 			gotB, _ := os.ReadFile(dest)
@@ -271,7 +237,7 @@ func TestYAMLMergeEngine_fullBlock(t *testing.T) {
 	}
 
 	bpPath := writeTempFile(t, tmp, "blue.yaml", string(bpContent))
-	m, err := NewMultipartFromFile(bpPath, "blue.yaml")
+	m, err := NewMultipartFromFile(bpPath, "blue.yaml", nil)
 	if err != nil {
 		t.Fatalf("multipart: %v", err)
 	}
@@ -289,7 +255,7 @@ func TestYAMLMergeEngine_fullBlock(t *testing.T) {
 	}
 
 	dest := writeTempFile(t, tmp, "dest.yaml", string(beforeContent))
-	if err := m.CompileToFile(dest, false); err != nil {
+	if err := m.CompileToFile(dest); err != nil {
 		t.Fatalf("compile: %v", err)
 	}
 
@@ -321,7 +287,7 @@ func TestYAMLMergeEngine_partialSection(t *testing.T) {
 	}
 
 	bpPath := writeTempFile(t, tmp, "blue.yaml", string(bpContent))
-	m, err := NewMultipartFromFile(bpPath, "blue.yaml")
+	m, err := NewMultipartFromFile(bpPath, "blue.yaml", nil)
 	if err != nil {
 		t.Fatalf("multipart: %v", err)
 	}
@@ -338,7 +304,7 @@ func TestYAMLMergeEngine_partialSection(t *testing.T) {
 	}
 
 	dest := writeTempFile(t, tmp, "dest.yaml", string(beforeContent))
-	if err := m.CompileToFile(dest, false); err != nil {
+	if err := m.CompileToFile(dest); err != nil {
 		t.Fatalf("compile: %v", err)
 	}
 

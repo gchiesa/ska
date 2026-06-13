@@ -1,11 +1,12 @@
 package stringprocessor
 
 import (
-	"github.com/apex/log"
+	"log/slog"
+
 	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 type StringProcessor struct {
 	template templateprovider.TemplateService
-	log      *log.Entry
+	log      *slog.Logger
 }

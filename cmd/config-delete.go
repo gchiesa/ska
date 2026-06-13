@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/apex/log"
+	charmlog "github.com/charmbracelet/log"
 	"github.com/gchiesa/ska/pkg/skaffolder"
 	"github.com/gchiesa/ska/pkg/util"
 	"github.com/manifoldco/promptui"
@@ -41,7 +41,7 @@ func (c *ConfigDeleteCmd) Execute(ctx context.Context) error {
 		response, err := p.Run()
 		if err != nil {
 			if errors.Is(err, promptui.ErrAbort) {
-				log.Infof("You responded: %s, so not proceeding further.", response)
+				charmlog.Infof("You responded: %s, so not proceeding further.", response)
 				return nil
 			}
 			return err
@@ -50,6 +50,6 @@ func (c *ConfigDeleteCmd) Execute(ctx context.Context) error {
 	if err := ska.DeleteConfig(c.Name); err != nil {
 		return err
 	}
-	log.Infof("Deleted configuration: %s", c.Name)
+	charmlog.Infof("Deleted configuration: %s", c.Name)
 	return nil
 }

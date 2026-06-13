@@ -1,9 +1,9 @@
 package upstreamconfigservice
 
 import (
+	"log/slog"
 	"path/filepath"
 
-	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/utils"
 	"gopkg.in/yaml.v2"
 )
@@ -12,7 +12,20 @@ const upstreamConfigFileName = ".ska-upstream.yaml"
 
 type UpstreamConfigService struct {
 	config *config
-	log    *log.Entry
+	log    *slog.Logger
+}
+
+// UpstreamConfigOption configures an UpstreamConfigService.
+type UpstreamConfigOption func(*UpstreamConfigService)
+
+// WithLogger injects a *slog.Logger into the service.
+// The service will add its own "pkg" field to the received logger.
+func WithLogger(logger *slog.Logger) UpstreamConfigOption {
+	return func(ucs *UpstreamConfigService) {
+		if logger != nil {
+			ucs.log = logger.With("pkg", "configuration")
+		}
+	}
 }
 
 type UpstreamConfigInput struct {
@@ -38,18 +51,19 @@ type config struct {
 	SkaConfig   SkaConfig             `yaml:"skaConfig,omitempty"`
 }
 
-func NewUpstreamConfigService() *UpstreamConfigService {
-	logCtx := log.WithFields(log.Fields{
-		"pkg": "configuration",
-	})
-	return &UpstreamConfigService{
+func NewUpstreamConfigService(opts ...UpstreamConfigOption) *UpstreamConfigService {
+	ucs := &UpstreamConfigService{
 		config: &config{},
-		log:    logCtx,
+		log:    slog.Default().With("pkg", "configuration"),
 	}
+	for _, opt := range opts {
+		opt(ucs)
+	}
+	return ucs
 }
 
 func (ucs *UpstreamConfigService) LoadFromPath(path string) (*UpstreamConfigService, error) {
-	cf := utils.NewConfigFromFile(filepath.Join(path, upstreamConfigFileName))
+	cf := utils.NewConfigFromFile(filepath.Join(path, upstreamConfigFileName), ucs.log)
 	configData, err := cf.ReadConfig()
 	if err != nil {
 		return nil, err

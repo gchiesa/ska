@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apex/log"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -150,6 +149,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case errMsg:
 		m.err = msg
+	default:
 	}
 	return m, tea.Batch(cmds...)
 }
@@ -201,7 +201,7 @@ func (m *Model) View() string {
 			// if the list is focused
 			if i == m.focusIndex {
 				// Show the label and list dropdown when focused
-				fmt.Fprintf(&builder, " %s", listLabelStyle.Render(entry.prompt))
+				_, _ = fmt.Fprintf(&builder, " %s", listLabelStyle.Render(entry.prompt))
 
 				// Calculate the indentation of the list box to align with where the value would appear
 				// "✔ " = 2 chars, then prompt length
@@ -213,7 +213,8 @@ func (m *Model) View() string {
 				// write the first line of the listbox widget next to the prompt
 				lines := strings.Split(listView, "\n")
 				if len(lines) == 0 {
-					log.Fatal("error while building the listbox. Exiting")
+					// strings.Split never returns an empty slice; this is unreachable
+					panic("error while building the listbox")
 				}
 				builder.WriteString(lines[0] + "\n")
 
@@ -227,7 +228,7 @@ func (m *Model) View() string {
 				if selectedDisplay == "" {
 					selectedDisplay = "(none selected)"
 				}
-				fmt.Fprintf(&builder, " %s%s\n", entry.prompt, selectedDisplay)
+				_, _ = fmt.Fprintf(&builder, " %s%s\n", entry.prompt, selectedDisplay)
 			}
 		} else {
 			// Render text input
@@ -236,7 +237,7 @@ func (m *Model) View() string {
 			} else {
 				builder.WriteString(badTick.Render("✖"))
 			}
-			fmt.Fprintf(&builder, " %s ", entry.textModel.View())
+			_, _ = fmt.Fprintf(&builder, " %s ", entry.textModel.View())
 			builder.WriteRune('\n')
 		}
 	}

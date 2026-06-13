@@ -2,12 +2,12 @@ package multipart
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
-	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/part"
 	"github.com/gchiesa/ska/internal/yamlmerge"
 )
@@ -18,10 +18,10 @@ type Multipart struct {
 	contentOriginal []byte
 	contentCompiled []byte
 	parts           []part.Part
-	log             *log.Entry
+	log             *slog.Logger
 }
 
-func NewMultipartFromFile(filePath, id string) (*Multipart, error) {
+func NewMultipartFromFile(filePath, id string, logger *slog.Logger) (*Multipart, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading file %s: %w", filePath, part.ErrMultipartError)
@@ -30,15 +30,15 @@ func NewMultipartFromFile(filePath, id string) (*Multipart, error) {
 		return nil, fmt.Errorf("invalid contentOriginal for partial container: %w", part.ErrInvalidContent)
 	}
 
-	logCtx := log.WithFields(log.Fields{
-		"pkg": "multipart",
-	})
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	return &Multipart{
 		id:              id,
 		refFileURI:      filePath,
 		contentOriginal: fileData,
-		log:             logCtx,
+		log:             logger.With("pkg", "multipart"),
 	}, nil
 }
 
@@ -66,13 +66,13 @@ func (mp *Multipart) ParseParts() error {
 func (mp *Multipart) PartsToFiles() ([]string, error) {
 	workDir := filepath.Dir(mp.refFileURI)
 	fileList := make([]string, 0)
-	for _, part := range mp.parts {
-		partialPath := filepath.Join(workDir, part.RefFileBasename())
-		err := part.SetFilePath(partialPath).CreateFile()
+	for _, p := range mp.parts {
+		partialPath := filepath.Join(workDir, p.RefFileBasename())
+		err := p.SetFilePath(partialPath).CreateFile()
 		if err != nil {
 			return nil, fmt.Errorf("error writing file: %w", err)
 		}
-		fileList = append(fileList, part.RefFilePath())
+		fileList = append(fileList, p.RefFilePath())
 	}
 	return fileList, nil
 }
@@ -88,20 +88,20 @@ func (mp *Multipart) Compile(forceRecompile bool) []byte {
 	}
 
 	dataContent := mp.contentOriginal
-	for _, part := range mp.parts {
+	for _, p := range mp.parts {
 		// find and replace the part in the content
-		compiledPartial, err := os.ReadFile(filepath.Join(filepath.Dir(mp.refFileURI), part.RefFileBasename()))
+		compiledPartial, err := os.ReadFile(filepath.Join(filepath.Dir(mp.refFileURI), p.RefFileBasename()))
 		if err != nil {
-			mp.log.Errorf("error reading file. %s: %v", part.RefFileBasename(), err)
+			mp.log.Error(fmt.Sprintf("error reading file. %s: %v", p.RefFileBasename(), err))
 		}
-		re := buildReplaceRegexp(part.ID())
+		re := buildReplaceRegexp(p.ID())
 		dataContent = re.ReplaceAll(dataContent, []byte(`${1}:${2}`+string("\n"+string(compiledPartial))+`${4}`)) //nolint:unconvert //keeping for better readability
 	}
 	mp.contentCompiled = dataContent
 	return dataContent
 }
 
-func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error { // noling:gosec
+func (mp *Multipart) CompileToFile(filePath string) error { // noling:gosec
 	// if local file exists, we need to use that as content
 	if _, err := os.Stat(filePath); err == nil {
 		dataContent, err := os.ReadFile(filePath)
@@ -116,7 +116,7 @@ func (mp *Multipart) CompileToFile(filePath string, forceRecompile bool) error {
 		// read compiled partial content
 		compiledPartial, err := os.ReadFile(filepath.Join(filepath.Dir(mp.refFileURI), p.RefFileBasename()))
 		if err != nil {
-			mp.log.Errorf("error reading file. %s: %v", p.RefFileBasename(), err)
+			mp.log.Error(fmt.Sprintf("error reading file. %s: %v", p.RefFileBasename(), err))
 			continue
 		}
 		// First check if a managed block for this section already exists (for idempotency)
@@ -185,12 +185,17 @@ func (mp *Multipart) applyYAMLMerge(dataContent []byte, re *regexp.Regexp, compi
 	existingContent := dataContent[contentStart:contentEnd]
 	mergedContent, changedPaths, err := yamlmerge.MergeYAML(existingContent, compiledPartial)
 	if err != nil {
-		mp.log.WithFields(log.Fields{"partID": partID, "engine": "yaml-merge"}).
-			Errorf("yaml merge failed, falling back to text replacement: %v", err)
+		if len(existingContent) == 0 {
+			mp.log.With("partID", partID, "engine", "yaml-merge").
+				Info(fmt.Sprintf("existing content is empty, falling back to text replacement: %v", err))
+		} else {
+			mp.log.With("partID", partID, "engine", "yaml-merge").
+				Error(fmt.Sprintf("yaml merge failed, falling back to text replacement: %v", err))
+		}
 		return re.ReplaceAll(dataContent, []byte(`${1}:${2}`+"\n"+string(compiledPartial)+`${4}`))
 	}
 	for _, path := range changedPaths {
-		mp.log.WithFields(log.Fields{"engine": "yaml-merge", "patch": path}).Debug("applying patch")
+		mp.log.With("engine", "yaml-merge", "patch", path).Debug("applying patch")
 	}
 	result := make([]byte, 0, len(dataContent)-len(existingContent)+len(mergedContent))
 	result = append(result, dataContent[:contentStart]...)
