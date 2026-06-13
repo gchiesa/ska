@@ -7,10 +7,11 @@ import (
 )
 
 const (
-	logPkg             = "contentprovider"
-	logFieldPkg        = "pkg"
-	logFieldType       = "type"
-	logFieldWorkingDir = "workingDir"
+	logPkg                     = "contentprovider"
+	logFieldPkg                = "pkg"
+	logFieldType               = "type"
+	logFieldWorkingDir         = "workingDir"
+	logFieldRepositoryFilePath = "repositoryFilePath"
 )
 
 func parseRemoteURIV2(uri string) (url, filePath, tag string) {

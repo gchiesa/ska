@@ -1,22 +1,19 @@
 package filetreeprocessor
 
 import (
-	"github.com/apex/log"
-	"github.com/gchiesa/ska/pkg/templateprovider"
+	"log/slog"
 	"os"
+
+	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
 func NewFileTreeProcessor(sourcePath, destinationPathRoot string, options ...func(*FileTreeProcessor)) *FileTreeProcessor {
-	logCtx := log.WithFields(log.Fields{
-		"pkg": "processor",
-	})
-
 	tp := &FileTreeProcessor{
 		sourcePath:          sourcePath,
 		destinationPathRoot: destinationPathRoot,
 		workingDir:          "",
 		template:            nil,
-		log:                 logCtx,
+		log:                 slog.Default().With("pkg", "processor"),
 	}
 	// configure options
 	for _, opt := range options {
@@ -30,7 +27,7 @@ func (tp *FileTreeProcessor) WorkingDir() string {
 }
 
 func (tp *FileTreeProcessor) Cleanup() error {
-	tp.log.WithFields(log.Fields{"workingDir": tp.workingDir}).Debug("removing working dir.")
+	tp.log.With("workingDir", tp.workingDir).Debug("removing working dir.")
 	return os.RemoveAll(tp.workingDir)
 }
 
@@ -87,5 +84,15 @@ func WithSourceIgnorePaths(sourceIgnorePaths []string) func(tp *FileTreeProcesso
 func WithDestinationIgnorePaths(destinationIgnorePaths []string) func(tp *FileTreeProcessor) {
 	return func(tp *FileTreeProcessor) {
 		tp.destinationIgnorePaths = destinationIgnorePaths
+	}
+}
+
+// WithLogger injects a *slog.Logger into the processor.
+// The processor will add its own "pkg" field to the received logger.
+func WithLogger(logger *slog.Logger) func(tp *FileTreeProcessor) {
+	return func(tp *FileTreeProcessor) {
+		if logger != nil {
+			tp.log = logger.With("pkg", "processor")
+		}
 	}
 }

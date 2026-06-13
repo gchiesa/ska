@@ -4,10 +4,10 @@ package skaffolder
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/gchiesa/ska/pkg/templateprovider"
 
-	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/contentprovider"
 	"github.com/gchiesa/ska/internal/filetreeprocessor"
 	"github.com/gchiesa/ska/internal/localconfigservice"
@@ -30,8 +30,10 @@ type SkaCreateTask struct {
 	Variables map[string]string
 	// Options controls interactive mode and template engine.
 	Options *SkaTaskOptions
-	// Log is a contextual logger used by the task.
-	Log *log.Entry
+	// Log is the slog-compatible logger propagated to every internal package.
+	// Defaults to slog.Default(). Inject any *slog.Logger (stdlib slog,
+	// charmbracelet/log wrapped via slog.New, etc.).
+	Log *slog.Logger
 }
 
 // SkaTaskOptions controls the behavior of create/update tasks.
@@ -47,24 +49,29 @@ type SkaTaskOptions struct {
 // NewSkaCreateTask constructs a SkaCreateTask with the provided parameters.
 // The returned task can be executed via (*SkaCreateTask).Create.
 func NewSkaCreateTask(templateURI, destinationPath, namedConfig string, variables map[string]string, options SkaTaskOptions) *SkaCreateTask {
-	logCtx := log.WithFields(log.Fields{
-		logFieldPkg: logPkg,
-	})
 	return &SkaCreateTask{
 		TemplateURI:     templateURI,
 		DestinationPath: destinationPath,
 		NamedConfig:     namedConfig,
 		Variables:       variables,
 		Options:         &options,
-		Log:             logCtx,
+		Log:             slog.Default(),
 	}
+}
+
+// WithLogger sets a custom slog-compatible logger on the task and returns the task
+// for chaining. The logger is propagated to all internal packages used during Create.
+func (s *SkaCreateTask) WithLogger(logger *slog.Logger) *SkaCreateTask {
+	s.Log = logger
+	return s
 }
 
 // Create expands the blueprint referred by TemplateURI into DestinationPath.
 // It optionally prompts for variables unless NonInteractive is set.
 func (s *SkaCreateTask) Create() error {
 	// blueprint provider
-	blueprintProvider, err := contentprovider.ByURI(s.TemplateURI)
+	blueprintProvider, err := contentprovider.ByURI(s.TemplateURI,
+		contentprovider.WithLogger(s.Log))
 	if err != nil {
 		return err
 	}
@@ -74,11 +81,11 @@ func (s *SkaCreateTask) Create() error {
 	}(blueprintProvider)
 
 	// configservice
-	localConfig := localconfigservice.NewLocalConfigService(s.NamedConfig)
+	localConfig := localconfigservice.NewLocalConfigService(s.NamedConfig).WithLogger(s.Log)
 
 	// check if localconfig already exist, if yes we fail
 	if localConfig.ConfigExists(s.DestinationPath) {
-		log.Infof("Default config or specified named config already exists, please use a different name for the configuration")
+		s.Log.Info("Default config or specified named config already exists, please use a different name for the configuration")
 		return fmt.Errorf("configuration already exists")
 	}
 
@@ -87,7 +94,9 @@ func (s *SkaCreateTask) Create() error {
 	}
 
 	// load the config for upstream blueprint
-	upstreamConfig, err := upstreamconfigservice.NewUpstreamConfigService().LoadFromPath(blueprintProvider.WorkingDir())
+	upstreamConfig, err := upstreamconfigservice.NewUpstreamConfigService(
+		upstreamconfigservice.WithLogger(s.Log)).
+		LoadFromPath(blueprintProvider.WorkingDir())
 	if err != nil {
 		return err
 	}
@@ -106,7 +115,8 @@ func (s *SkaCreateTask) Create() error {
 	fileTreeProcessor := filetreeprocessor.NewFileTreeProcessor(blueprintProvider.WorkingDir(), s.DestinationPath,
 		filetreeprocessor.WithTemplateService(templateService),
 		filetreeprocessor.WithSourceIgnorePaths(upstreamConfig.UpstreamIgnorePaths()),
-		filetreeprocessor.WithDestinationIgnorePaths(localConfig.IgnorePaths()))
+		filetreeprocessor.WithDestinationIgnorePaths(localConfig.IgnorePaths()),
+		filetreeprocessor.WithLogger(s.Log))
 
 	defer func(fileTreeProcessor *filetreeprocessor.FileTreeProcessor) {
 		_ = fileTreeProcessor.Cleanup()
@@ -116,7 +126,9 @@ func (s *SkaCreateTask) Create() error {
 
 	interactiveService := tui.NewSkaInteractiveService(
 		fmt.Sprintf("Blueprint: %s", s.TemplateURI),
-		upstreamConfig.GetInputs()).SetShowBanner(s.Options.ShowBanner)
+		upstreamConfig.GetInputs(),
+		tui.WithLogger(s.Log)).
+		SetShowBanner(s.Options.ShowBanner)
 
 	// check if interactive mode is required
 	if !s.Options.NonInteractive && interactiveService.ShouldRun() {
@@ -142,7 +154,9 @@ func (s *SkaCreateTask) Create() error {
 	}
 
 	// render the ignore entries in the upstream configuration
-	sp := stringprocessor.NewStringProcessor(stringprocessor.WithTemplateService(templateService))
+	sp := stringprocessor.NewStringProcessor(
+		stringprocessor.WithTemplateService(templateService),
+		stringprocessor.WithLogger(s.Log))
 	skaConfigIgnorePaths, err := sp.RenderSliceOfStrings(upstreamConfig.SkaConfigIgnorePaths(), vars)
 	if err != nil {
 		return err
@@ -158,6 +172,7 @@ func (s *SkaCreateTask) Create() error {
 		return err
 	}
 
-	log.WithFields(log.Fields{"method": "Create", "path": s.DestinationPath, "blueprintUri": blueprintProvider.RemoteURI()}).Info("blueprint expanded under destination path.")
+	s.Log.With("method", "Create", "path", s.DestinationPath, "blueprintUri", blueprintProvider.RemoteURI()).
+		Info("blueprint expanded under destination path.")
 	return nil
 }

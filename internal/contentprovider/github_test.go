@@ -1,13 +1,13 @@
 package contentprovider
 
 import (
-	"github.com/apex/log"
+	"testing"
+
 	"github.com/go-git/go-git/v5/plumbing/transport/client"
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/cassette"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/recorder"
-	"testing"
 )
 
 const (
@@ -27,7 +27,7 @@ func TestGitHubDownloadContent(t *testing.T) {
 	}
 	r, err := recorder.New("fixtures/content-provider-github", opts...)
 	if err != nil {
-		log.Fatalf("error creating recorder: %v", err)
+		t.Fatalf("error creating recorder: %v", err)
 	}
 	defer func(r *recorder.Recorder) { _ = r.Stop() }(r)
 
@@ -37,9 +37,9 @@ func TestGitHubDownloadContent(t *testing.T) {
 	// use the mock client
 	client.InstallProtocol("https", githttp.NewClient(httpClient))
 
-	gh, err := NewGitHub(GitHubTestRepository)
+	gh, err := NewGitHub(GitHubTestRepository, nil)
 	if err != nil {
-		log.Fatalf("error creating GitHub client: %v", err)
+		t.Fatalf("error creating GitHub client: %v", err)
 	}
 	err = gh.DownloadContent()
 	assert.NoError(t, err)
@@ -81,12 +81,11 @@ func TestGithub_validateRemoteURI(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			cp, err := NewGitHub(tc.uri)
+			cp, err := NewGitHub(tc.uri, nil)
 			assert.NoError(t, err)
 			err = cp.validateRemoteURI(tc.uri)
 			tc.expectedTupleFunc(t, cp)
 			tc.expectedErrFunc(t, err)
 		})
 	}
-
 }

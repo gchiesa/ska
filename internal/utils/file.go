@@ -1,22 +1,23 @@
 package utils
 
 import (
-	"github.com/apex/log"
+	"fmt"
+	"log/slog"
 	"os"
 )
 
 type ConfigFile struct {
 	filePath string
-	log      *log.Entry
+	log      *slog.Logger
 }
 
-func NewConfigFromFile(filePath string) *ConfigFile {
-	logCtx := log.WithFields(log.Fields{
-		"pkg": "configuration",
-	})
+func NewConfigFromFile(filePath string, logger *slog.Logger) *ConfigFile {
+	if logger == nil {
+		logger = slog.Default()
+	}
 	return &ConfigFile{
 		filePath: filePath,
-		log:      logCtx,
+		log:      logger.With("pkg", "configuration"),
 	}
 }
 
@@ -25,14 +26,14 @@ func (cf *ConfigFile) GetFilePath() string {
 }
 
 func (cf *ConfigFile) WriteConfig(configData []byte) error {
-	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Debug("writing configuration to file")
+	cf.log.With("filePath", cf.filePath).Debug("writing configuration to file")
 	if err := os.WriteFile(cf.filePath, configData, 0o644); err != nil {
-		return err
+		return fmt.Errorf("writing configuration: %w", err)
 	}
 	return nil
 }
 
 func (cf *ConfigFile) ReadConfig() ([]byte, error) {
-	cf.log.WithFields(log.Fields{"filePath": cf.filePath}).Debug("reading configuration from file")
+	cf.log.With("filePath", cf.filePath).Debug("reading configuration from file")
 	return os.ReadFile(cf.filePath)
 }

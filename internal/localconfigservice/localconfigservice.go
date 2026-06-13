@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gchiesa/ska/internal/utils"
-	"gopkg.in/yaml.v2"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"slices"
+
+	"github.com/gchiesa/ska/internal/utils"
+	"gopkg.in/yaml.v2"
 )
 
 var ErrNoConfigSpecified = errors.New("no configuration specified and multiple configurations present")
@@ -37,6 +39,7 @@ type appCfg struct {
 type LocalConfigService struct {
 	namedConfig string
 	app         *appCfg
+	log         *slog.Logger
 }
 
 func NewLocalConfigService(namedConfig string) *LocalConfigService {
@@ -46,7 +49,19 @@ func NewLocalConfigService(namedConfig string) *LocalConfigService {
 		Config: *configBlock,
 		State:  *stateBlock,
 	}
-	return &LocalConfigService{namedConfig: namedConfig, app: appConfiguration}
+	return &LocalConfigService{
+		namedConfig: namedConfig,
+		app:         appConfiguration,
+		log:         slog.Default(),
+	}
+}
+
+// WithLogger injects a *slog.Logger into the service and returns the service for chaining.
+func (cs *LocalConfigService) WithLogger(logger *slog.Logger) *LocalConfigService {
+	if logger != nil {
+		cs.log = logger
+	}
+	return cs
 }
 
 func (cs *LocalConfigService) NamedConfig() string {
@@ -119,7 +134,9 @@ func (cs *LocalConfigService) WriteConfig(dirPath string) error {
 		return err
 	}
 
-	cf := utils.NewConfigFromFile(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)))
+	cf := utils.NewConfigFromFile(
+		filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)),
+		cs.log)
 
 	// get the time utc now in format "2006-01-02 15:04:05.999999999 -0700 MST"
 	cs.app.State.LastUpdate = timeNowUTC()
@@ -152,7 +169,9 @@ func (cs *LocalConfigService) ReadValidConfig(dirPath string) error {
 		return ErrNoConfigSpecified
 	}
 
-	cf := utils.NewConfigFromFile(filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)))
+	cf := utils.NewConfigFromFile(
+		filepath.Join(makeConfigPath(dirPath), makeConfigFileName(cs.namedConfig)),
+		cs.log)
 	return cs.LoadConfig(cf)
 }
 

@@ -1,12 +1,13 @@
 package contentprovider
 
 import (
-	"github.com/apex/log"
-	gitlab "gitlab.com/gitlab-org/api/client-go"
-
+	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	gitlab "gitlab.com/gitlab-org/api/client-go"
 )
 
 type GitLab struct {
@@ -17,18 +18,18 @@ type GitLab struct {
 	projectPath        string
 	workingDir         string
 	gitlabOptions      []gitlab.ClientOptionFunc
-	log                *log.Entry
+	log                *slog.Logger
 }
 
 type GitLabOption func(*GitLab)
 
 const GitLabPrefix = "https://gitlab.com/"
 
-func NewGitLab(remoteURI string, opt ...GitLabOption) (*GitLab, error) {
-	logCtx := log.WithFields(log.Fields{
-		logFieldPkg:  logPkg,
-		logFieldType: "gitlab",
-	})
+func NewGitLab(remoteURI string, logger *slog.Logger, opt ...GitLabOption) (*GitLab, error) {
+	if logger == nil {
+		logger = slog.Default()
+	}
+	logCtx := logger.With(logFieldPkg, logPkg, logFieldType, "gitlab")
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
 	if err != nil {
 		return nil, err
@@ -53,14 +54,14 @@ func (cp *GitLab) WorkingDir() string {
 	// if filepath is set, we set that one as working directory
 	if cp.repositoryFilePath != "" {
 		wd := filepath.Join(cp.workingDir, cp.repositoryFilePath)
-		cp.log.WithFields(log.Fields{"repositoryFilePath": cp.repositoryFilePath}).Debugf("using repository file path: %s", wd)
+		cp.log.With(logFieldRepositoryFilePath, cp.repositoryFilePath).Debug(fmt.Sprintf("using repository file path: %s", wd))
 		return wd
 	}
 	return cp.workingDir
 }
 
 func (cp *GitLab) Cleanup() error {
-	cp.log.WithFields(log.Fields{logFieldWorkingDir: cp.workingDir}).Debug("removing working dir.")
+	cp.log.With(logFieldWorkingDir, cp.workingDir).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err
 }
