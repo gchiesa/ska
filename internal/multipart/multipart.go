@@ -230,12 +230,12 @@ func (mp *Multipart) adoptWithYAMLMerge(base []byte, regex string, compiledParti
 	existingContent := base[start:end]
 	mergedContent, changedPaths, err := yamlmerge.MergeYAML(existingContent, compiledPartial)
 	if err != nil {
-		mp.log.WithFields(log.Fields{"partID": partID, "engine": "yaml-merge"}).
-			Errorf("yaml merge failed during adoption, falling back to replace: %v", err)
+		mp.log.With("partID", partID, "engine", "yaml-merge").
+			Error(fmt.Sprintf("yaml merge failed during adoption, falling back to replace: %v", err))
 		return replaceMatch(base, regex, string(buildManagedBlock(partID, compiledPartial)))
 	}
 	for _, path := range changedPaths {
-		mp.log.WithFields(log.Fields{"engine": "yaml-merge", "patch": path}).Debug("applying patch (adopt)")
+		mp.log.With("engine", "yaml-merge", "patch", path).Debug("applying patch (adopt)")
 	}
 
 	managed := buildManagedBlock(partID, mergedContent)

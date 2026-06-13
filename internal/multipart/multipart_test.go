@@ -375,7 +375,7 @@ stack:
 `
 
 	bpPath := writeTempFile(t, tmp, "blue.yaml", blueprintContent)
-	m, err := NewMultipartFromFile(bpPath, "blue.yaml")
+	m, err := NewMultipartFromFile(bpPath, "blue.yaml", nil)
 	if err != nil {
 		t.Fatalf("multipart: %v", err)
 	}
@@ -393,7 +393,7 @@ stack:
 	}
 
 	dest := writeTempFile(t, tmp, "dest.yaml", destContent)
-	if err := m.CompileToFile(dest, false); err != nil {
+	if err := m.CompileToFile(dest); err != nil {
 		t.Fatalf("compile: %v", err)
 	}
 
