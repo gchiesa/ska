@@ -5,8 +5,8 @@ package skaffolder
 
 import (
 	"fmt"
+	"log/slog"
 
-	"github.com/apex/log"
 	cfg "github.com/gchiesa/ska/internal/localconfigservice"
 	"github.com/gchiesa/ska/pkg/util"
 )
@@ -16,19 +16,24 @@ import (
 type SkaConfigTask struct {
 	// BaseURI is the path to the project base directory.
 	BaseURI string
-	// Log is a contextual logger used by the task.
-	Log *log.Entry
+	// Log is the slog-compatible logger used by the task.
+	// Defaults to slog.Default(). Inject any *slog.Logger (stdlib slog,
+	// charmbracelet/log wrapped via slog.New, etc.).
+	Log *slog.Logger
 }
 
 // NewSkaConfigTask constructs a SkaConfigTask bound to a base directory.
 func NewSkaConfigTask(baseURI string) *SkaConfigTask {
-	logCtx := log.WithFields(log.Fields{
-		logFieldPkg: logPkg,
-	})
 	return &SkaConfigTask{
 		BaseURI: baseURI,
-		Log:     logCtx,
+		Log:     slog.Default(),
 	}
+}
+
+// WithLogger sets a custom slog-compatible logger on the task and returns the task for chaining.
+func (c *SkaConfigTask) WithLogger(logger *slog.Logger) *SkaConfigTask {
+	c.Log = logger
+	return c
 }
 
 // ListNamedConfigs returns the names of all .ska-config configurations stored
@@ -39,7 +44,7 @@ func (c *SkaConfigTask) ListNamedConfigs() ([]string, error) {
 
 // RenameNamedConfig renames an existing named configuration from name to newName.
 func (c *SkaConfigTask) RenameNamedConfig(name, newName string) error {
-	localConfig := cfg.NewLocalConfigService(name)
+	localConfig := cfg.NewLocalConfigService(name).WithLogger(c.Log)
 
 	if err := localConfig.ReadValidConfig(c.BaseURI); err != nil {
 		return err
@@ -47,14 +52,14 @@ func (c *SkaConfigTask) RenameNamedConfig(name, newName string) error {
 
 	err := localConfig.RenameNamedConfig(c.BaseURI, newName)
 	if err == nil {
-		c.Log.WithFields(log.Fields{"name": name, "newName": newName}).Infof("Renamed config from %s to %s", name, newName)
+		c.Log.With("name", name, "newName", newName).Info(fmt.Sprintf("Renamed config from %s to %s", name, newName))
 	}
 	return err
 }
 
 // DeleteConfig deletes the specified named configuration from .ska-config.
 func (c *SkaConfigTask) DeleteConfig(name string) error {
-	localConfig := cfg.NewLocalConfigService(name)
+	localConfig := cfg.NewLocalConfigService(name).WithLogger(c.Log)
 
 	if err := localConfig.ReadValidConfig(c.BaseURI); err != nil {
 		return err

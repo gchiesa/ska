@@ -2,10 +2,10 @@ package contentprovider
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
-	"github.com/apex/log"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
@@ -17,16 +17,16 @@ type GitHub struct {
 	repositoryRef      string
 	repositoryFilePath string
 	workingDir         string
-	log                *log.Entry
+	log                *slog.Logger
 }
 
 const GitHubPrefix = "https://github.com/"
 
-func NewGitHub(remoteURI string) (*GitHub, error) {
-	logCtx := log.WithFields(log.Fields{
-		logFieldPkg:  logPkg,
-		logFieldType: "github",
-	})
+func NewGitHub(remoteURI string, logger *slog.Logger) (*GitHub, error) {
+	if logger == nil {
+		logger = slog.Default()
+	}
+	logCtx := logger.With(logFieldPkg, logPkg, logFieldType, "github")
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (cp *GitHub) WorkingDir() string {
 	// if filepath is set we set that one as working directory
 	if cp.repositoryFilePath != "" {
 		wd := filepath.Join(cp.workingDir, cp.repositoryFilePath)
-		cp.log.WithFields(log.Fields{"repositoryFilePath": cp.repositoryFilePath}).Debugf("using repository file path: %s", wd)
+		cp.log.With(logFieldRepositoryFilePath, cp.repositoryFilePath).Debug(fmt.Sprintf("using repository file path: %s", wd))
 		return wd
 	}
 	return cp.workingDir
@@ -93,7 +93,7 @@ func (cp *GitHub) DownloadContent() error {
 }
 
 func (cp *GitHub) Cleanup() error {
-	cp.log.WithFields(log.Fields{logFieldWorkingDir: cp.workingDir}).Debug("removing working dir.")
+	cp.log.With(logFieldWorkingDir, cp.workingDir).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err
 }

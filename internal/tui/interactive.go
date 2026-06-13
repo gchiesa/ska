@@ -2,9 +2,9 @@ package tui
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 
-	"github.com/apex/log"
 	"github.com/gchiesa/ska/internal/upstreamconfigservice"
 )
 
@@ -14,7 +14,20 @@ type SkaInteractiveService struct {
 	formShowBanner   bool
 	variables        map[string]string
 	writeOnceEnabled bool // writeOnceEnabled enable the readonly management
-	log              *log.Entry
+	log              *slog.Logger
+}
+
+// SkaInteractiveOption configures a SkaInteractiveService.
+type SkaInteractiveOption func(*SkaInteractiveService)
+
+// WithLogger injects a *slog.Logger into the interactive service.
+// The service will add its own "pkg" field to the received logger.
+func WithLogger(logger *slog.Logger) SkaInteractiveOption {
+	return func(s *SkaInteractiveService) {
+		if logger != nil {
+			s.log = logger.With("pkg", "tui")
+		}
+	}
 }
 
 // InputType defines the type of input (text or list)
@@ -48,7 +61,7 @@ type InteractiveForm struct {
 
 type Variables map[string]string
 
-func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.UpstreamConfigInput) *SkaInteractiveService {
+func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.UpstreamConfigInput, opts ...SkaInteractiveOption) *SkaInteractiveService {
 	var interactiveInputs []InteractiveInput
 
 	for _, i := range inputs {
@@ -72,11 +85,15 @@ func NewSkaInteractiveService(formTitle string, inputs []upstreamconfigservice.U
 		interactiveInputs = append(interactiveInputs, *input)
 	}
 
-	return &SkaInteractiveService{
+	s := &SkaInteractiveService{
 		formTitle:  formTitle,
 		formConfig: &InteractiveForm{Inputs: interactiveInputs},
-		log:        log.WithFields(log.Fields{"pkg": "skaffolder"}),
+		log:        slog.Default().With("pkg", "tui"),
 	}
+	for _, opt := range opts {
+		opt(s)
+	}
+	return s
 }
 
 func (s *SkaInteractiveService) SetWriteOnce(isEnabled bool) *SkaInteractiveService {
@@ -135,7 +152,7 @@ func (s *SkaInteractiveService) SetShowBanner(enabled bool) *SkaInteractiveServi
 func (s *SkaInteractiveService) disableWithLoggingInvalidRegExp() {
 	for i := range s.formConfig.Inputs {
 		if _, err := regexp.Compile(s.formConfig.Inputs[i].RegExp); err != nil {
-			s.log.WithFields(log.Fields{"validation": s.formConfig.Inputs[i].RegExp}).Warnf("the RegExp expression is invalid. Error: %s. Ignoring validation.", err)
+			s.log.With("validation", s.formConfig.Inputs[i].RegExp).Warn(fmt.Sprintf("the RegExp expression is invalid. Error: %s. Ignoring validation.", err))
 			s.formConfig.Inputs[i].RegExp = ""
 		}
 	}

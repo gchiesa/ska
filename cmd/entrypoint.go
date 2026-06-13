@@ -3,12 +3,11 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/alexflint/go-arg"
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/cli"
-	"github.com/apex/log/handlers/json"
+	charmlog "github.com/charmbracelet/log"
 	"github.com/gchiesa/ska/pkg/templateprovider"
 )
 
@@ -34,20 +33,24 @@ var args arguments
 
 func Execute(version string) error {
 	commandVersion = version
-	log.SetHandler(cli.New(os.Stderr))
-	log.SetLevel(log.InfoLevel)
 
 	arg.MustParse(&args)
 
+	// Build the charmbracelet logger with the requested level/format, then
+	// expose it as the process-wide slog default so every internal package
+	// that calls slog.Default() automatically uses the same handler.
+	charmLogger := charmlog.New(os.Stderr)
+	charmLogger.SetLevel(charmlog.InfoLevel)
 	if args.Debug {
-		log.SetLevel(log.DebugLevel)
+		charmLogger.SetLevel(charmlog.DebugLevel)
 	}
 	if args.JSONOutput {
-		log.SetHandler(json.New(os.Stderr))
+		charmLogger.SetFormatter(charmlog.JSONFormatter)
 	}
+	slog.SetDefault(slog.New(charmLogger))
 
 	if args.Engine != "sprig" && args.Engine != "jinja" {
-		log.Fatalf("invalid template engine: %s", args.Engine)
+		charmLogger.Fatalf("invalid template engine: %s", args.Engine)
 	}
 
 	ctx := context.TODO()
@@ -56,15 +59,15 @@ func Execute(version string) error {
 	switch {
 	case args.CreateCmd != nil:
 		if err := args.CreateCmd.Execute(ctx); err != nil {
-			log.Fatalf("error executing create command: %v", err)
+			charmLogger.Fatalf("error executing create command: %v", err)
 		}
 	case args.UpdateCmd != nil:
 		if err := args.UpdateCmd.Execute(ctx); err != nil {
-			log.Fatalf("error executing update command: %v", err)
+			charmLogger.Fatalf("error executing update command: %v", err)
 		}
 	case args.ConfigCmd != nil:
 		if err := args.ConfigCmd.Execute(ctx); err != nil {
-			log.Fatalf("error executing config command: %v", err)
+			charmLogger.Fatalf("error executing config command: %v", err)
 		}
 	default:
 		fmt.Println("no subcommand specified, please use the --help flag to check available commands")

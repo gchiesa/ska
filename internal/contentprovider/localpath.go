@@ -2,24 +2,25 @@ package contentprovider
 
 import (
 	"fmt"
-	"github.com/apex/log"
-	"github.com/otiai10/copy"
+	"log/slog"
 	"os"
+
+	"github.com/otiai10/copy"
 )
 
 type LocalPath struct {
 	sourcePath string
 	workingDir string
-	log        *log.Entry
+	log        *slog.Logger
 }
 
 const LocalPathPrefix = "file://"
 
-func NewLocalPath(path string) (*LocalPath, error) {
-	logCtx := log.WithFields(log.Fields{
-		logFieldPkg:  logPkg,
-		logFieldType: "github",
-	})
+func NewLocalPath(path string, logger *slog.Logger) (*LocalPath, error) {
+	if logger == nil {
+		logger = slog.Default()
+	}
+	logCtx := logger.With(logFieldPkg, logPkg, logFieldType, "localpath")
 	tmpDir, err := os.MkdirTemp("", workingDirPrefix)
 	if err != nil {
 		return nil, err
@@ -36,10 +37,11 @@ func (cp *LocalPath) RemoteURI() string {
 }
 
 func (cp *LocalPath) Cleanup() error {
-	cp.log.WithFields(log.Fields{logFieldWorkingDir: cp.workingDir}).Debug("removing working dir.")
+	cp.log.With(logFieldWorkingDir, cp.workingDir).Debug("removing working dir.")
 	err := os.RemoveAll(cp.workingDir)
 	return err
 }
+
 func (cp *LocalPath) DownloadContent() error {
 	if cp.workingDir == "" {
 		var err error
