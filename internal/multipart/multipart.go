@@ -190,7 +190,7 @@ func (mp *Multipart) applyYAMLMerge(dataContent []byte, re *regexp.Regexp, compi
 				Info(fmt.Sprintf("existing content is empty, falling back to text replacement: %v", err))
 		} else {
 			mp.log.With("partID", partID, "engine", "yaml-merge").
-				Error(fmt.Sprintf("yaml merge failed, falling back to text replacement: %v", err))
+				Warn(fmt.Sprintf("yaml merge failed, falling back to text replacement: %v", err))
 		}
 		return re.ReplaceAll(dataContent, []byte(`${1}:${2}`+"\n"+string(compiledPartial)+`${4}`))
 	}
@@ -235,7 +235,7 @@ func (mp *Multipart) adoptWithYAMLMerge(base []byte, regex string, compiledParti
 				Info(fmt.Sprintf("existing content is empty, falling back to replace: %v", err))
 		} else {
 			mp.log.With("partID", partID, "engine", "yaml-merge").
-				Error(fmt.Sprintf("yaml merge failed during adoption, falling back to replace: %v", err))
+				Warn(fmt.Sprintf("yaml merge failed during adoption, falling back to replace: %v", err))
 		}
 		return replaceMatch(base, regex, string(buildManagedBlock(partID, compiledPartial)))
 	}
