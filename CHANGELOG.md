@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/gchiesa/ska/compare/v1.4.0...v1.4.1) (2026-06-15)
+
+
+### Bug Fixes
+
+* logging issue ([4eb3410](https://github.com/gchiesa/ska/commit/4eb3410952725691f98a4ef223bb2035495d85f3))
+
 ## [1.4.0](https://github.com/gchiesa/ska/compare/v1.3.1...v1.4.0) (2026-06-13)
 
 
